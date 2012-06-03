@@ -17,9 +17,9 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
 import tatoo.ArmyListInstanceSidePanel;
+import tatoo.TextWrapper;
 import tatoo.VersionNumber;
 import tatoo.model.ArmyListModel;
-import tatoo.model.TextWrapper;
 import tatoo.model.entities.Entity;
 import tatoo.view.armyBuilder.ArmyBuilderPanel;
 import tatoo.view.armyList.ArmyListPanel;

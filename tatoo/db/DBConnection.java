@@ -56,7 +56,7 @@ public abstract class DBConnection {
  // Den Datensatz zu diesem Objekt suchen
     Query query = createQuery();
     query.get(entity.getClass());
-    query.addCondition("Entity_id = " + entity.);
+//    query.addCondition("Entity_id = " + entity.);
 //    
 //    // wird der Datensatz nicht gefunden muss das Objekt in die Datenbank
 //    // eingetragen werden

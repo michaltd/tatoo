@@ -15,7 +15,7 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 
-import tatoo.model.TextWrapper;
+import tatoo.TextWrapper;
 import tatoo.model.conditions.SimpleNumber;
 import tatoo.model.entities.AbstractEntity;
 import tatoo.model.entities.Entity;

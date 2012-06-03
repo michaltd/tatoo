@@ -7,6 +7,7 @@ import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreePath;
 
+import tatoo.TextWrapper;
 import tatoo.model.entities.AbstractEntity;
 import tatoo.model.entities.Entity;
 

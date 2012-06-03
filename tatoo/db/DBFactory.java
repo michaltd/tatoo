@@ -13,7 +13,7 @@ public class DBFactory {
 	 */
 	private void init() {
 		//Connection aufbauen
-		//TODO DBASES.H2 muss noch ersetzt werden durch einen Wert aus einer ini/conf Datei.
+		//TODO hier muss per Reflection der "Treiber" geladen werden (SQLConnection, XMLConnection oder MySQLConnection usw.)
 		conn = new SQLConnection(DBases.H2Server);
 		//conn = new SQLConnection(DBases.H2);
 		conn.connect();

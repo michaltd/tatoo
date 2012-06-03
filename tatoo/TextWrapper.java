@@ -1,4 +1,4 @@
-package tatoo.model;
+package tatoo;
 
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;

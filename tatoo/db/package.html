@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3c.org/TR/1999/REC-html401-19991224/loose.dtd">
+<html>
+	<head>
+	</head>
+<body>
+	<p>Das Paket enthält Klassen für das Serialisieren von Objekten in eine Datenbank oder wahlweise auch in XML-Dateien.<p>
+	<h1>Intention</h1>
+	<p>
+	Es gibt bereits verschiedene Bibliotheken wie zum Beispiel Hibernate, die einem die Arbeit des Serialisierens abnehmen. Dennoch wurde die 
+	Entscheidung getroffen ein eigenes Framework zu schreiben. Das hat mehrere Gründe.
+	<ul>
+	<li>Die meisten Serialisierungs-Frameworks unterstützen keine serialisierung in XML-Dateien. Diese Funktionalität wird hier aber gebraucht, 
+	weil geplant ist, Armeelisten in XML-Dateien zu schreiben um eine Speicherfunktionalität bereitzustellen.</li>
+	<li>Ein eigenes Framework ermöglicht höhere Flexibilität. so ist z.B. geplant ein Versions-Konvertierungssystem zu schreiben, so dass
+	eine gespeicherte Armeeliste aus einer älteren Version von tatoo in eine neuere Version eingelesen werden kann. Das ist mit herkömmlichen 
+	Serialisierungsframeworks nicht machbar.</li>
+	<li>Weil ich es kann. <br />Es handelt sich bei tatoo um ein Spass-Projekt, welches in meiner Freizeit entsteht. Ich will die Technik hinter 
+	der Serialisierung verstehen und nachbauen auch um meine Fähigkeiten zu verbessern.</li>
+	</ul>
+	</p>
+	<p>
+	Bei der Planung der Schnittstelle zur Datenbank waren mir folgende Punkte wichtig:
+	<ul>
+	<li>Die einzelnen Objekte sollten nicht von sich aus wissen wie sie sich in die Datenbank schreiben können. Ich wollte in den Klassen keine Methoden
+	wie <code>save_to_XML()</code> oder ähnliches sehen.</li>
+	<li>Die Datenbank im Hintergrund muss wenn möglich sogar zur Laufzeit austauschbar sein. 
+	Ob da nun eine h2, sqlite oder MySQL oder eben XML hinter liegt sollte egal sein.</li>
+	<li>Das ganze Konstrukt sollte als in sich geschlossenes Modul vorliegen, welches ohne das Gesamtsystem umschreiben zu müssen verändert oder
+	sogar neu geschrieben werden kann.</li>
+	<li>Ein import von älteren Daten in eine neue Version muss möglich sein. Nur so werden gespeicherte Armeelisten nicht bei einem Update ungültig. 
+	Ausserdem ist ein Austausch zwischen zwei Computern möglich auf denen zwei verschiedene Versionen installiert sind. 
+	</li>
+	</ul>
+	</p>
+	<h1>Überblick</h1>
+	<p>
+	Dreh und Angelpunt der Serialisierung ist die Klasse <code>DBFactory</code>. Es handelt sich hierbei um ein Singleton. Die Factory 
+	wird beim Laden von tatoo per Konfigurationsdatei auf eine spezifische Datenbank oder einer XML-Struktur initialisiert 
+	und baut eine Verbindung dazu auf.<br />  
+	Diese Verbindung kann mit der Methode <code>getConnection()</code> abgefragt werden. Diese Methode liefert ein <code>DBConnection</code> Objekt zurück.
+	Die Klasse <code>DBConnection</code> ist eine Abstrakte Klasse welche je nach verwendetem "Datenbanktreiber" unterschiedliche konkrete
+	Objekte enthält. Bisher implementiert ist nur {@link tatoo.db.sql.SQLConnection} welche eine Implementierung einer Verbindung mit einer SQL-Datenbank darstellt.
+	Generell enthält sie Methoden um Abfragen auf die Datenbank bereit zu stellen. Die Abfragen sind soweit von der konkreten Implementierung Abstrahiert,
+	dass sie für jeden "Treiber" gleich aussehen. <br />
+	Konkret bedeutet das, dass drei verschiedene Abfragen erstellt werden können: 
+	<ul><li>Datamanipulation zur Manipulation (INSERT, DELETE usw) von Daten.</li>
+	<li>Datadefinition zur Definition von Daten (ALTER TABLE) und</li>
+	<li>Query zur Abfrage von Daten (SELECT)</li></ul>
+	Konkret handelt es sich um die drei abstrakten Klassen <code>DataManipulation</code>, <code>DataDefinition</code> und <code>Query</code>.
+	Diese Klassen sind wiederum abstrakt und werden lediglich vom konkreten "Treiber" implementiert.	
+	</p>
+	<p>
+	Ein paar Worte zum Rest der im Paket enthaltenen Klassen:
+	<ul><li>Dataset:<br />Ugly, Ugly, Ugly. Ursprünglich war es geplant jede serialisierbare Klasse von Dataset abzuleiten. So wird im Moment noch
+	{@link tatoo.model.entities.AbstractEntity} von Dataset abgeleitet. Dataset stellt zwei Methoden bereit <code>save()</code> und <code>delete()</code>
+	damit sollte die Klasse dann gespeichert oder auch gelöscht werden aus der DB. Blödsinn ohne gleichen. Hatte ich mir irgendwann Nachts um drei ausgedacht.
+	<br />Stattdessen wird entweder die Connection oder aber sogar die DBFactory (ich überlege die DBconnection so weit zu verstecken, dass sie ausserhalb
+	des Paketes <code>tatoo.db</code> nicht sichtbar ist) zwei Methoden enthalten: <code>write()</code> und <code>read()</code>.</li>
+	<li>Migration:<br />
+	Die Klasse ist dafür gedacht die Datenbank bzw. die Daten zwischen den Versionen der Datenbank hin und her zu switchen. Das hat in meinem Ursprünglichen
+	Design auch geklappt. Allerdings wurde noch einiges umgestellt, und so funktioniert da garnichts mehr. Klasse wird erst mal beibehalten: vielleicht 
+	brauche ich sie noch mal :)</li>
+	</ul>
+	</p>
+@author mkortz
+
+</body>
+</html>

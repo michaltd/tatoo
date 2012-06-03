@@ -1,0 +1,23 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3c.org/TR/1999/REC-html401-19991224/loose.dtd">
+<html>
+	<head>
+	</head>
+<body>
+	<p>Veränderbare Attribute für Entities.</p>
+	<p>Conditions werden in Entities als Attribute benutzt. Eine Condition stellt im Grunde genommen
+	ein Attribut dar, welches von anderen Werten, Attributen oder anderen Entities abhängig ist oder sein kann. 
+	So lassen sich Attribute während der Laufzeit auf einfache Weise berechnen und ändern.</p>
+	<p>Ein Beispiel:<br />
+	Eine Einheit B hängt von einer anderen Einheit A in der Form ab, dass für jede Einheit A eine Einheit B in den
+	Armeeplan aufgenommen werden darf.</p>
+	<p>Einheit B bekommt nun als Attribut <code>count</code> eine <code>CalculatedNumberCondition</code> übergeben
+	welche wiederum auf das Attribut <code>count</code> von Einheit A verweist. Ändert sich der Wert von A.count so 
+	ist von dieser Änderung automatisch der Wert von B.count betroffen. 
+	</p>
+	<p>Anmerkung: <br/>
+	So ist es zumindest geplant. Ob das so für alle conditions funktioniert und wie sich Conditions 
+	serialisieren lassen ist noch vollkommen ungeklärt.</p>
+@author mkortz
+
+</body>
+</html>

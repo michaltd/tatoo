@@ -24,7 +24,7 @@ public class ArmyListInstanceSidePanel {
 			
 			armeeliste = new RootNode("Armeeliste");
 			//armeeliste.save();
-			DBFactory.getInstance().getConnection().save(armeeliste);
+//			DBFactory.getInstance().getConnection().save(armeeliste);
 
 //			/* Entry */
 //			Entity hq = new CategoryNode("HQ");

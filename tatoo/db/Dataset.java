@@ -1,5 +1,11 @@
 package tatoo.db;
 
+@Deprecated 
+/**
+ * holy crap!
+ * @author mkortz
+ *
+ */
 public class Dataset {
 
   private static DBConnection conn = DBFactory.getInstance().getConnection();
