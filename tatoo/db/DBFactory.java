@@ -2,6 +2,8 @@ package tatoo.db;
 
 import tatoo.db.DBConnection.DBases;
 import tatoo.db.sql.SQLConnection;
+import tatoo.model.entities.Entity;
+import tatoo.model.entities.RootNode;
 
 public class DBFactory {
 	
@@ -14,6 +16,7 @@ public class DBFactory {
 	private void init() {
 		//Connection aufbauen
 		//TODO hier muss per Reflection der "Treiber" geladen werden (SQLConnection, XMLConnection oder MySQLConnection usw.)
+	  // zur zeit noch einfach so eingestellt
 		conn = new SQLConnection(DBases.H2Server);
 		//conn = new SQLConnection(DBases.H2);
 		conn.connect();
@@ -30,6 +33,15 @@ public class DBFactory {
 		}
 		return factory;
 	}
+
+  public void write(Dataset o) {
+    getConnection().write(o);
+  }
+
+  public Dataset read(Class<?> c, int id) {
+    return getConnection().read(c, id);
+    
+  }
 	
 //	/**
 //	 * migrate all pending Migrations

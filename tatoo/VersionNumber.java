@@ -1,4 +1,7 @@
+
 package tatoo;
+
+import tatoo.db.Dataset;
 
 /**
  * Eine einfache Implementation einer Versionsnummer. Die Versionsnummer 
@@ -8,9 +11,9 @@ package tatoo;
  * @author mkortz
  *
  */
-public class VersionNumber implements Comparable<VersionNumber>{
+public class VersionNumber extends Dataset implements Comparable<VersionNumber>{
 
-	private long version = 0;
+	private int version = 0;
 	private String format = "\\d\\d\\.\\d\\d\\d\\d\\.\\d\\d";
 	
 	/**
@@ -20,7 +23,7 @@ public class VersionNumber implements Comparable<VersionNumber>{
 	 * @throws NumberFormatException
 	 */
 	public VersionNumber(String versionAsString){
-		version = versionToLong(versionAsString);
+		version = versionToInt(versionAsString);
 	}
 	
 	/**
@@ -28,11 +31,11 @@ public class VersionNumber implements Comparable<VersionNumber>{
 	 * Zahlen beinhalten wie es das Format der Version vorgibt. Bei zu wenig Zahlen wird von links mit nullen (0) aufgefüllt.  
 	 * @param versionNumber
 	 */
-	public VersionNumber(long versionNumber){
+	public VersionNumber(int versionNumber){
 	  // versionsnummer zuweisen
 		version = versionNumber;
 		// von Links mit 0 auffüllen
-		version = versionToLong(this.toString());
+		version = versionToInt(this.toString());
 	}
 	
 	// privater leerer Konstruktor. Ist für das Instanziieren aus dem Datenbankframework. NICHT löschen.
@@ -44,10 +47,10 @@ public class VersionNumber implements Comparable<VersionNumber>{
 	 * @return den long Wert des Versionsstrings
 	 * @throws NumberFormatException
 	 */
-	private long versionToLong(String versionAsString){
+	private int versionToInt(String versionAsString){
 	  if (!versionAsString.matches(format))
       throw new NumberFormatException("Versionstring does not match excepted format: " + format);
-    return new Long(versionAsString.replaceAll("\\.", "")).longValue();
+    return new Integer(versionAsString.replaceAll("\\.", "")).intValue();
 	}
 	
 	/**
@@ -57,7 +60,7 @@ public class VersionNumber implements Comparable<VersionNumber>{
 	public String toString(){
 	  if (version == 0)
         throw new tatoo.Exceptions.VersionnumberNotInitializedException();
-		char[] charArr = ((Long)version).toString().toCharArray();
+		char[] charArr = ((Integer)version).toString().toCharArray();
 		char[] resArr = new char[8];
 		byte offset = (byte) (resArr.length - charArr.length);
 		
@@ -73,7 +76,7 @@ public class VersionNumber implements Comparable<VersionNumber>{
 	 * Gibt die Versionsnummer als long-Wert zurück. Der Wert entspricht der Versionsnummer ohne trennende Punkte.
 	 * @return die Versionsnummer als long.
 	 */
-	public long longValue(){
+	public int intValue(){
 	  if (version == 0)
       throw new tatoo.Exceptions.VersionnumberNotInitializedException();
 		return version;
@@ -86,7 +89,15 @@ public class VersionNumber implements Comparable<VersionNumber>{
    */
 	@Override
 	public int compareTo(VersionNumber o) {
-		return new Long(this.longValue()).compareTo(new Long(o.longValue()));
+		return new Integer(this.intValue()).compareTo(new Integer(o.intValue()));
+	}
+	
+	public int getMajorVersion(){
+	  return new Integer((intValue() - (intValue() % 100000)) / 100000).intValue();
+	}
+	
+	public int getMinorVersion(){
+	  return new Integer((intValue() % 100000)/100).intValue();
 	}
 	
 }

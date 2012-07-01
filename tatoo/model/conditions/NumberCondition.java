@@ -1,8 +1,8 @@
 package tatoo.model.conditions;
 
-public interface NumberCondition extends Condition<Integer>, Comparable<NumberCondition> {
+public interface NumberCondition<T> extends Condition<Number>, Comparable<NumberCondition<T>> {
   
-  public abstract int compareTo(NumberCondition numbCond);
+  public abstract int compareTo(NumberCondition<T> numbCond);
   
   public void addChangeListener(ConditionListener l);
   

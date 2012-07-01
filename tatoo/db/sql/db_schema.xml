@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<schema>
+	<class name="VersionNumber" table="migration_schema" >
+		<property name="version" column="version"/>
+	</class>
+	<class name="Entity" table="entity">
+		<property name="parent" column="parent"/>
+	</class>
+	<class name="AbstractEntity" table="abstract_entity">
+		<property name="name" column="name"/>
+		<property name="price" column="price" type="" />
+		<property name="count" column="count"/>
+	</class>
+	<class name="Dataset" table="dataset">
+		<property name="id" column="dataset_id"/>
+	</class>
+	<class name="AbstractUpgrade" table="abstract_upgrade" >
+		<property name="receivingEntity" column="receiving_entity_id" />
+	</class>
+	<class name="RealEntity" table="real_entity">
+		<property name="maxCount" column="max_count_id" />
+		<property name="minCount" column="min_count_id" />
+		<set name="entities" table="realentity_entities" type="ArrayList" />
+	</class>
+	<class name="SimpleNumber" table="simple_number">
+		<property name="number" column="number"/>
+	</class>
+	<class name="CalculatedNumber" table="calculated_number">
+		<property name="source" column="source" />
+		<property name="value" column="value" />
+		<property name="arith" column="arith" />
+	</class>
+	<class name="AbstractNumberCondition" table="abstract_number_condition">
+		<set name="listenerList" table="abstract_number_condition_listeners" type="EventListenerList" />
+	</class>
+</schema>
+
+
+

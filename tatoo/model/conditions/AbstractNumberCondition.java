@@ -1,8 +1,12 @@
 package tatoo.model.conditions;
 
+import java.util.EventListener;
+
 import javax.swing.event.EventListenerList;
 
-public abstract class AbstractNumberCondition implements NumberCondition {
+import tatoo.db.Dataset;
+
+public abstract class AbstractNumberCondition<T> extends Dataset implements NumberCondition<T> {
 
   Object owner;
   /** List of objects listening on Changes on this Condition. */
@@ -27,7 +31,8 @@ public abstract class AbstractNumberCondition implements NumberCondition {
   public void fireValueChanged() {
     Object[] listeners = listenerList.getListenerList();
     for (int i = listeners.length - 2; i >= 0; i -= 2) {
-      if (listeners[i] == ConditionListener.class) {
+//      if (listeners[i] == ConditionListener.class) {
+      if (EventListener.class.isAssignableFrom((Class<?>)listeners[i])) {
         ((ConditionListener) listeners[i + 1]).valueChanged();
       }
     }
@@ -39,10 +44,10 @@ public abstract class AbstractNumberCondition implements NumberCondition {
   }
 
   @Override
-  public int compareTo(NumberCondition numbCond) {
-    Integer thisNum = this.getValue();
-    Integer anotherNum = numbCond.getValue();
-    return (thisNum<anotherNum ? -1 : (thisNum==anotherNum ? 0 : 1));    
+  public int compareTo(NumberCondition<T> numbCond) {
+    Number thisNum = this.getValue();
+    Number anotherNum = numbCond.getValue();
+    return ( thisNum.doubleValue() < anotherNum.doubleValue() ? -1 : (thisNum == anotherNum ? 0 : 1));    
   }
   
   public void setOwner(Object o){

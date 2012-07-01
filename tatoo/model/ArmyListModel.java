@@ -190,7 +190,6 @@ public class ArmyListModel implements ArmyModel {
   }
   
   @Override
-  //TODO: Kopie eines Entities einfügen .. OHNE Childs (copy-Constructor)
 	public AbstractEntity insertEntitiy(Object[] treePath) {
   	//das erste Object im Array MUSS der root-Knoten sein, sonst ist es kein
   	//gültiger Pfad!
@@ -220,7 +219,7 @@ public class ArmyListModel implements ArmyModel {
 				}
 			}
 			//den letzten Knoten auf jeden Fall hinzufügen
-			AbstractEntity newNode = (AbstractEntity)treePath[treePath.length -1];
+			AbstractEntity newNode = (AbstractEntity)treePath[treePath.length -1];			
 			treeNode.addEntity(newNode);
 			int[] idx = { treeNode.getChildCount() };
 			Object[] child = { newNode };

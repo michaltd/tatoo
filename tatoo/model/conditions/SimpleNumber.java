@@ -1,9 +1,12 @@
 package tatoo.model.conditions;
 
-public class SimpleNumber extends AbstractNumberCondition {
+public class SimpleNumber extends AbstractNumberCondition<Integer> {
 
   protected Integer number;
 
+  public SimpleNumber()
+  {this(0);}
+  
   public SimpleNumber(int num) {
     number = num;
   }
@@ -11,9 +14,10 @@ public class SimpleNumber extends AbstractNumberCondition {
   public Integer getValue() {
     return number;
   }
-
-  public void setValue(Integer val) {
-    number = val;
+  
+  @Override
+  public void setValue(Number val) {
+    number = val.intValue();
     fireValueChanged();
   }
 

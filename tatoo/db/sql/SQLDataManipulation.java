@@ -1,25 +1,24 @@
 package tatoo.db.sql;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.AbstractMap.SimpleEntry;
-
 import tatoo.db.DataManipulation;
 import tatoo.db.Dataset;
+import tatoo.db.sql.DBSchemaDefinition.SchemaType;
 
 public class SQLDataManipulation extends DataManipulation {
 
   Connection dbconn;
 
   private String t_name;
+  private String t_class;
   private Hashtable<String, String> t_values = new Hashtable<String, String>();
   private String condition;
+
+  
 
   public SQLDataManipulation(Connection sqlConnection, DBSchema schema) {
     dbconn = sqlConnection;
@@ -39,15 +38,15 @@ public class SQLDataManipulation extends DataManipulation {
   }
 
   @Override
-  public DataManipulation addValues(String... columnValues) {
+  public DataManipulation alterValues(String... columnValues) {
     for (String valString : columnValues) {
-      addValue(valString);
+      alterValue(valString);
     }
     return this;
   }
 
   @Override
-  public DataManipulation addValue(String columnValue) {
+  public DataManipulation alterValue(String columnValue) {
     String columnSignature[] = columnValue.split("=");
     if (columnSignature.length != 2)
       ;// TODO throw someException
@@ -59,17 +58,30 @@ public class SQLDataManipulation extends DataManipulation {
   public int delete() {
     String sql = new String("DELETE FROM  \"" + t_name + "\" WHERE "
         + condition);
-    return execute(sql);
+    int result = 0;
+    try {
+      execute(sql);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return result;
   }
 
   @Override
   public int delete(Dataset dataset) {
-    buildFromDataset(dataset);  
+    collectFieldParameters(dataset, dataset.getClass());  
     return delete();
   }
 
-  @Override
-  public int insert() {
+  
+  //@Override
+  /**
+   * Fügt die übergebenen Daten in die Datenbank ein. 
+   * Sollte nicht aufgerufen werden wenn das einfügen über die Methode {@link insert(Dataset dataset)} möglich ist.
+   */
+  private int insert() {
+    if (t_name==null)
+      return -1;
     String columnNames = new String("");
     String columnValues = new String("");
     for (String columnName : t_values.keySet()) {
@@ -80,16 +92,125 @@ public class SQLDataManipulation extends DataManipulation {
       columnNames += columnName;
       columnValues += t_values.get(columnName);
     }
-    String sql = new String("INSERT INTO \"" + t_name + "\" (" + columnNames
-        + ") values (" + columnValues + ");");
-    return execute(sql);
+    String sql = "";
+    if (t_name.equalsIgnoreCase("dataset"))
+      sql = new String("INSERT INTO \"dataset\" (type) values ('" + t_class + "');");
+    else
+      sql = new String("INSERT INTO \"" + t_name + "\" (" + columnNames
+          + ") values (" + columnValues + ");");
+    int result = 0;
+    try {
+      result = execute(sql);
+    } catch (SQLException e) {
+//      // State 42S02 = Table not Found -> Sie muss angelegt werden!
+//      if (e.getSQLState() == "42S02")
+        
+      e.printStackTrace();
+    }
+    return result;
   }
 
+  /**
+   * Fügt das Dataset in die Datenbank ein und vergibt eine eindeutige ID für das Objekt.
+   */
   @Override
   public int insert(Dataset dataset) {
-    buildFromDataset(dataset);    
-    return insert();
+    return insert(dataset, dataset.getClass());
   }
+  
+  /**
+   * Fügt das Objekt, welches der übergebenen Klasse entspricht in die Datenbank ein.
+   * Da das einzufügende Dataset mitsamt seinen Parents geschrieben werden muss, wird diese
+   * rekursive Methode benutzt. Sie ruft sich selbst für jede Oberklasse des übergebenen Objekts aus.
+   * @param dataset
+   * @param c
+   * @return
+   */
+  private int insert(Dataset dataset, Class<?> c) {
+    this.t_class = dataset.getClass().getName();
+    int id = dataset.getId();
+    
+    if (id > 0)
+      return id;
+    
+    Class<?> superclass = c.getSuperclass();
+    // solange rekursiv insert(Dataset, Class) mit der Oberklasse aufrufen bis die Klasse Object erreicht ist.
+    
+    if (superclass != Object.class)
+    {
+      SQLDataManipulation insertStmt = new SQLDataManipulation(dbconn, schema);
+      id = insertStmt.insert(dataset, superclass);
+    }
+    collectFieldParameters(dataset, c); 
+    // wenn die id == 0 ist handelt es sich in jedem Fall um die Dataset-Klasse -> (c.getSimpleName() == "Dataset")
+    // dieses Objekt wird also sofort in den Cache geschoben, da es gerade in die DB eingefügt wurde.
+    if (id == 0)
+    {
+      id = insert();
+      dataset.setId(id);
+      // ein erzeugtes Objekt wird zwecks wiederverwendung (z.B. bei Referenzen darauf) hier in den Cache gelegt
+      addToCache(dataset);
+    }
+    else
+    {
+      alterValue("dataset_id = " + id); //jede Tabelle (außer das Dataset selbst) bekommt die dataset_id übergeben.
+      insert();
+    }
+    
+    // TODO: das folgende auslagern in eine eigene Methode?
+    // ist der Datensatz erst mal eingetragen müssen die Sets behandelt werden
+    String table = schema.getTableName(c);
+    if (table != null)
+    {
+      DBSchemaDefinition def = schema.getTable(c);
+      if (def.getSchemaType() == SchemaType.CLASS){
+        // die Sets durchlaufen ...
+        for (DBSchemaSetPattern set : ((DBSchemaClassPattern)def).getSets()) {
+          // ... und die einzelnen Objecte darin ... 
+          Object[] objects = {};
+          try {
+            objects = set.getContent( c , dataset);
+          } 
+          catch (SecurityException e) {e.printStackTrace();continue;} 
+          catch (IllegalArgumentException e) {e.printStackTrace();continue;} 
+          catch (NoSuchFieldException e) {e.printStackTrace();continue;} 
+          catch (IllegalAccessException e) {e.printStackTrace();continue;}
+          
+          for (Object item : objects){
+            Dataset datset;
+            if (Dataset.class.isInstance(item))
+            {
+              datset = (Dataset)item;
+            }
+            else
+            {
+//              objectClass = item.getClass();
+              continue;
+            }
+              
+            // ... in die Datenbank sichern.
+            DataManipulation insertItem = new SQLDataManipulation(dbconn, schema);
+            int itemId = insertItem.insert(datset);
+            // ist das Objekt gesichert muss es in die entsprechende set-Tabelle eingetragen werden,
+            // um die Verbindung zu dem hier behandelten Datensatz zu schaffen
+            SQLDataManipulation insertSet = new SQLDataManipulation(dbconn, schema);
+            insertSet.setTableName(set.getTableName());
+            insertSet.alterValue( set.getName() + "_id = " + id);
+            insertSet.alterValue( schema.getTableName(c) + "_id = " + itemId );
+            insertSet.insert();
+          }
+        }
+      }
+    }
+    
+    // TODO: end TODO auslagern oben
+    
+    // wenn es sich um ein Dataset handelt muss die ID gesetzt werden.
+//    if (c == Dataset.class)
+//      dataset.setId(id);
+    return id;
+  }
+
   
   @Override
   public int update() {
@@ -101,86 +222,94 @@ public class SQLDataManipulation extends DataManipulation {
     if (condition.length() > 0 )
       sql += " WHERE " + condition;
     sql += ";";
-    return execute(sql);
+    int result = 0;
+    try {
+      execute(sql);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return result;
   }
 
   @Override
   public int update(Dataset dataset) {
-    buildFromDataset(dataset);
+    collectFieldParameters(dataset, dataset.getClass());
     return update();
   }
 
   /**
-   * Sucht zunächst in der übergebenen Klasse nach dem Feld. Wenn das Feld nicht gefunden wird, sucht es in der Elternklasse weiter.
-   * Trifft die Methode irgendwann auf die Object Klasse, einen primitiven Datentyp oder ein Interface wirft es eine 
-   * NoSuchFieldException
-   * @param datasetClass
-   * @param column
+   * Führt das übergebene SQL-Statement aus und gibt die erzeugte ID zurück.
+   * Wenn keine ID erzeugt wurde, wird -1 zurückgeliefert.
+   * @param sqlStatement
    * @return
-   * @throws NoSuchFieldException
+   * @throws SQLException
    */
-  private Field getField(Class<?> datasetClass, String column) throws NoSuchFieldException {
-    if (datasetClass == null) throw new NoSuchFieldException(column);
-    Field [] flds = datasetClass.getDeclaredFields();
-    for (Field fld : flds){
-      if (fld.getName().equalsIgnoreCase(column)){
-        return fld;
-      }
-    }
-    return getField(datasetClass.getSuperclass(), column);
-  }
-
-  private int execute(String sqlStatement) {
-    try {
-      Statement stmt = dbconn.createStatement();
-      stmt.execute(sqlStatement);
-//      if (stmt.execute(sqlStatement)){
-//        //Wird das gebraucht??
-//        ResultSet rslt = stmt.getResultSet();
-//        rslt.first();
-//        return rslt.getInt("columnLabel");
-//      }
-      if (stmt.getUpdateCount() >= 0){
-        ResultSet rslt = stmt.getGeneratedKeys();
-        rslt.first();
+  private int execute(String sqlStatement) throws SQLException {
+    Statement stmt = dbconn.createStatement();
+    stmt.execute(sqlStatement);
+    if (stmt.getUpdateCount() == 1){
+      ResultSet rslt = stmt.getGeneratedKeys();
+      if (rslt.first())
         return rslt.getInt(1);
-      }
-      return 0;
-
-    } catch (SQLException e) {
-      e.printStackTrace();
-      return 0;
+      else
+        return -1;
     }
+    if (stmt.getUpdateCount() > 1){
+      //TODO: hier müssen die Änderungen och Rückgängig gemacht werden.
+      throw new SQLException("es wurden zu viele Ergebnisse geliefert.");
+    }
+    return -1;
   }
   
-  private void buildFromDataset(Dataset dataset){
-    Class<?> datasetClass = dataset.getClass();
-    t_name = schema.getTableName(datasetClass);
-    HashMap<String, SimpleEntry<String, String>> columns = 
-      schema.getColumnsOf(datasetClass);
-    for (String column : columns.keySet()){
-      String columnName = columns.get(column).getKey();
-      String columnType = columns.get(column).getValue();
+  /**
+   * Baut aus dem Dataset die Parameter für das SQL-Statement zusammen. Dabei werden nur die Attribute der 
+   * zusätzlich übergebenen Klasse geschrieben.
+   * @param dataset das Objekt des Datasets
+   * @param class Die Klasse die behandelt werden soll
+   */  
+  private void collectFieldParameters(Dataset dataset, Class<?> c) {
+    // zunächst den Tabellennamen heraussuchen
+    t_name = schema.getTableName(c);
+    //es kommt vor, dass die Klasse nicht im Schema auftaucht, weil sie selbst keine speichernden Attribute 
+    // besitzt. Dann muss hier abgebrochen werden!
+    if (t_name == null)
+      return;
+
+    DBSchemaDefinition def = schema.getTable(c);
+    if (def.getSchemaType() != SchemaType.CLASS)
+      return;
+    for (DBSchemaDefinition field : ((DBSchemaClassPattern)def).getFields()) {
       String value = "";
       try {
-        //veruschen den Wert über die Methode zu holen:
-        try {
-          Object oValue = datasetClass.getMethod("get" + column).invoke(dataset);
-          if (oValue != null)
-            value = oValue.toString();
-        } catch (InvocationTargetException e) {} catch (NoSuchMethodException e) {}
-        if (value.equals("")){
-          //wenn das nicht klappt das Feld direkt suchen:
-          Field fld = getField(datasetClass, column);
-          fld.setAccessible(true);
-          Object oValue = fld.get(dataset);
-          if (oValue == null) throw new NoSuchFieldException(column);
-          value = oValue.toString();
-        }
-        if (columnType.equalsIgnoreCase("string"))
-          addValue(columnName + " = '" + value + "'");
+          // Den Wert aus des Attributs für das Feld aus dem Dataset-Objekt holen
+          Object oValue = ((DBSchemaPropertyPattern)field).getValue(c, dataset);
+          if (oValue == null) continue;
+          // wenn es sich hier wiederum um ein Objekt handelt welches wieder ein Dataset ist, muss
+          // dieses zunächst selbst weggeschrieben werden. Ansonsten wird einfach der Wert gesetzt
+          // das funktioniert nicht für bidirektionale Beziehungen! In einem solchen Fall dürfte es eine Enlosschleife geben
+          // Da muss eventuell in Zukunft etwas mit "static" Listen hier in der Klasse SQLDataManipulation gemacht werden in 
+          // der alle instanzen der zu speichernden Objekte Referenziert sind, um doppelte einträge zu vermeiden. 
+          // Oder so.... irgendwie .... :)
+          if(Dataset.class.isInstance(oValue))
+          {
+            SQLDataManipulation insertStmt = new SQLDataManipulation(dbconn, schema);
+            if (((Dataset)oValue).getId() == 0)
+              value = ((Integer)insertStmt.insert((Dataset)oValue)).toString();
+            else
+              value = ((Integer)((Dataset)oValue).getId()).toString();
+          }
+          else
+          {
+            if (oValue.getClass().isEnum() || oValue.getClass().getSuperclass().isEnum())
+              value = ((Enum)oValue).name();
+            else
+              value = oValue.toString();
+          }
+//        }
+        if (oValue.getClass().getSimpleName().equalsIgnoreCase("string") || oValue.getClass().isEnum() || oValue.getClass().getSuperclass().isEnum())
+          alterValue(((DBSchemaPropertyPattern)field).getDatabaseFieldName() + " = '" + value + "'");
         else
-          addValue(columnName + " = " + value);
+          alterValue(((DBSchemaPropertyPattern)field).getDatabaseFieldName() + " = " + value);
       } catch (SecurityException e) {
         e.printStackTrace();
       } catch (NoSuchFieldException e) {
@@ -190,18 +319,8 @@ public class SQLDataManipulation extends DataManipulation {
       } catch (IllegalAccessException e) {
         e.printStackTrace();
       }
-    }
-    try {
-      Field pk = getField(datasetClass, "id");
-      pk.setAccessible(true);
-      setCondition(t_name + "_id = " + pk.getLong(dataset));
-    } catch (NoSuchFieldException e) {
-      e.printStackTrace();
-    } catch (IllegalArgumentException e) {
-      e.printStackTrace();
-    } catch (IllegalAccessException e) {
-      e.printStackTrace();
+      
     }
   }
-
+  
 }

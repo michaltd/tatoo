@@ -115,7 +115,7 @@ public abstract class AbstractEntity extends tatoo.db.Dataset  implements ArmyLi
   	}catch(ClassCastException e){
   		return false;
   	}
-  	return this.getName() == entity.getName() && 
+  	return this.getName().equals(entity.getName()) && 
   			 price.getValue() == entity.getPrice().getValue() && 
   			 count.getValue() == entity.getCount().getValue();
   }
@@ -141,7 +141,6 @@ public abstract class AbstractEntity extends tatoo.db.Dataset  implements ArmyLi
 
   public abstract int getTotalPrice();
 
-  //nicht umbenennen! sonst gibt es probleme mit dem JTree!
   public abstract AbstractEntity getEntityAt(int index);
 
   public abstract Boolean addEntity(AbstractEntity entity);

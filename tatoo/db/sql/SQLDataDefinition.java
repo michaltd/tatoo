@@ -20,6 +20,8 @@ public class SQLDataDefinition extends DataDefinition {
 		for (String columnName: t_columns.keySet() ){
 			sqlString += columnName + " " + t_columns.get(columnName) + ",";
 		}
+		if (!t_Name.equalsIgnoreCase("dataset"))
+		  sqlString += "dataset_id INTEGER, ";
 		for (String columnName: t_pk.keySet() ){
 			sqlString +=  columnName + " " + t_pk.get(columnName) + " AUTO_INCREMENT PRIMARY KEY ";
 		}

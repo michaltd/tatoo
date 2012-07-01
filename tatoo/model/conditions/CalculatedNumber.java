@@ -1,26 +1,26 @@
 package tatoo.model.conditions;
 
-public class CalculatedNumber extends AbstractNumberCondition implements ConditionListener {
+public class CalculatedNumber extends AbstractNumberCondition<Integer> implements ConditionListener {
 
   public enum Arithmetic {
     ADD("+") {
-      protected Integer solve(NumberCondition src, NumberCondition val) {
-        return src.getValue() + val.getValue();
+      protected Integer solve(NumberCondition<Integer> src, NumberCondition<Integer> val) {
+        return src.getValue().intValue() + val.getValue().intValue();
       }
     },
     SUBTRACT("-") {
-      protected Integer solve(NumberCondition src, NumberCondition val) {
-        return src.getValue() - val.getValue();
+      protected Integer solve(NumberCondition<Integer> src, NumberCondition<Integer> val) {
+        return src.getValue().intValue() - val.getValue().intValue();
       }
     },
     MULTIPLY("*") {
-      protected Integer solve(NumberCondition src, NumberCondition val) {
-        return src.getValue() * val.getValue();
+      protected Integer solve(NumberCondition<Integer> src, NumberCondition<Integer> val) {
+        return src.getValue().intValue() * val.getValue().intValue();
       }
     },
     DIVIDE("/") {
-      protected Integer solve(NumberCondition src, NumberCondition val) {
-        return src.getValue() / val.getValue();
+      protected Integer solve(NumberCondition<Integer> src, NumberCondition<Integer> val) {
+        return src.getValue().intValue() / val.getValue().intValue();
       }
     };
 
@@ -28,25 +28,27 @@ public class CalculatedNumber extends AbstractNumberCondition implements Conditi
     Arithmetic(String calculator){
       this.calculator = calculator;
     }
-    protected abstract Integer solve(NumberCondition src, NumberCondition val);
+    protected abstract Integer solve(NumberCondition<Integer> src, NumberCondition<Integer> val);
     public String toString(){
       return calculator;
     }
     
   }
 
-  NumberCondition source = new SimpleNumber(0);
-  NumberCondition value = new SimpleNumber(0);
+  NumberCondition<Integer> source = new SimpleNumber(0);
+  NumberCondition<Integer> value = new SimpleNumber(0);
   Arithmetic arith;
+  
+  public CalculatedNumber(){}
 
-  public CalculatedNumber(NumberCondition condition, Integer value, Arithmetic a) {
+  public CalculatedNumber(NumberCondition<Integer> condition, Integer value, Arithmetic a) {
     this.source = condition;
     this.arith = a;
     this.value.setValue(value);
     condition.addChangeListener(this);
   }
 
-  public CalculatedNumber(NumberCondition src, NumberCondition value, Arithmetic a) {
+  public CalculatedNumber(NumberCondition<Integer> src, NumberCondition<Integer> value, Arithmetic a) {
     this.source = src;
     this.arith = a;
     this.value = value;
@@ -54,7 +56,7 @@ public class CalculatedNumber extends AbstractNumberCondition implements Conditi
     value.addChangeListener(this);
   }
 
-  public void setCalculationSource(NumberCondition src) {
+  public void setCalculationSource(NumberCondition<Integer> src) {
     source = src;
   }
 
@@ -64,7 +66,7 @@ public class CalculatedNumber extends AbstractNumberCondition implements Conditi
   }
 
   @Override
-  public void setValue(Integer val) {
+  public void setValue(Number val) {
     value.setValue(val);
   }
   
@@ -76,5 +78,6 @@ public class CalculatedNumber extends AbstractNumberCondition implements Conditi
 	public void valueChanged() {
 		fireValueChanged();		
 	}
+
 
 }

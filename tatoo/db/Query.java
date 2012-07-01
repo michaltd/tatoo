@@ -12,6 +12,11 @@ public abstract class Query extends DataHandler {
 	
 	public abstract Query groupBy(String group);
 	
-	public abstract LinkedList<Object> execute();
+	/**
+	 * Führt die Abfrage aus. Liefert die gefundenen Objekte zurück. Wenn ein Objekt nicht gefunden wurde,
+	 * oder ein anderer Fehler auftritt wird <code>null</code> zurück gegeben.
+	 * @return
+	 */
+	public abstract LinkedList<Dataset> execute();
 
 }

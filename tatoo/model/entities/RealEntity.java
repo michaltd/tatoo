@@ -9,10 +9,10 @@ import tatoo.model.conditions.NumberCondition;
 import tatoo.model.conditions.SimpleNumber;
 
 
-class RealEntity extends AbstractEntity {
+public class RealEntity extends AbstractEntity {
 
-  protected Condition<Integer> maxCount = new SimpleNumber(0);
-  protected Condition<Integer> minCount = new SimpleNumber(0);
+  protected Condition maxCount = new SimpleNumber(0);
+  protected Condition minCount = new SimpleNumber(0);
 
   private ArrayList<AbstractEntity> entities = new ArrayList<AbstractEntity>();
 
@@ -26,7 +26,7 @@ class RealEntity extends AbstractEntity {
     setMaxCount(new SimpleNumber(maxCount));
   }
   
-  public void setMaxCount(Condition<Integer> maxCount){
+  public void setMaxCount(Condition maxCount){
   	this.maxCount = maxCount;
   	if (this.getCount().getValue() > this.getMaxCount().getValue())
      	this.setCount(this.getMaxCount());
@@ -49,14 +49,17 @@ class RealEntity extends AbstractEntity {
     this.count.setValue(minCount.getValue());
   }
   
+  public RealEntity()
+  {
+    this("");
+  }
+  
   public RealEntity(String name) {
-  	this.init();
-    this.name = name;
+  	this(name, 0);
   }
 
   public RealEntity(String name, int price) {
   	this.init();
-//    new RealEntity(name);
     this.name = name;
     this.price.setValue(price);
   }
@@ -69,7 +72,7 @@ class RealEntity extends AbstractEntity {
 
   @Override
   public int getTotalPrice() {
-    int total = price.getValue();
+    int total = (Integer) price.getValue();
     for (AbstractEntity ae : entities)
       total += ae.getTotalPrice();
     return total;

@@ -1,6 +1,5 @@
 package tatoo.db.migrate;
 
-import tatoo.db.DataDefinition;
 import tatoo.db.Migration;
 
 public class InitialAddOfAllTables extends Migration {
@@ -8,80 +7,42 @@ public class InitialAddOfAllTables extends Migration {
 	@Override
 	public void up() {
 		
-		createTableWithID("panel",
-								"name:VARCHAR(45)");
+	  createTableWithID("entity", "parent:INTEGER");
 		
-		createTableWithID("game",
-								"name:VARCHAR(45)");
-
-		createTableWithID("entity_type",
-								"name:VARCHAR(45)");
-		
-		createTableWithID("condition", 
-								"value:VARCHAR(255)");
-		
-		DataDefinition fraction = createTableWithID("fraction",
-								"game_id:INTEGER",
-								"name:VARCHAR(45)");
-		fraction.addForeignKey("game_id", "game", "id");
-		
-		DataDefinition armylist = createTableWithID("armylist",
-								"fraction_id:INTEGER",
-								"name:VARCHAR(45)",
-								"is_pattern:TINYINT(1)");
-		armylist.addForeignKey("fraction_id","fraction", "id");
-		
-		
-		DataDefinition panelOptions = createTableWithID("panel_options",
-								"game_id:INTEGER",
-							  "entity_type_id:INTEGER",
-							  "fraction_id:INTEGER",
-							  "armylist_id:INTEGER",
-							  "panel_id:INTEGER",
-							  "alignment:VARCHAR(45)");
-		panelOptions.addForeignKey("game_id","game", "id");
-		panelOptions.addForeignKey("entity_type_id","entity_type", "id");
-		panelOptions.addForeignKey("fraction_id","fraction", "id");
-		panelOptions.addForeignKey("armylist_id","armylist", "id");
-		panelOptions.addForeignKey("panel_id","panel", "id");
-		
-		DataDefinition entity = createTableWithID("entity", 
-								"entity_type_id:INTEGER", 
-								"armylist_id:INTEGER",
-							  "count:INTEGER",
-							  "maxcount:INTEGER",
-							  "mincount:INTEGER",
-							  "price:INTEGER",
-							  "name:VARCHAR(45)",
-							  "parent:INTEGER");
-//		entity.nullPermitted("entity_type_id", "INTEGER", false);
-//		entity.nullPermitted("armylist_id", "INTEGER", false);
-		entity.addForeignKey("armylist_id","armylist", "id");
-		entity.addForeignKey("entity_type_id","entity_type", "id");
-		entity.addForeignKey("count","condition", "id");
-		entity.addForeignKey("maxcount","condition", "id");
-		entity.addForeignKey("mincount","condition", "id");
-		entity.addForeignKey("price","condition", "id");
-		entity.addForeignKey("parent","entity", "id");
+	  createTableWithID("abstract_entity", "name:VARCHAR(45)", "price:INTEGER", "count:INTEGER");
+	  
+	  createTableWithID("abstract_upgrade","receiving_entity_id:INTEGER");
+	  
+	  createTableWithID("real_entity", "max_count_id:INTEGER", "min_count_id:INTEGER");
+	  
+	  createTableWithID("simple_number", "number:INTEGER");
+	  
+	  createTable("realentity_entities", "real_entity_id:INTEGER","entities_id:INTEGER");
+    
+    createTable("calculated_number", "source:Integer", "value:Integer", "arith:Varchar");
+    
+    createTable("abstract_number_condition");
+    
+    createTable("abstract_number_condition_listeners", "abstract_number_condition_id:Integer", "listenerList_id:Integer" );
 
 	}
 	
 	@Override
 	public void down() {
 
-		dropTable("entity");
-		dropTable("panel_options");
-		dropTable("armylist");
-		dropTable("fraction");
-		dropTable("condition");
-		dropTable("entity_type");
-		dropTable("game");
-		dropTable("panel");
-
+	  dropTable("entity");
+    dropTable("abstract_entity");
+	  dropTable("abstract_upgrade");
+	  dropTable("real_entity");
+	  dropTable("simple_number");
+	  dropTable("realentity_entities");
+    dropTable("calculated_number");
+    dropTable("abstract_number_condition");
+    dropTable("abstract_number_condition_listeners");
 	}
 
 	@Override
-	public long getVersion() {
+	public int getVersion() {
 		return 2;
 	}
 

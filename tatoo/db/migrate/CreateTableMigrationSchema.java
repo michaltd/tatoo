@@ -6,19 +6,22 @@ public class CreateTableMigrationSchema extends Migration {
 
 	@Override
 	public void down() {
-		//drop table nicht ausführen, da migration_schema immer nötig ist!
-		//für testzwecke dennoch aktiviert
 		dropTable("migration_schema");
+		dropTable("dataset");
 	}
 
 	@Override
 	public void up() {
-		createTable("migration_schema", "version:Number").create();
+	  
+	  // bevor überhaupt etwas angelegt werden kann muss die Tabelle Dataset vorhanden sein
+	  createTableWithID("dataset", "type:Varchar");
+	  
+		createTableWithID("migration_schema", "version:Integer");
 		
 	}
 
 	@Override
-	public long getVersion() {
+	public int getVersion() {
 		return 1;
 	}
 
