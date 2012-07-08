@@ -1,9 +1,7 @@
 package tatoo;
 
-import tatoo.model.entities.CategoryNode;
+import tatoo.model.entities.AbstractEntity;
 import tatoo.model.entities.Entity;
-import tatoo.model.entities.RootNode;
-import tatoo.model.entities.UpgradeNode;
 
 public class ArmyListInstanceMainPanel {
 
@@ -11,7 +9,7 @@ public class ArmyListInstanceMainPanel {
 	
 	public ArmyListInstanceMainPanel(){
 			
-  	armeeliste = new RootNode("Armeeliste");
+  	armeeliste = new Entity(AbstractEntity.EntityType.ROOT, "Armeeliste");
 //
 //		/* Entry */
 //		Entity hq = new CategoryNode("HQ");

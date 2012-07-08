@@ -40,6 +40,8 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements
 
   public AbstractEntity(EntityType type) { this.type = type; }
   
+  public AbstractEntity() { super();}
+
   /**
    * Der Typ des Entitys. Dieser Wert muss in einer von AbstractEntity erbenden
    * Klasse im Konstruktor gesetzt werden.
@@ -190,7 +192,15 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements
     } catch (ClassCastException e) {
       return false;
     }
-    return this.getName().equals(entity.getName())
+    
+    String thisName = this.getName();
+    String hisName = entity.getName();
+    if (thisName == null)
+      thisName = "";
+    if (hisName == null)
+      hisName = "";
+    return thisName.equals(hisName)
+        && this.getId() == entity.getId()
         && price.getValue() == entity.getPrice().getValue()
         && count.getValue() == entity.getCount().getValue();
   }

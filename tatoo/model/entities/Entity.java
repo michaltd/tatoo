@@ -11,12 +11,14 @@ public class Entity extends AbstractUpgrade {
 
 	protected AbstractEntity parent = null;
 
+	
+	public Entity(){super();};
+	
 	public Entity(EntityType type, String name)
 	{
 	  super(type);
 		this.init();
 		this.receivingEntity = new RealEntity(type, name);
-		this.setName(null);
 	}
 	
 	public AbstractEntity getParent() {

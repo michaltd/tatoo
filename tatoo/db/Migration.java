@@ -61,6 +61,7 @@ public abstract class Migration implements Comparable<Migration> {
    *          Die Spalten der Tabelle. Die Spalten müssen in der Form
    *          "spaltenname:spaltentyp" übergeben werden, ansonsten wird eine
    *          {@link DataDefinitionException} geworfen.
+   *          @see #createTable(String, String...)
    */
   protected void createTableWithID(String name, String... columns) {
 
@@ -71,7 +72,7 @@ public abstract class Migration implements Comparable<Migration> {
   }
 
   /**
-   * Erzeugt eine Tabelle.
+   * Erzeugt eine Tabelle. 
    * 
    * @param name
    *          Der Name der zu erzeugenden Tabelle.

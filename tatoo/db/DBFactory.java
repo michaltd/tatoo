@@ -2,8 +2,6 @@ package tatoo.db;
 
 import tatoo.db.DBConnection.DBases;
 import tatoo.db.sql.SQLConnection;
-import tatoo.model.entities.Entity;
-import tatoo.model.entities.RootNode;
 
 /**
  * Hält ein global nutzbare Datenverbindung aufrecht. 

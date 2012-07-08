@@ -10,7 +10,7 @@ public class InitialAddOfAllTables extends Migration {
 		
 	  createTableWithID("entity", "parent:INTEGER");
 		
-	  createTableWithID("abstract_entity", "name:VARCHAR(45)", "price:INTEGER", "count:INTEGER");
+	  createTableWithID("abstract_entity", "name:VARCHAR(45)", "price:INTEGER", "count:INTEGER", "entity_type:VARCHAR");
 	  
 	  createTableWithID("abstract_upgrade","receiving_entity_id:INTEGER");
 	  
@@ -20,7 +20,7 @@ public class InitialAddOfAllTables extends Migration {
 	  
 	  createTable("realentity_entities", "real_entity_id:INTEGER","entities_id:INTEGER");
     
-    createTable("calculated_number", "source:Integer", "value:Integer", "arith:Varchar");
+    createTable("calculated_number", "source:Integer", "value:Integer", "arith:VARCHAR");
     
     createTable("abstract_number_condition");
     

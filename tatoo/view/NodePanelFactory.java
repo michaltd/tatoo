@@ -4,12 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import tatoo.model.EntityModel;
-import tatoo.model.entities.AnyOfUpgradeNode;
-import tatoo.model.entities.CategoryNode;
-import tatoo.model.entities.NodeNode;
-import tatoo.model.entities.OneOfUpgradeNode;
-import tatoo.model.entities.RootNode;
-import tatoo.model.entities.UpgradeNode;
+import tatoo.model.entities.AbstractEntity;
+import tatoo.model.entities.Entity;
 import tatoo.view.armyList.SimpleAnyOfUpgradePanel;
 import tatoo.view.armyList.SimpleArmyListPanel;
 import tatoo.view.armyList.SimpleCategoryPanel;
@@ -18,13 +14,6 @@ import tatoo.view.armyList.SimpleNodePanel;
 import tatoo.view.armyList.SimpleOneOfUpgradePanel;
 
 public class NodePanelFactory {
-
-	private final static int ROOT = 0;
-	private final static int CATEGORY = 1;
-	private final static int NODE = 2;
-	private final static int UPGRADE = 3;
-	private final static int ONE_OF_UPGRADE = 4;
-	private final static int ANY_OF_UPGRADE = 5;
 	
 	private Map<Integer, NodePanelEntity> nodePanel;
 	
@@ -39,86 +28,37 @@ public class NodePanelFactory {
 			entity.setAlignment(NodePanel.HORIZONTAL_ALIGNMENT);
 			entity.setShowEmptyEntities(false);
 		}
-		nodePanel.put(ROOT, entity);
+		nodePanel.put(AbstractEntity.EntityType.ROOT.ordinal(), entity);
 		
 		entity = new NodePanelEntity();
 		entity.setNodePanel(SimpleCategoryPanel.class);
 		if (target == "ArmyList"){
 			entity.setShowEmptyEntities(false);
 		}
-		nodePanel.put(CATEGORY, entity);
+		nodePanel.put(AbstractEntity.EntityType.CATEGORY.ordinal(), entity);
 		
 		entity = new NodePanelEntity();
 		entity.setNodePanel(SimpleNodePanel.class);
 		if (target == "Sidemenu")
 			entity.setShowChilds(false);
-		nodePanel.put(NODE, entity);
+		nodePanel.put(AbstractEntity.EntityType.NODE.ordinal(), entity);
 		
 		entity = new NodePanelEntity();
 		entity.setNodePanel(SimpleFiller.class);
-		nodePanel.put(UPGRADE, entity);
+		nodePanel.put(AbstractEntity.EntityType.UPGRADE.ordinal(), entity);
 		
 		entity = new NodePanelEntity();
 		entity.setNodePanel(SimpleOneOfUpgradePanel.class);
-		nodePanel.put(ONE_OF_UPGRADE, entity);
+		nodePanel.put(AbstractEntity.EntityType.ONEOFUPGRADE.ordinal(), entity);
 		
 		entity = new NodePanelEntity();
 		entity.setNodePanel(SimpleAnyOfUpgradePanel.class);
-		nodePanel.put(ANY_OF_UPGRADE, entity);
+		nodePanel.put(AbstractEntity.EntityType.ANYOFUPGRADE.ordinal(), entity);
 
 	}
 	
 	public NodePanel getNodePanel(Object node){
-		
-		try {
-			return getNodePanel((UpgradeNode)node);
-		}catch (ClassCastException e){}
-		
-		try {
-			return getNodePanel((OneOfUpgradeNode)node);
-		}catch (ClassCastException e){}
-		
-		try {
-			return getNodePanel((AnyOfUpgradeNode)node);
-		}catch (ClassCastException e){}
-		
-		try {
-			return getNodePanel((NodeNode)node);
-		}catch (ClassCastException e){}
-		
-		try {
-			return getNodePanel((CategoryNode)node);
-		}catch (ClassCastException e){}
-		
-		try {
-			return getNodePanel((RootNode)node);
-		}catch (ClassCastException e){}
-		
-		throw new ClassCastException();
-	}
-	
-	private NodePanel getNodePanel(RootNode node){
-		return buildNodePane(ROOT, node);
-	}
-	
-	private NodePanel getNodePanel(CategoryNode node){
-		return buildNodePane(CATEGORY, node);
-	}
-	
-	private NodePanel getNodePanel(NodeNode node){
-		return buildNodePane(NODE, node);
-	}
-	
-	private NodePanel getNodePanel(UpgradeNode node){
-		return buildNodePane(UPGRADE, node);
-	}
-	
-	private NodePanel getNodePanel(OneOfUpgradeNode node){
-		return buildNodePane(ONE_OF_UPGRADE, node);
-	}
-	
-	private NodePanel getNodePanel(AnyOfUpgradeNode node){
-		return buildNodePane(ANY_OF_UPGRADE, node);
+		return buildNodePane(new EntityModel(node).getNodeType(), node);
 	}
 	
 	private NodePanel buildNodePane(int category, Object node){

@@ -209,4 +209,8 @@ public class EntityModel implements ArmyListEntityModel, EntityListener {
     fireAttribChanged(e);
   }
 
+  public int getNodeType() {
+    return entity.getType().ordinal();
+  }
+
 }

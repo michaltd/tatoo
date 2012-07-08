@@ -8,6 +8,7 @@ import tatoo.model.conditions.NumberCondition;
 
 public abstract class AbstractUpgrade extends AbstractEntity {
 
+  public AbstractUpgrade() { super(); }
   public AbstractUpgrade(EntityType type) { super(type); }
 
   protected AbstractEntity receivingEntity;

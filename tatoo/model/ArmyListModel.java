@@ -230,6 +230,10 @@ public class ArmyListModel implements ArmyModel {
   public AbstractEntity insertEntitiy(Object[] treePath) {
     // das erste Object im Array MUSS der root-Knoten sein, sonst ist es kein
     // gültiger Pfad!
+    // Wenn der Root in der Armeeliste noch keine Kinder hat muss er ersetzt werden durch den ersten Knoten im TreePath
+    if (((AbstractEntity)getRoot()).getChildCount() == 0 && treePath.length > 0){
+      armyList = (AbstractEntity) treePath[0];
+    }
     if (treePath[0].equals(getRoot()) && treePath.length > 1) {
       boolean found = false;
       AbstractEntity treeNode = armyList;
