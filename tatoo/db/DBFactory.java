@@ -5,13 +5,20 @@ import tatoo.db.sql.SQLConnection;
 import tatoo.model.entities.Entity;
 import tatoo.model.entities.RootNode;
 
+/**
+ * Hält ein global nutzbare Datenverbindung aufrecht. 
+ * Es können Objekte direkt in die Datenverbindung geschrieben oder daraus gelesen werden.
+ *   
+ * @author mkortz
+ *
+ */
 public class DBFactory {
 	
 	private DBConnection conn;
 	private static DBFactory factory= null;
 	
 	/**
-	 * create and initialize a new DBFactory
+	 * Erzeugen und initialisieren der Datenverbindung.
 	 */
 	private void init() {
 		//Connection aufbauen
@@ -22,10 +29,18 @@ public class DBFactory {
 		conn.connect();
 	}
 	
+	/**
+	 * Liefert die aktuell verwendete Datenverbindung zurück.
+	 * @return
+	 */
 	public DBConnection getConnection(){
 		return conn;
 	}
 	
+	/**
+	 * Liefert die eine Instanz der DBFactory zurück.
+	 * @return die globale DBFactory
+	 */
 	public static DBFactory getInstance(){
 		if (factory == null){
 			factory = new DBFactory();
@@ -33,115 +48,25 @@ public class DBFactory {
 		}
 		return factory;
 	}
-
-  public void write(Dataset o) {
-    getConnection().write(o);
+	
+	/**
+   * Schreibt das übergebene Objekt o in die darunter liegende Datenstruktur. Ein Objekt, welches sich bereits in der Datenbank befindet,
+   * wird lediglich angepasst, alle anderen neu geschrieben. Datasets erhalten nach den Schreibvorgang ihre ID.
+   * @param Object o Das Objekt das geschrieben werden soll.
+   * @return gibt true zurück wenn das schreiben geklappt hat. False sonst.
+   */
+  public boolean write(Dataset o) {
+    return getConnection().write(o);
   }
 
+  /**
+   * Liest ein Objekt der übergebenen Klasse mit der angegebenen id aus der Datenstruktur.
+   * @param c Die Klasse welche gelesen werden soll
+   * @param id Die Id des zu lesenden Objektes
+   * @return Das gelesene Objekt. Kann das Objekt nicht gelesen werden wird <code>null</code> zurückgegeben.
+   */
   public Dataset read(Class<?> c, int id) {
     return getConnection().read(c, id);
     
   }
-	
-//	/**
-//	 * migrate all pending Migrations
-//	 * equivalent to migrate(getMigrationList().getLast().getVersion());
-//	 */
-//	public void migrate(){		
-//		migrate(getMigrationList().getLast().getVersion());
-//	}
-//	
-//	public void migrate(long toVersion){
-//		//Migrationen holen
-//		LinkedList<Migration> migrations = getMigrationList();	
-//		
-//		//Datenbankversion holen
-//		long dbVersion = 0;
-//		ResultSet rs;
-//		try{
-//		  	rs = conn.executeQuery("SELECT max(version) from \"migration_schema\";");
-//		  	rs.first();
-//		  	dbVersion = rs.getLong("max(version)");
-//		}catch (SQLException e){
-//			//das muss funktionieren! wenn nicht dann muss migriert werden! in diesem Fall keine Fehlermeldung ausgeben?
-////			e.printStackTrace();
-//		}
-//		catch (Exception e){
-//			e.printStackTrace();
-//		}
-//		
-//		if (dbVersion > toVersion){
-//			while (migrations.getFirst().getVersion() < toVersion){
-//				migrations.removeFirst();
-//			}
-//			while (migrations.getLast().getVersion() > dbVersion){
-//				migrations.removeLast();
-//			}
-//			migrate_down(migrations);
-//		}
-//		else if(dbVersion < toVersion){
-//			while (migrations.getFirst().getVersion() <= dbVersion){
-//				migrations.removeFirst();
-//			}
-//			while (migrations.getLast().getVersion() > toVersion){
-//				migrations.removeLast();
-//			}
-//			migrate_up(migrations);
-//		}
-//		
-//		
-//	}
-//	
-//	/**
-//	 * migrate up the
-//	 * @param migrations List of Pending Migrations
-//	 */
-//	private void migrate_up(LinkedList<Migration> migrations) {
-//		for (Migration m: migrations){
-//			m.migration_up();
-//		}
-//	}
-//	
-//	private void migrate_down(LinkedList<Migration> migrations) {
-//		for (int i = migrations.size()-1; i>= 0; i--)
-//			migrations.get(i).migration_down();
-//	}	
-//	
-//	/**
-//	 * Get a List of all Migrations
-//	 * Searches the Migration-Directory and returns a list of all found Migrations sortet by Version-Number
-//	 * in ascending order
-//	 * @return List of Migrations 
-//	 */
-//	private LinkedList<Migration> getMigrationList(){
-//		File migrationDir = new File("./bin/tatoo/db/migrate");
-//		migrationDir.exists();
-//		LinkedList<Migration> migrationList = new LinkedList<Migration>();
-//		//TODO muss noch auf list(FileNameFilter f ) umgestellt werden.
-//		for (File f: migrationDir.listFiles()){
-//			String fileName = f.getName();
-//			fileName = "tatoo.db.migrate." + fileName.substring(0, fileName.length()-6);
-//			Migration migration = null;
-//			try {
-//				migration = (Migration)Class.forName(fileName).newInstance();
-//			} catch (ClassNotFoundException e) {
-//				e.printStackTrace();
-//			} catch (InstantiationException e) {
-//				e.printStackTrace();
-//			} catch (IllegalAccessException e) {
-//				e.printStackTrace();
-//			}
-//			if (migration != null){
-//				int idx = 0;
-//				for (; idx < migrationList.size() && 
-//							 migrationList.get(idx).getVersion() < migration.getVersion(); 
-//							 idx++){ }
-//				migrationList.add(idx, migration);
-//			}
-//		}
-//		return migrationList;
-//	}
-	
-	
-
 }

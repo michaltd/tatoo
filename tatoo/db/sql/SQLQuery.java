@@ -1,17 +1,12 @@
 package tatoo.db.sql;
 
-import java.io.ObjectOutputStream.PutField;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.EventListener;
-import java.util.HashMap;
 import java.util.LinkedList;
 
 import javax.swing.event.EventListenerList;
@@ -19,22 +14,48 @@ import javax.swing.event.EventListenerList;
 import tatoo.db.DBFactory;
 import tatoo.db.Dataset;
 import tatoo.db.Query;
-import tatoo.model.conditions.ConditionListener;
-import tatoo.model.entities.RootNode;
-
+/**
+ * Implementierung einer Query für die Verbindung mit der SQL-Datenbank H2.
+ * @see tatoo.db.Query
+ * @author mkortz
+ *
+ */
 public class SQLQuery extends Query {
 
+  /**
+   * Die Klasse für die Objekte aus der Datenstruktur geholt werden sollen.
+   */
 	private Class<?> t_class = null;
-	private DBSchema schema;
+	
+	/**
+	 * Der String der hinter "ORDER BY" steht. t_orderBy darf nur die Namen Felder enthalten, nach denen sortiert werden soll. 
+	 * Die Felder müssen als ein langer String übergeben werden.
+	 */
 	private String t_orderBy;
+	
+	/**
+	 * Der String der hinter "GROUP BY" steht. t_groupBy darf nur die Namen der Felder enthalten nach denen gruppiert werden soll.
+	 * Die Felder müssen als ein langer String übergeben werden.  
+	 */
 	private String t_groupBy;
+	
+	/**
+	 * Der String der hinter "WHERE" steht. t_condition muss den WHERE String so enthalten, wie er an die Abfrage angehänt wird. 
+	 */
 	private String t_condition;
 
+	/**
+	 * Die Datenbankverbindung
+	 */
 	Connection dbconn;
 
+	/**
+	 * @param sqlConnection Die {@link Connection Verbindung}, welche für die Abfrage benutzt werden soll.
+	 * @param schema Das {@link DBSchema Datenbankschema}
+	 */
 	public SQLQuery(Connection sqlConnection, DBSchema schema) {
+	  super(schema);
 		dbconn = sqlConnection;
-		this.schema = schema;
 	}
 
 	@Override
@@ -63,11 +84,6 @@ public class SQLQuery extends Query {
 	}
 
 	@Override
-	/**
-   * Führt die Abfrage aus. Liefert die gefundenen Objekte zurück. Wenn ein Objekt nicht gefunden wurde,
-   * oder ein anderer Fehler auftritt wird <code>null</code> zurück gegeben.
-   * @return
-   */
 	public LinkedList<Dataset> execute() {
 		try {
 		  String stmt = composeStatement();
@@ -304,7 +320,7 @@ public class SQLQuery extends Query {
         return composeStatement(superclass, fieldsStatement, fromStatement);
     }
     
-    for (DBSchemaDefinition field : ((DBSchemaClassPattern)schema.getTable(c)).getFields()) {
+    for (DBSchemaPattern field : ((DBSchemaClassPattern)schema.getTable(c)).getFields()) {
       if (result[0].length() > 0) 
         result[0] += ", \"";
       else

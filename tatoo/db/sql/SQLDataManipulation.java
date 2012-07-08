@@ -1,14 +1,23 @@
 package tatoo.db.sql;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Hashtable;
+
 import tatoo.db.DataManipulation;
 import tatoo.db.Dataset;
-import tatoo.db.sql.DBSchemaDefinition.SchemaType;
+import tatoo.db.sql.DBSchemaPattern.SchemaType;
 
+/**
+ * Implementierung der DataManipulation für die Verbindung mit der SQL-Datenbank H2.
+ * @see tatoo.db.DataManipulation
+ * @author mkortz
+ *
+ */
 public class SQLDataManipulation extends DataManipulation {
 
   Connection dbconn;
@@ -21,8 +30,8 @@ public class SQLDataManipulation extends DataManipulation {
   
 
   public SQLDataManipulation(Connection sqlConnection, DBSchema schema) {
+    super(schema);
     dbconn = sqlConnection;
-    this.schema = schema;
   }
 
   @Override
@@ -55,12 +64,13 @@ public class SQLDataManipulation extends DataManipulation {
   }
 
   @Override
-  public int delete() {
-    String sql = new String("DELETE FROM  \"" + t_name + "\" WHERE "
-        + condition);
-    int result = 0;
+  public boolean delete() {
+    String sql = new String("DELETE FROM  \"" + t_name + "\" ");
+    if (condition.length() > 0)
+        sql += "WHERE " + condition;
+    boolean result = false;
     try {
-      execute(sql);
+      result = execute(sql) > 0 ? true : false;
     } catch (SQLException e) {
       e.printStackTrace();
     }
@@ -68,7 +78,7 @@ public class SQLDataManipulation extends DataManipulation {
   }
 
   @Override
-  public int delete(Dataset dataset) {
+  public boolean delete(Dataset dataset) {
     collectFieldParameters(dataset, dataset.getClass());  
     return delete();
   }
@@ -77,7 +87,7 @@ public class SQLDataManipulation extends DataManipulation {
   //@Override
   /**
    * Fügt die übergebenen Daten in die Datenbank ein. 
-   * Sollte nicht aufgerufen werden wenn das einfügen über die Methode {@link insert(Dataset dataset)} möglich ist.
+   * Sollte nicht aufgerufen werden wenn das einfügen über die Methode {@link #insert(Dataset)} möglich ist.
    */
   private int insert() {
     if (t_name==null)
@@ -98,7 +108,7 @@ public class SQLDataManipulation extends DataManipulation {
     else
       sql = new String("INSERT INTO \"" + t_name + "\" (" + columnNames
           + ") values (" + columnValues + ");");
-    int result = 0;
+    int result = -1;
     try {
       result = execute(sql);
     } catch (SQLException e) {
@@ -143,11 +153,23 @@ public class SQLDataManipulation extends DataManipulation {
     }
     collectFieldParameters(dataset, c); 
     // wenn die id == 0 ist handelt es sich in jedem Fall um die Dataset-Klasse -> (c.getSimpleName() == "Dataset")
+    // wir kommen von Oben und gehen rekursiv in der Klassenhirarchie nach unten zur Wurzel. Die Wurzel ist die Klasse Dataset!
     // dieses Objekt wird also sofort in den Cache geschoben, da es gerade in die DB eingefügt wurde.
     if (id == 0)
     {
       id = insert();
-      dataset.setId(id);
+      // die id des Objektes setzen. Geschieht über Reflection weil setId eine private Methode ist.
+      try {
+        Method setId = c.getDeclaredMethod("setId", int.class);
+        setId.setAccessible(true);
+        setId.invoke(dataset, id);
+      } 
+      catch (SecurityException e) {e.printStackTrace();} 
+      catch (NoSuchMethodException e) {e.printStackTrace();} 
+      catch (IllegalArgumentException e) {e.printStackTrace();} 
+      catch (IllegalAccessException e) {e.printStackTrace();} 
+      catch (InvocationTargetException e) {e.printStackTrace(); }
+//      dataset.setId(id);
       // ein erzeugtes Objekt wird zwecks wiederverwendung (z.B. bei Referenzen darauf) hier in den Cache gelegt
       addToCache(dataset);
     }
@@ -162,7 +184,7 @@ public class SQLDataManipulation extends DataManipulation {
     String table = schema.getTableName(c);
     if (table != null)
     {
-      DBSchemaDefinition def = schema.getTable(c);
+      DBSchemaPattern def = schema.getTable(c);
       if (def.getSchemaType() == SchemaType.CLASS){
         // die Sets durchlaufen ...
         for (DBSchemaSetPattern set : ((DBSchemaClassPattern)def).getSets()) {
@@ -213,7 +235,7 @@ public class SQLDataManipulation extends DataManipulation {
 
   
   @Override
-  public int update() {
+  public boolean update() {
     String setStatement = new String("");
     for (String columnName : t_values.keySet()) {
       setStatement += " " + columnName + " = " + t_values.get(columnName) + ", ";
@@ -222,9 +244,9 @@ public class SQLDataManipulation extends DataManipulation {
     if (condition.length() > 0 )
       sql += " WHERE " + condition;
     sql += ";";
-    int result = 0;
+    boolean result = false;
     try {
-      execute(sql);
+      result = execute(sql) > 0 ? true : false;
     } catch (SQLException e) {
       e.printStackTrace();
     }
@@ -232,7 +254,7 @@ public class SQLDataManipulation extends DataManipulation {
   }
 
   @Override
-  public int update(Dataset dataset) {
+  public boolean update(Dataset dataset) {
     collectFieldParameters(dataset, dataset.getClass());
     return update();
   }
@@ -255,7 +277,6 @@ public class SQLDataManipulation extends DataManipulation {
         return -1;
     }
     if (stmt.getUpdateCount() > 1){
-      //TODO: hier müssen die Änderungen och Rückgängig gemacht werden.
       throw new SQLException("es wurden zu viele Ergebnisse geliefert.");
     }
     return -1;
@@ -275,10 +296,10 @@ public class SQLDataManipulation extends DataManipulation {
     if (t_name == null)
       return;
 
-    DBSchemaDefinition def = schema.getTable(c);
+    DBSchemaPattern def = schema.getTable(c);
     if (def.getSchemaType() != SchemaType.CLASS)
       return;
-    for (DBSchemaDefinition field : ((DBSchemaClassPattern)def).getFields()) {
+    for (DBSchemaPattern field : ((DBSchemaClassPattern)def).getFields()) {
       String value = "";
       try {
           // Den Wert aus des Attributs für das Feld aus dem Dataset-Objekt holen

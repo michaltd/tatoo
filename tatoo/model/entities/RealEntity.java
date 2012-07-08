@@ -11,13 +11,30 @@ import tatoo.model.conditions.SimpleNumber;
 
 public class RealEntity extends AbstractEntity {
 
-  protected Condition maxCount = new SimpleNumber(0);
-  protected Condition minCount = new SimpleNumber(0);
+  protected NumberCondition<Integer> maxCount = new SimpleNumber(0);
+  protected NumberCondition<Integer> minCount = new SimpleNumber(0);
 
   private ArrayList<AbstractEntity> entities = new ArrayList<AbstractEntity>();
 
+  public RealEntity()
+  {
+    this(EntityType.NODE,"");
+  }
+  
+  public RealEntity(EntityType type, String name) {
+    this(type, name, 0);
+  }
+
+  public RealEntity(EntityType type, String name, int price) {
+    super(type);
+    this.init();
+    setName(name);
+    setPrice(price);
+  }
+
+  
   @Override
-  public Condition<Integer> getMaxCount() {
+  public NumberCondition<Integer> getMaxCount() {
     return maxCount;
   }  
   
@@ -26,44 +43,30 @@ public class RealEntity extends AbstractEntity {
     setMaxCount(new SimpleNumber(maxCount));
   }
   
-  public void setMaxCount(Condition maxCount){
+  public void setMaxCount(NumberCondition<Integer> maxCount){
   	this.maxCount = maxCount;
-  	if (this.getCount().getValue() > this.getMaxCount().getValue())
+  	if ((Integer)this.getCount().getValue() > (Integer)this.getMaxCount().getValue())
      	this.setCount(this.getMaxCount());
   }
 
   @Override
-  public Condition<Integer> getMinCount() {
+  public NumberCondition<Integer> getMinCount() {
     return minCount;
   }
 
   @Override
   public void setMinCount(int minCount) {
     this.minCount.setValue(minCount);
-    this.count.setValue(minCount);
+    this.setCount(minCount);
   }
-  
+
   @Override
-  public void setMinCount(Condition<Integer> minCount) {
+  public void setMinCount(NumberCondition<Integer> minCount) {
     this.minCount.setValue(minCount.getValue());
-    this.count.setValue(minCount.getValue());
+    if ((Integer)this.getCount().getValue() < (Integer)this.minCount.getValue())
+      setCount(minCount);
   }
   
-  public RealEntity()
-  {
-    this("");
-  }
-  
-  public RealEntity(String name) {
-  	this(name, 0);
-  }
-
-  public RealEntity(String name, int price) {
-  	this.init();
-    this.name = name;
-    this.price.setValue(price);
-  }
-
   @Override
   public void getSpecialRules() {
   // TODO Auto-generated method stub
@@ -72,7 +75,7 @@ public class RealEntity extends AbstractEntity {
 
   @Override
   public int getTotalPrice() {
-    int total = (Integer) price.getValue();
+    int total = (Integer)getPrice().getValue();
     for (AbstractEntity ae : entities)
       total += ae.getTotalPrice();
     return total;
@@ -91,7 +94,7 @@ public class RealEntity extends AbstractEntity {
     String priceString = "";
     // if (price > 0)
     // priceString = "->" + price;
-    return name + priceString; // + returnString;
+    return getName() + priceString; // + returnString;
   }
 
   @Override

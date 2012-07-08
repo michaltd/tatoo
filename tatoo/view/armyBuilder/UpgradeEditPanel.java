@@ -2,7 +2,7 @@ package tatoo.view.armyBuilder;
 
 import javax.swing.JButton;
 
-import tatoo.model.entities.EntityModel;
+import tatoo.model.EntityModel;
 
 
 @SuppressWarnings("serial")

@@ -12,7 +12,7 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-import tatoo.model.entities.EntityModelEvent;
+import tatoo.model.entities.events.EntityModelEvent;
 import tatoo.view.AbstractNodePanel;
 
 @SuppressWarnings("serial")
@@ -40,7 +40,7 @@ public class SimpleNodePanel extends AbstractNodePanel {
 		JLabel nameLabel = new JLabel("<html><b><i>"+model.getName()+"</i></b></html>");
 		nameLabel.setHorizontalAlignment(JLabel.LEFT);
 		
-		JLabel priceLabel = new JLabel(new Integer(model.getPrice().getValue()).toString());
+		JLabel priceLabel = new JLabel(((Integer)model.getPrice()).toString());
 		
 		namePanel.add(nameLabel);
 		namePanel.add(Box.createGlue());

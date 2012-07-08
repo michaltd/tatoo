@@ -2,8 +2,16 @@ package tatoo.model.conditions;
 
 import java.util.EventListener;
 
-public interface ConditionListener extends EventListener{
+/**
+ * Oberklasse aller Klassen die auf Conditions lauschen.
+ * 
+ * @author mkortz
+ */
+public interface ConditionListener extends EventListener {
 
-	public void valueChanged();
-	
+  /**
+   * Horcht auf das ValueChangedEvent.
+   */
+  public void valueChanged();
+
 }

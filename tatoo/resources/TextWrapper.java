@@ -1,4 +1,4 @@
-package tatoo;
+package tatoo.resources;
 
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -14,9 +14,9 @@ public class TextWrapper {
 	 */
 	public enum Language {
 		/** Define English */
-		LANG_EN("tatoo.lang_en", "English"), 
+		LANG_EN("tatoo.resources.lang_en", "English"), 
 		/** Define German */
-		LANG_DE("tatoo.lang_de", "German");
+		LANG_DE("tatoo.resources.lang_de", "German");
 
 		private final String l;
 		private final String l_name;

@@ -37,7 +37,7 @@ public interface ArmyModel extends TreeModel{
    * Compare each node of the treePath to the existing nodes in the Tree. 
    * If the nodes on the Path don't exist they whill be inserted. However
    * the last node in TreePath (Leaf) will be inserted although an equal node exists.
-   * Comparing is made with the {@link equal()} method of AbstractEntity. 
+   * Comparing is made with the {@link #equals(Object)} method of AbstractEntity. 
    * If treePath[0] is not equal to the root node of the tree of this model, 
    * nothing happens and return value is null.
    * @param treePath Path to the node inserted

@@ -17,10 +17,10 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
 import tatoo.ArmyListInstanceSidePanel;
-import tatoo.TextWrapper;
 import tatoo.VersionNumber;
 import tatoo.model.ArmyListModel;
 import tatoo.model.entities.Entity;
+import tatoo.resources.TextWrapper;
 import tatoo.view.armyBuilder.ArmyBuilderPanel;
 import tatoo.view.armyList.ArmyListPanel;
 
@@ -130,20 +130,6 @@ public class MainWindow extends JFrame implements ActionListener, ItemListener {
    */
   //TODO: so aktualisieren, dass übergeben werden kann mit welchem "Fenster" die GUI aufgebaut werden soll?
   public static void createAndShowGUI(VersionNumber version) {
-  	
-  	try {
-    	setNimbusLookAndFeel();
-    } catch (Exception e) {
-      System.err.println("Error setting Nimbus LAF: " + e
-          + "\n Trying native LAF!");
-       try{
-      	 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-       }catch(Exception ex){
-      	 System.err.println("Error setting native LAF: " + e
-      			 + "\n Falling back to Motif LAF!");
-      	 setMotifLookAndFeel();
-       }      
-    }
     
     // Create and set up the window.
     MainWindow frame = new MainWindow("TabletopOrganisation - Version " + version );
@@ -158,25 +144,6 @@ public class MainWindow extends JFrame implements ActionListener, ItemListener {
     frame.setSize(new Dimension(800, 500));
     frame.setResizable(true);
     frame.setVisible(true);
-  }
-
-  public static void setMotifLookAndFeel() {
-    try {
-      UIManager
-          .setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
-    } catch (Exception e) {
-      System.out.println("Error setting Motif LAF: " + e);
-      System.exit(1);
-    }
-  }
-  
-  public static void setNimbusLookAndFeel() throws Exception{
-    for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-        if ("Nimbus".equals(info.getName())) {
-            UIManager.setLookAndFeel(info.getClassName());
-            break;
-        }
-    }
   }
 
 	@Override

@@ -1,7 +1,7 @@
 package tatoo.model.entities.attributesetters;
 
+import tatoo.model.EntityModel;
 import tatoo.model.conditions.Condition;
-import tatoo.model.entities.EntityModel;
 
 /**
  * Helper Class to set an Attribute of an Entity.

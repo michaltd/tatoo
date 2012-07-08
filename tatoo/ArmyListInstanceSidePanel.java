@@ -5,6 +5,7 @@ import tatoo.model.conditions.CalculatedNumber;
 import tatoo.model.conditions.Condition;
 import tatoo.model.conditions.NumberCondition;
 import tatoo.model.conditions.CalculatedNumber.Arithmetic;
+import tatoo.model.entities.AbstractEntity;
 import tatoo.model.entities.AnyOfUpgradeNode;
 import tatoo.model.entities.CategoryNode;
 import tatoo.model.entities.Entity;
@@ -18,8 +19,10 @@ public class ArmyListInstanceSidePanel {
   //zu Testzwecken freigegeben über kurz oder lang muss das hier weg!
 	public Entity armeeliste;
 	
-	private Entity andUpgrade(){ return new AnyOfUpgradeNode("beliebiges aus"); }
-	private Entity orUpgrade(){ return new OneOfUpgradeNode("eines aus"); }
+//	private Entity andUpgrade(){ return new AnyOfUpgradeNode("beliebiges aus"); }
+	private Entity andUpgrade(){ return new Entity(AbstractEntity.EntityType.ANYOFUPGRADE, "beliebiges aus"); }
+//	private Entity orUpgrade(){ return new OneOfUpgradeNode("eines aus"); }
+	private Entity orUpgrade(){ return new Entity(AbstractEntity.EntityType.ONEOFUPGRADE, "beliebiges aus"); }
 	
 	public ArmyListInstanceSidePanel(){
 
@@ -180,7 +183,7 @@ public class ArmyListInstanceSidePanel {
     //stikkbombz.setPrice(stikkbombzPrice);
     //stikkbombzPrice.addChangeListener(stikkbombz);
     stikkbombz.setPrice(1);
-    stikkbombz.setMaxCount((Condition)stikkbombzCount);
+    stikkbombz.setMaxCount(stikkbombzCount);
     
     stikkbombzCount.addChangeListener(stikkbombz);
     //ende
@@ -193,23 +196,23 @@ public class ArmyListInstanceSidePanel {
     fetteWumme.setMinCount(0);
     CalculatedNumber fwMax = 
       new CalculatedNumber(
-          new CalculatedNumber(boy.getCountAsCondition(), 10, Arithmetic.DIVIDE),
-          bazzukka.getCountAsCondition(), 
+          new CalculatedNumber(boy.getCount(), 10, Arithmetic.DIVIDE),
+          bazzukka.getCount(), 
           Arithmetic.SUBTRACT
       );
     fwMax.addChangeListener(fetteWumme);
-    fetteWumme.setMaxCount((Condition)fwMax);
+    fetteWumme.setMaxCount(fwMax);
     fetteWumme.setPrice(5);
     
     bazzukka.setMinCount(0);
     CalculatedNumber bazMax = 
       new CalculatedNumber(
-          new CalculatedNumber(boy.getCountAsCondition(), 10, Arithmetic.DIVIDE ),
-          fetteWumme.getCountAsCondition(),
+          new CalculatedNumber(boy.getCount(), 10, Arithmetic.DIVIDE ),
+          fetteWumme.getCount(),
           Arithmetic.SUBTRACT
       );
     bazMax.addChangeListener(bazzukka);
-    bazzukka.setMaxCount((Condition)bazMax);
+    bazzukka.setMaxCount(bazMax);
     bazzukka.setPrice(10);
     Entity orUpgrade1 = orUpgrade();
     orUpgrade1.addEntity(fetteWumme);

@@ -15,12 +15,12 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 
-import tatoo.TextWrapper;
+import tatoo.model.EntityModel;
 import tatoo.model.conditions.SimpleNumber;
 import tatoo.model.entities.AbstractEntity;
 import tatoo.model.entities.Entity;
-import tatoo.model.entities.EntityModel;
 import tatoo.model.entities.attributesetters.AttribSetter;
+import tatoo.resources.TextWrapper;
 import tatoo.view.ObservableJPanel;
 
 /**
@@ -68,7 +68,7 @@ public class ConditionBuilder extends ObservableJPanel {
     add(dependsOnTextField);
     
     Vector<AbstractEntity> items = new Vector<AbstractEntity>();
-    AbstractEntity ae =(AbstractEntity)model.getSource();
+//    AbstractEntity ae =(AbstractEntity)model.getSource();
     
     JComboBox dependOnComboBox = new JComboBox(items);
     add(dependOnComboBox);

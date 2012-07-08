@@ -1,4 +1,4 @@
-package tatoo.Exceptions;
+package tatoo;
 
 public class VersionnumberNotInitializedException extends NumberFormatException {
 

@@ -4,122 +4,108 @@ import java.util.List;
 
 import javax.swing.event.EventListenerList;
 
-import tatoo.model.conditions.Condition;
 import tatoo.model.conditions.ConditionListener;
 import tatoo.model.conditions.NumberCondition;
 import tatoo.model.conditions.SimpleNumber;
 
 /**
+ * Abstrakte Oberklasse aller Entities. <br />
+ * Bei einem Entity handelt es sich um eine beliebige Instanz innerhalb einer
+ * Armeeliste oder eines Codex. Diese (Armeeliste und Codex) werden als Bäume
+ * von Entitys dargestellt. Ein Entity stellt dabei einen Knoten dar. Demzufolge
+ * kann ein Entity verschiedene Knoten repräsentieren. Um welche Art von Knoten
+ * es sich handelt wird durch das Attribut {@link tatoo.model.entities.type}
+ * festgelgt.
+ * 
  * @author mkortz
  * 
  */
-public abstract class AbstractEntity extends tatoo.db.Dataset  implements ArmyListEntity, ConditionListener {
+public abstract class AbstractEntity extends tatoo.db.Dataset implements
+    ArmyListEntity, ConditionListener {
 
+  /**
+   * Die möglichen Entitytypen
+   * 
+   * @author mkortz
+   * 
+   */
+  public enum EntityType {
+    ROOT,
+    CATEGORY,
+    NODE,
+    ANYOFUPGRADE,
+    ONEOFUPGRADE,
+    UPGRADE
+  }
+
+  public AbstractEntity(EntityType type) { this.type = type; }
   
-	//niemals direkt auf die attribute zugreifen! immer über die getter Methoden!
-	/** name of the Entity */
-  protected String name;
-  /** price of the Entity */
-  protected NumberCondition price;
-  /** count of the Entity */
-  protected NumberCondition count;
-  
-  /** List of Listeners */
+  /**
+   * Der Typ des Entitys. Dieser Wert muss in einer von AbstractEntity erbenden
+   * Klasse im Konstruktor gesetzt werden.
+   */
+  protected EntityType type;
+  /** Der Name des Entitys */
+  private String name;
+  /** Der Preis des Entitys */
+  private NumberCondition<Integer> price;
+  /** Die Anzahl des Entitys */
+  private NumberCondition<Integer> count;
+
+  /** Liste von Listenern */
   private EventListenerList listenerList = new EventListenerList();
-  
-  public void init(){
-		count = new SimpleNumber(0);
-		count.addChangeListener(this);
-		
-		price = new SimpleNumber(0);
-		price.addChangeListener(this);
-  }
-  
-  public void addEntityListener(EntityListener l){
-  	listenerList.add(EntityListener.class, l);
-  }
-  
-  public void removeEntityListener(EntityListener l){
-  	listenerList.remove(EntityListener.class, l);
+
+  /**
+   * initialisiert das Entity.
+   */
+  public void init() {
+    count = new SimpleNumber(0);
+    count.addChangeListener(this);
+
+    price = new SimpleNumber(0);
+    price.addChangeListener(this);
   }
 
-  public NumberCondition getPrice() {
-    return price;
-  }
-  
-  public NumberCondition getPriceAsCondition(){
-    return price;
-  }
-  
-  public void setPrice(int price) {
-    this.price.setValue(price);
-  }
-  
-  public void setPrice(Condition price) {
-    this.price = (NumberCondition)price;
+  /**
+   * Fügt der Liste von Listenern einen Listener hinzu
+   * 
+   * @param l
+   *          Der Listener, der hinzugefügt werden soll.
+   */
+  public void addEntityListener(EntityListener l) {
+    listenerList.add(EntityListener.class, l);
   }
 
-  public String getName() {
-    return name;
+  /**
+   * Entfernt einen Listener aus der Liste von Listenern.
+   * 
+   * @param l
+   *          der Listender, der entfernt werden soll.
+   */
+  public void removeEntityListener(EntityListener l) {
+    listenerList.remove(EntityListener.class, l);
   }
 
-  public void setName(String name) {
-    this.name = name;
-  }
-  
-  public NumberCondition getCountAsCondition(){
-  	return count;
-  }
-
-  public Condition<Integer> getCount() {
-    return count;
-  }
-
-  public void setCount(int count) {
-  	int value = (Integer)getMinCount().getValue();
-  	if (count < value)
-  		this.count.setValue(value);
-  	if (count >= value && count <= getMaxCount().getValue()){
-  		this.count.setValue(count);
-  	}
-  }
-  
-  public void setCount(Condition<Integer> count) {
-  	int value = (Integer)getMinCount().getValue();
-  	int countVal = count.getValue();
-  	if (countVal < value)
-  		this.count.setValue(value);
-  	if (countVal >= value && countVal <= getMaxCount().getValue()){
-  		this.count.setValue(countVal);
-  	}
-  }
-
+  /**
+   * Vergleicht zwei AbstractEntitys auf Wertgleichheit. Es werden Name und
+   * Preis verglichen. Liefert true zurück wenn diese Werte gleich sind. False
+   * sonst.
+   * 
+   * @param e Das Entity mit dem verglichen werden soll.
+   * @return true wenn die Entitys wertmäßig gleich sind. False sonst.
+   */
   public boolean equals(AbstractEntity e) {
-    if (this.getName() == null) return false;
+    if (this.getName() == null)
+      return false;
     boolean nameEqual, priceEqual;
     nameEqual = this.getName().equals(e.getName());
     priceEqual = (this.getPrice().getValue()) == (e.getPrice().getValue());
     return nameEqual && priceEqual;
   }
 
-  public int hashCode() {
-    String hashString = name + price;
-    return hashString.hashCode();
-  }
-  
-  public boolean equals(Object obj) {
-  	if (obj == null) return false;
-  	AbstractEntity entity;
-  	try{
-  		entity = (AbstractEntity)obj;
-  	}catch(ClassCastException e){
-  		return false;
-  	}
-  	return this.getName().equals(entity.getName()) && 
-  			 price.getValue() == entity.getPrice().getValue() && 
-  			 count.getValue() == entity.getCount().getValue();
-  }
-  
+  /**
+   * Übergibt allen Listenern das AttribChangedEvent.
+   */
   public void fireAttribChanged() {
     Object[] listeners = listenerList.getListenerList();
     for (int i = listeners.length - 2; i >= 0; i -= 2) {
@@ -129,15 +115,96 @@ public abstract class AbstractEntity extends tatoo.db.Dataset  implements ArmyLi
     }
   }
   
-  public void valueChanged(){
-  	fireAttribChanged();
+  /**
+   * Gibt den Typ des Entitys zurück.
+   * @return Der Typ des Entitys.
+   */
+  public EntityType getType() {
+    return type;
+  }
+  
+  @Override
+  public NumberCondition<Integer> getPrice() {
+    return price;
   }
 
-  public abstract Condition<Integer> getMaxCount();
+  @Override
+  public void setPrice(int price) {
+    this.price.setValue(price);
+  }
+
+  @Override
+  public void setPrice(NumberCondition<Integer> price) {
+    this.price = price;
+  }
+
+  @Override
+  public String getName() {
+    return name;
+  }
+
+  @Override
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  @Override
+  public NumberCondition<Integer> getCount() {
+    return count;
+  }
+
+  @Override
+  public void setCount(int count) {
+    int value = (Integer) getMinCount().getValue();
+    if (count < value)
+      this.count.setValue(value);
+    if (count >= value && count <= (Integer) getMaxCount().getValue()) {
+      this.count.setValue(count);
+    }
+  }
+
+  @Override
+  public void setCount(NumberCondition<Integer> count) {
+    int value = (Integer) getMinCount().getValue();
+    int countVal = (Integer) count.getValue();
+    if (countVal < value)
+      this.count.setValue(value);
+    if (countVal >= value && countVal <= (Integer) getMaxCount().getValue()) {
+      this.count.setValue(countVal);
+    }
+  }
+
+  @Override
+  public int hashCode() {
+    String hashString = name + price;
+    return hashString.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null)
+      return false;
+    AbstractEntity entity;
+    try {
+      entity = (AbstractEntity) obj;
+    } catch (ClassCastException e) {
+      return false;
+    }
+    return this.getName().equals(entity.getName())
+        && price.getValue() == entity.getPrice().getValue()
+        && count.getValue() == entity.getCount().getValue();
+  }
+
+  @Override
+  public void valueChanged() {
+    fireAttribChanged();
+  }
+
+  public abstract NumberCondition<Integer> getMaxCount();
 
   public abstract void setMaxCount(int maxCount);
-  
-  public abstract void setMaxCount(Condition<Integer> maxCount);
+
+  public abstract void setMaxCount(NumberCondition<Integer> maxCount);
 
   public abstract int getTotalPrice();
 
@@ -146,8 +213,6 @@ public abstract class AbstractEntity extends tatoo.db.Dataset  implements ArmyLi
   public abstract Boolean addEntity(AbstractEntity entity);
 
   public abstract void removeEntity(AbstractEntity entity);
-
-  public abstract void getSpecialRules();
 
   public abstract void addUpgrade(AbstractUpgrade upgrade);
 

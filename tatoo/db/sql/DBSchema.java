@@ -20,21 +20,20 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
-import tatoo.db.sql.DBSchemaDefinition.SchemaType;
+import tatoo.db.sql.DBSchemaPattern.SchemaType;
 
 /**
- * Represents the database-schema as defined in db_schema.xml
+ * Stellt das Datenbankschema wie es aus der Schemadatei gelesen wurde dar.
  * 
  * @author mkortz
- * @param <T>
  * 
  */
 public class DBSchema {  
   
   /**
-   * Enthält die Tabellen als <code>DBSchemaDefinition<code> mit dem Namen als Schlüssel.
+   * Enthält die Tabellen als {@link DBSchemaPattern} mit dem Namen als Schlüssel.
    */
-  HashMap<String, DBSchemaDefinition> schema = new HashMap<String, DBSchemaDefinition>();
+  HashMap<String, DBSchemaPattern> schema = new HashMap<String, DBSchemaPattern>();
 
   public DBSchema(String pathToSchema) {
     Document doc = null;
@@ -48,7 +47,7 @@ public class DBSchema {
   }
   
   /**
-   * Baut das Schema aus <code>DBSchemaDefinition</code> nach. 
+   * Baut das Schema aus <code>DBSchemaPattern</code> nach. 
    * @param doc
    */
   @SuppressWarnings("unchecked")
@@ -72,7 +71,7 @@ public class DBSchema {
    * @return Der Tabellenname in welcher die Klasse gespeichert wird
    */
   public String getTableName(Class<?> cl) {
-    DBSchemaDefinition def = schema.get(cl.getSimpleName());
+    DBSchemaPattern def = schema.get(cl.getSimpleName());
     DBSchemaClassPattern table;
     if (def != null && def.getSchemaType() == SchemaType.CLASS)
     {
@@ -85,12 +84,12 @@ public class DBSchema {
   }
   
   /**
-   * Gibt für die übergebene Klasse die <code>DBSchemaDefinition</code> zurück. Ist für die KLasse keine
+   * Gibt für die übergebene Klasse die <code>DBSchemaPattern</code> zurück. Ist für die KLasse keine
    * Definition vorhanden wird <code>null</code> zurückgegeben.
    * @param cl
    * @return
    */
-  public DBSchemaDefinition getTable(Class<?> cl){    
+  public DBSchemaPattern getTable(Class<?> cl){    
     return schema.get(cl.getSimpleName());
   }
 

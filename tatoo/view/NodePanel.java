@@ -5,10 +5,10 @@ import java.awt.BorderLayout;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
-import tatoo.model.entities.EntityModel;
+import tatoo.model.EntityModel;
 
 /**
- * Interface for Panels for a node of {@link ArmyList}. 
+ * Interface for Panels for a node of {@link Armylist}. 
  * In most cases you don't want to use this Interface directly, 
  * use {@link AbstractNodePanel} instead. 
  * @author mkortz

@@ -1,5 +1,6 @@
 package tatoo.db.migrate;
 
+import tatoo.VersionNumber;
 import tatoo.db.Migration;
 
 public class InitialAddOfAllTables extends Migration {
@@ -42,8 +43,8 @@ public class InitialAddOfAllTables extends Migration {
 	}
 
 	@Override
-	public int getVersion() {
-		return 2;
+	public VersionNumber getVersion() {
+		return new VersionNumber(3);
 	}
 
 	

@@ -18,7 +18,7 @@ import javax.swing.PopupFactory;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 
-import tatoo.model.entities.EntityModel;
+import tatoo.model.EntityModel;
 import tatoo.model.entities.attributesetters.PriceSetter;
 
 /**
@@ -145,9 +145,9 @@ public class EntityEditPane extends ArmyListEditPanel implements ActionListener 
     if (model == null) this.setEnabled(false);
     else {
       title.setText(model.getName());
-      points.setText(new Integer(model.getPrice().getValue()).toString());
-      minCount.setText(new Integer(model.getMinCount().getValue()).toString());
-      maxCount.setText(new Integer(model.getMaxCount().getValue()).toString());
+      points.setText(new Integer(model.getPrice()).toString());
+      minCount.setText(new Integer(model.getMinCount()).toString());
+      maxCount.setText(new Integer(model.getMaxCount()).toString());
     }
   }
 

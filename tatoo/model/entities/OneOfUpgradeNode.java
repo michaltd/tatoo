@@ -5,7 +5,7 @@ public class OneOfUpgradeNode extends Entity {
   public OneOfUpgradeNode(){this("");}
   
 	public OneOfUpgradeNode(String name) {
-		super(name);
+		super(AbstractEntity.EntityType.ONEOFUPGRADE, name);
 	}
 
 }

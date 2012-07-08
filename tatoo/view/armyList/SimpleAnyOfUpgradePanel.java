@@ -2,7 +2,7 @@ package tatoo.view.armyList;
 
 import javax.swing.JPanel;
 
-import tatoo.model.entities.EntityModelEvent;
+import tatoo.model.entities.events.EntityModelEvent;
 import tatoo.view.AbstractNodePanel;
 
 @SuppressWarnings("serial")

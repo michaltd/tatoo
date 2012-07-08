@@ -5,7 +5,7 @@ public class UpgradeNode  extends Entity{
   public UpgradeNode(){this("");}
   
 	public UpgradeNode(String name) {
-		super(name);
+		super(AbstractEntity.EntityType.UPGRADE, name);
 		// TODO Auto-generated constructor stub
 	}
 

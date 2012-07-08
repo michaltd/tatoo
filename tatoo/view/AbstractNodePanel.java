@@ -8,8 +8,8 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
-import tatoo.model.entities.EntityModel;
-import tatoo.model.entities.EntityModelListener;
+import tatoo.model.EntityModel;
+import tatoo.model.EntityModelListener;
 
 /**
  * general implementation for all node panels.
@@ -39,7 +39,7 @@ public abstract class AbstractNodePanel extends JPanel implements NodePanel, Ent
 	/**
 	 * Constructor to initialize this NodePanel without a node.
 	 * you have to care about setting the node later. 
-	 * Use {@link AbstractNodePanel(Object node)} to initialize with a node.
+	 * Use {@link #AbstractNodePanel(Object)} to initialize with a node.
 	 */
 	protected AbstractNodePanel() {
 	} 
@@ -62,7 +62,7 @@ public abstract class AbstractNodePanel extends JPanel implements NodePanel, Ent
 	
 	/**
 	 * this method is for intern use only. Do not override it or call it. Use
-	 * method {@link create(JPanel parentPanel, boolean hasChilds)} instead.
+	 * method {@link #create(JPanel, JPanel, boolean)} instead.
 	 */
 	@Override
 	public void createNodePanel(JPanel parentPanel, boolean hasChilds) {

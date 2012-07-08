@@ -11,9 +11,9 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import tatoo.model.entities.EntityModel;
-import tatoo.model.entities.EntityModelEvent;
-import tatoo.model.entities.EntityModelListener;
+import tatoo.model.EntityModel;
+import tatoo.model.EntityModelListener;
+import tatoo.model.entities.events.EntityModelEvent;
 
 
 @SuppressWarnings("serial")

@@ -7,39 +7,42 @@ import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreePath;
 
-import tatoo.TextWrapper;
 import tatoo.model.entities.AbstractEntity;
 import tatoo.model.entities.Entity;
-
+import tatoo.resources.TextWrapper;
 
 /**
  * Model für die Armeeliste. Das Model stellt eine triviale Implementierung des
- * Interfaces ArmyModel (TreeModel) bereit.
+ * Interfaces ArmyModel bereit.
  * 
  * @author mkortz
  * 
  */
 public class ArmyListModel implements ArmyModel {
 
-	/** root Element of the Armylist */
+  /** Wurzelelement der Armeeliste */
   private AbstractEntity armyList = null;
-  /** List of Listeners */
+  /** Liste von Listenern */
   private EventListenerList listenerList = new EventListenerList();
 
   /**
-   * create an new Entity-tree whith root as root.
-   * @param root the root of the tree.
+   * Instantiiert einen neuen Entity-Baum mit root als Wurzelknoten.
+   * 
+   * @param root
+   *          Die Wurzel des Baumes
    */
   public ArmyListModel(AbstractEntity root) {
     armyList = root;
   }
 
   /**
-   * fire a TreeNodesChanged Event
+   * Löst ein TreeNodesChangedEvent aus.
+   * 
    * @param e
+   *          Das Event welches an die Listener übergeben wird.
    */
-  //TODO: noch mal überarbeiten, so dass nicht das Event übergeben wird, 
-  //sondern eine Referenz auf das auslösende Objekt.
+  // TODO: noch mal überarbeiten, so dass nicht das Event übergeben wird,
+  // sondern eine Referenz auf das auslösende Objekt.
 
   public void fireTreeNodesChanged(TreeModelEvent e) {
     Object[] listeners = listenerList.getListenerList();
@@ -51,11 +54,13 @@ public class ArmyListModel implements ArmyModel {
   }
 
   /**
-   * fire a treeNodesInserted Event
+   * Löst ein TreeNodesInsertedEvent aus.
+   * 
    * @param e
+   *          Das Event welches an die Listener übergeben wird.
    */
-  //TODO: noch mal überarbeiten, so dass nicht das Event übergeben wird, 
-  //sondern eine Referenz auf das auslösende Objekt.
+  // TODO: noch mal überarbeiten, so dass nicht das Event übergeben wird,
+  // sondern eine Referenz auf das auslösende Objekt.
   public void fireTreeNodesInserted(TreeModelEvent e) {
     Object[] listeners = listenerList.getListenerList();
     for (int i = listeners.length - 2; i >= 0; i -= 2) {
@@ -66,11 +71,13 @@ public class ArmyListModel implements ArmyModel {
   }
 
   /**
-   * fire a treeNodesRemoved Event
+   * Löst ein TreeNodesRemovedEvent aus.
+   * 
    * @param e
+   *          Das Event welches an die Listener übergeben wird.
    */
-  //TODO: noch mal überarbeiten, so dass nicht das Event übergeben wird, 
-  //sondern eine Referenz auf das auslösende Objekt.
+  // TODO: noch mal überarbeiten, so dass nicht das Event übergeben wird,
+  // sondern eine Referenz auf das auslösende Objekt.
   public void fireTreeNodesRemoved(TreeModelEvent e) {
     Object[] listeners = listenerList.getListenerList();
     for (int i = listeners.length - 2; i >= 0; i -= 2) {
@@ -79,13 +86,15 @@ public class ArmyListModel implements ArmyModel {
       }
     }
   }
-  
+
   /**
-   * fire a treeStructureChanged Event
+   * Löst ein TreeStructureChangedEvent aus.
+   * 
    * @param e
+   *          Das Event welches an die Listener übergeben wird.
    */
-  //TODO: noch mal überarbeiten, so dass nicht das Event übergeben wird, 
-  //sondern eine Referenz auf das auslösende Objekt.
+  // TODO: noch mal überarbeiten, so dass nicht das Event übergeben wird,
+  // sondern eine Referenz auf das auslösende Objekt.
   public void fireTreeStructureChanged(TreeModelEvent e) {
     Object[] listeners = listenerList.getListenerList();
     for (int i = listeners.length - 2; i >= 0; i -= 2) {
@@ -95,9 +104,6 @@ public class ArmyListModel implements ArmyModel {
     }
   }
 
-  /**
-   * add a Listener to the model
-   */
   @Override
   public void addTreeModelListener(TreeModelListener l) {
     listenerList.add(TreeModelListener.class, l);
@@ -108,7 +114,16 @@ public class ArmyListModel implements ArmyModel {
     listenerList.remove(TreeModelListener.class, l);
   }
 
-  @Override
+  /**
+   * Gibt den Kindsknoten an Position <code>index</code> des Knotens
+   * <code>parent</code> zurück.
+   * 
+   * @param parent
+   *          Der Knoten dessen Kindsknoten zurückgegeben werden soll.
+   * @param index
+   *          Der index des Kindsknotens, der zurückgegeben werden soll.
+   * @return Den Kindknoten mit dem Index <code>index</code> als Objekt.
+   */
   public Object getChild(Object parent, int index) {
     return ((AbstractEntity) parent).getEntityAt(index);
   }
@@ -120,14 +135,12 @@ public class ArmyListModel implements ArmyModel {
 
   @Override
   public int getIndexOfChild(Object parent, Object child) {
-    if (parent == null || child == null) return -1;
+    if (parent == null || child == null)
+      return -1;
     return ((AbstractEntity) parent).getIndexOf((AbstractEntity) child);
   }
 
   @Override
-  /**
-   * get the root of the tree
-   */
   public Object getRoot() {
     return armyList;
   }
@@ -151,85 +164,115 @@ public class ArmyListModel implements ArmyModel {
 
   }
 
-
+  /**
+   * Gibt den Pfad zum dem übergebenen Knoten zurück.
+   * 
+   * @param Der
+   *          Knoten dessen Pfad ermittelt werden soll.
+   * @return Den Pfad zum Knoten als ein Array von Objects.
+   */
   public Object[] getTreePathTo(Object o) {
     return getNodePath((AbstractEntity) o, 0).toArray();
   }
 
-
+  /**
+   * Gibt den Knotenpfad zurück. Ruft sich selbst rekursiv auf. Wird es von
+   * aussen aufgerufen muss immer 0 also levelCount übergeben werden.
+   * 
+   * @param e Das Entity dessen Pfad zurückgegeben werden soll
+   * @param levelCount die Baumtiefe in der sich der gesuchte Knoten befindet. Wird von außen immer mit 0 aufgerufen!
+   * @return den Pfad des Baumes als ArrayList
+   */
+  //TODO: hmmm wieso existiert hier levelCount?? so viel schneller wird die Methode dadurch nicht.
   private ArrayList<Object> getNodePath(AbstractEntity e, int levelCount) {
     ArrayList<Object> o;
     Entity ent = (Entity) e;
-    if (ent.getParent() == null) o = new ArrayList<Object>(levelCount);
-    else o = getNodePath(ent.getParent(), levelCount++);
+    if (ent.getParent() == null)
+      o = new ArrayList<Object>(levelCount);
+    else
+      o = getNodePath(ent.getParent(), levelCount++);
     o.add(e);
     return o;
   }
-
-  //TODO: throw ClassCastException?
+  
+  /**
+   * Fügt dem Entitybaum einen weiteren leeren Knoten hinzu
+   * @param parent Der Knoten dem ein Knoten angehängt werden soll.
+   * @return gibt den angehängten Knoten zurück
+   */
+  // TODO: throw ClassCastException?
   public AbstractEntity insertNewEntityInto(Object parent) {
 
-  	//create new Entity with the given Name from language-file
-    AbstractEntity newEntity = new Entity(TextWrapper
-        .getString("ArmyListModel.0"));
-    //create an Array with the new Entity as Element
+    // create new Entity with the given Name from language-file
+    AbstractEntity newEntity = new Entity( AbstractEntity.EntityType.NODE,
+        TextWrapper.getString("ArmyListModel.0"));
+    // create an Array with the new Entity as Element
     Object[] child = { newEntity };
 
     AbstractEntity paren;
-    //If no parent was passed as parameter get the root from tree 
-    //and insert the new node as child
-    //else insert child into passed node
-    if (parent == null) paren = (AbstractEntity) getRoot();
-    else paren = (AbstractEntity) parent;
+    // If no parent was passed as parameter get the root from tree
+    // and insert the new node as child
+    // else insert child into passed node
+    if (parent == null)
+      paren = (AbstractEntity) getRoot();
+    else
+      paren = (AbstractEntity) parent;
     int[] idx = { paren.getChildCount() };
     paren.addEntity(newEntity);
 
-    TreeModelEvent e = new TreeModelEvent(this, getNodePath(paren, 0).toArray(), idx, child);
+    TreeModelEvent e = new TreeModelEvent(this,
+        getNodePath(paren, 0).toArray(), idx, child);
     fireTreeNodesInserted(e);
     return newEntity;
   }
-  
+
   @Override
-	public AbstractEntity insertEntitiy(Object[] treePath) {
-  	//das erste Object im Array MUSS der root-Knoten sein, sonst ist es kein
-  	//gültiger Pfad!
-		if (treePath[0].equals(getRoot()) && treePath.length > 1){
-			boolean found = false;
-			AbstractEntity treeNode = armyList;
-			//den Pfad vom Knoten eins bis Ende durchlaufen
-			for (int i = 1; i < treePath.length -1; i++){
-				//prüfen ob der Knoten schon enthalten ist
-				//aber nur wenn es sich nicht um das Pfadblatt handelt. 
-				//wenn der Knoten nicht enthalten ist anlegen 
-				found = false;
-				for (int j = 0; j < treeNode.getChildCount() && !found; j++ ){
-					if (treeNode.getEntityAt(j).equals((AbstractEntity)treePath[i])){
-						found = true;
-						treeNode = treeNode.getEntityAt(j);
-					}
-				}
-				if (!found){
-					AbstractEntity newNode = (AbstractEntity)treePath[i];
-					treeNode.addEntity(newNode);
-					int[] idx = { treeNode.getChildCount() };
-	  			Object[] child = { newNode };
-		    	TreeModelEvent e = new TreeModelEvent(this, getTreePathTo(treeNode), idx, child );
-		      fireTreeNodesInserted(e);
-					treeNode = newNode;
-				}
-			}
-			//den letzten Knoten auf jeden Fall hinzufügen
-			AbstractEntity newNode = (AbstractEntity)treePath[treePath.length -1];			
-			treeNode.addEntity(newNode);
-			int[] idx = { treeNode.getChildCount() };
-			Object[] child = { newNode };
-    	TreeModelEvent e = new TreeModelEvent(this, getTreePathTo(treeNode), idx, child );
+  public AbstractEntity insertEntitiy(Object[] treePath) {
+    // das erste Object im Array MUSS der root-Knoten sein, sonst ist es kein
+    // gültiger Pfad!
+    if (treePath[0].equals(getRoot()) && treePath.length > 1) {
+      boolean found = false;
+      AbstractEntity treeNode = armyList;
+      // den Pfad vom Knoten eins bis Ende durchlaufen
+      for (int i = 1; i < treePath.length - 1; i++) {
+        // prüfen ob der Knoten schon enthalten ist
+        // aber nur wenn es sich nicht um das Pfadblatt handelt.
+        // wenn der Knoten nicht enthalten ist anlegen
+        found = false;
+        for (int j = 0; j < treeNode.getChildCount() && !found; j++) {
+          if (treeNode.getEntityAt(j).equals((AbstractEntity) treePath[i])) {
+            found = true;
+            treeNode = treeNode.getEntityAt(j);
+          }
+        }
+        if (!found) {
+          AbstractEntity newNode = (AbstractEntity) treePath[i];
+          treeNode.addEntity(newNode);
+          int[] idx = { treeNode.getChildCount() };
+          Object[] child = { newNode };
+          TreeModelEvent e = new TreeModelEvent(this, getTreePathTo(treeNode),
+              idx, child);
+          fireTreeNodesInserted(e);
+          treeNode = newNode;
+        }
+      }
+      // den letzten Knoten auf jeden Fall hinzufügen
+      AbstractEntity newNode = (AbstractEntity) treePath[treePath.length - 1];
+      treeNode.addEntity(newNode);
+      int[] idx = { treeNode.getChildCount() };
+      Object[] child = { newNode };
+      TreeModelEvent e = new TreeModelEvent(this, getTreePathTo(treeNode), idx,
+          child);
       fireTreeNodesInserted(e);
-			return newNode;
-		}
-  	return null;
+      return newNode;
+    }
+    return null;
   }
 
+  /**
+   * Entfernt den übergebenen Knoten aus dem Baum.
+   * @param Der Knoten der entfernt werden soll
+   */
   public void removeNodeFromParent(Object node) {
     Entity delEntity = (Entity) node;
     AbstractEntity parent = delEntity.getParent();
@@ -242,16 +285,6 @@ public class ArmyListModel implements ArmyModel {
         .toArray(), idx, child);
 
     fireTreeNodesRemoved(e);
-  }
-
-  //TODO: wird das hier benötigt? ist doch eigentlich crap
-  public void insertNewAndUpgradeInto(Object parent) {
-        
-  }
-  //TODO: wird das hier benötigt? ist doch eigentlich crap
-  public void insertNewOrUpgradeInto(Object parent) {
-    // TODO Auto-generated method stub
-    
   }
 
 }

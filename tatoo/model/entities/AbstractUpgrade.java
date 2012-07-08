@@ -8,6 +8,8 @@ import tatoo.model.conditions.NumberCondition;
 
 public abstract class AbstractUpgrade extends AbstractEntity {
 
+  public AbstractUpgrade(EntityType type) { super(type); }
+
   protected AbstractEntity receivingEntity;
 
   public String getName() {
@@ -18,7 +20,7 @@ public abstract class AbstractUpgrade extends AbstractEntity {
     receivingEntity.setName(name);
   }
 
-  public NumberCondition getPrice() {
+  public NumberCondition<Integer> getPrice() {
     return receivingEntity.getPrice();
   }
 
@@ -30,12 +32,12 @@ public abstract class AbstractUpgrade extends AbstractEntity {
     receivingEntity.setPrice(price);
   }
   
-  public void setPrice(Condition price) {
+  public void setPrice(NumberCondition<Integer> price) {
     receivingEntity.setPrice(price);
   }
 
   @Override
-  public Condition<Integer> getMinCount() {
+  public NumberCondition<Integer> getMinCount() {
     return receivingEntity.getMinCount();
   }
 
@@ -45,12 +47,12 @@ public abstract class AbstractUpgrade extends AbstractEntity {
   }
 
   @Override
-  public void setMinCount(Condition<Integer> minCount) {
+  public void setMinCount(NumberCondition<Integer> minCount) {
     receivingEntity.setMinCount(minCount);
   }
   
   @Override
-  public Condition<Integer> getMaxCount() {
+  public NumberCondition<Integer> getMaxCount() {
     return receivingEntity.getMaxCount();
   }
 
@@ -60,7 +62,7 @@ public abstract class AbstractUpgrade extends AbstractEntity {
   }
 
   @Override
-  public void setMaxCount(Condition<Integer> maxCount) {
+  public void setMaxCount(NumberCondition<Integer> maxCount) {
     receivingEntity.setMaxCount(maxCount);
   }
   

@@ -1,5 +1,6 @@
 package tatoo.db.migrate;
 
+import tatoo.VersionNumber;
 import tatoo.db.Migration;
 
 public class CreateTableMigrationSchema extends Migration {
@@ -21,8 +22,9 @@ public class CreateTableMigrationSchema extends Migration {
 	}
 
 	@Override
-	public int getVersion() {
-		return 1;
+	public VersionNumber getVersion() {
+	  // wir starten mit der Datenbankversion 1: nichts eingetragen. die erste Migration muss demnach die 2 tragen:
+		return new VersionNumber(2);
 	}
 
 }

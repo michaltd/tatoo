@@ -1,4 +1,4 @@
-package tatoo.model.entities;
+package tatoo.model.entities.events;
 
 import java.util.EventObject;
 

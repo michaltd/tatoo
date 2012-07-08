@@ -2,79 +2,95 @@ package tatoo.db;
 
 import java.util.Hashtable;
 
+import tatoo.db.sql.DBSchema;
 
+/**
+ * Abstrakte Oberklasse für Datendefinitionen (Datenbeschreibungssprache).
+ * Die Klasse ist die Grundlage für das erstellen, löschen und verändern von Datenstrukturen.
+ * @author mkortz
+ *
+ */
 public abstract class DataDefinition extends DataHandler{
 
+  /**
+   * Der Name der Datenstruktur. In Datenbanksichtweise wäre dies der Name einer Tabelle
+   */
 	protected String t_Name;
 	/**
-	 * Hashtable of columns holding pairs of columnname -> datatype
+	 * Nimmt die Datenfelder auf, welche von der Datenoperation betroffen sind.
+	 * Der Schlüssel enthält den Datenfeldname in der Datenstrukturen und der Wert den Datenfeldtypen.
 	 */
 	protected Hashtable<String, String> t_columns = new Hashtable<String, String>();
 	/**
-	 * Hashtable of primarykeys holding pairs of columnname -> datatype
+	 * Nimmt die Pimärschlüsseldefinitionen auf. 
+	 * Der Schlüssel enthält den Datenfeldname in der Datenstrukturen und der Wert den Datenfeldtypen.
 	 */
 	protected Hashtable<String, String> t_pk = new Hashtable<String, String>();
 
-	protected abstract boolean createTable();
+	/**
+	 * @param schema Das Datenbankschema welches für die Datenoperation benutzt wird.
+	 * @see DataHandler#schema
+	 */
+	public DataDefinition(DBSchema schema) {
+	  super(schema);
+  }
 
-	protected abstract boolean dropTable();
+	/**
+	 * Erzeugt eine Datenstruktur mit den zuvor eingefügten Feldern.
+	 * @return true wenn die Datenstruktur angelegt werden konnte. False sonst.
+	 */
+  protected abstract boolean create();
+  /**
+   * Löscht die Datenstruktur.
+   * @return True wenn die Datenstruktur gelöscht werden konnte. False sonst.
+   */
+	protected abstract boolean drop();
 
-	// TODO addForeignKey kann auch ganz automatisiert laufen wenn der name der ID
-	// aus einer anderen Tabelle bekannt ist:
-	public void addForeignKey(String foreignTableName) {
-		addForeignKey(foreignTableName + "_id", foreignTableName, foreignTableName
-				+ "_id");
-	}
-
-	public final boolean create() {
-		if (createTable()){
-			//hier das einfügen in das xml schema erledigen!!		
-			return true;
-		}
-		return false;
-	};
-
-	public final boolean drop() {
-		if (dropTable()){
-			//hier das löschen aus dem xml schema erledigen!!
-			//ich mach hier mal nen Compilerfehler hin, dann finde ich das morgen gleich :)
-			//DBSchema <-verwenden!!!
-			return true;
-		}
-		return false;
-	}
-
+	/**
+	 * Fügt ein Datenfeld hinzu. Der übergebene String muss das folgende Format besitzen: "name:typ". Hat er das nicht wird eine 
+	 * {@link DataDefinitionException} ausgelöst. Gibt diese Datendefinition als {@link DataHandler} zurück.
+	 * @param Der übergebene String muss das folgende Format besitzen: "name:typ". 
+	 * @return Das Objekt dieser DataDefinition
+	 */
 	public DataHandler addColumn(String column) {
 		String columnSignature[] = column.split(":");
 		if (columnSignature.length != 2)
-			;//TODO throw someException
+			throw new DataDefinitionException("Wrong Column format") ;
 		t_columns.put(columnSignature[0], columnSignature[1]);
 		return this;
 	}
-
+	/**
+   * Fügt mehrere Datenfelder hinzu. Die übergebenen String müssen das folgende Format besitzen: "name:typ". 
+   * Haben sie das nicht wird eine {@link DataDefinitionException} ausgelöst. Gibt diese Datendefinition als {@link DataHandler} zurück.
+   * @param Der übergebene String muss das folgende Format besitzen: "name:typ". 
+   * @return Das Objekt dieser DataDefinition
+   */
 	public DataHandler addColumns(String... columns) {
 		for (String colString : columns){
-			String columnSignature[] = colString.split(":");
-			if (columnSignature.length != 2)
-				;//TODO throw someException
-			t_columns.put(columnSignature[0], columnSignature[1]);
+			addColumn(colString);
 		}
 		return this;
 	}
 
+	/**
+	 * Fügt der Datenstruktur einen Primärschlüssel hinzu. Primärschlüssel sind Datenfelder, welche die einzelnen Datensätze in der 
+	 * Datenstruktur identifizieren. Ein Primärschlüssel darf nicht in mehreren Datensätzen einer Datenstruktur vorkommen. 
+	 * @param string Der übergebene String muss das folgende Format besitzen: "name:typ". 
+	 * @return Das Objekt dieser DataDefinition
+	 */
 	public DataHandler addPrimaryKey(String string) {
 		String columnSignature[] = string.split(":");
 		if (columnSignature.length != 2)
 			return null;//TODO throw someException
 		t_pk.put(columnSignature[0], columnSignature[1]);
-		//t_columns.put(columnSignature[0], columnSignature[1]);
 		return this;
 	}
 
-	public void addForeignKey(String selfColumn, String foreignTable, String foreignColumn) {
-		//TODO: noch zu implementieren :)
-	}
-
+	/**
+	 * Setzt den Namen der Datenstruktur.
+	 * @param name Der Name als String
+	 * @return Das Objekt dieser DataDefinition
+	 */
 	public DataHandler setTableName(String name) {
 		this.t_Name = name;
 		return this;

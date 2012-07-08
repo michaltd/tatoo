@@ -3,9 +3,9 @@ package tatoo.view;
 import java.util.HashMap;
 import java.util.Map;
 
+import tatoo.model.EntityModel;
 import tatoo.model.entities.AnyOfUpgradeNode;
 import tatoo.model.entities.CategoryNode;
-import tatoo.model.entities.EntityModel;
 import tatoo.model.entities.NodeNode;
 import tatoo.model.entities.OneOfUpgradeNode;
 import tatoo.model.entities.RootNode;

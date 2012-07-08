@@ -5,11 +5,27 @@ import java.lang.reflect.Field;
 import org.jdom.Attribute;
 import org.jdom.Element;
 
-public class DBSchemaPropertyPattern extends DBSchemaDefinition {
+/**
+ * Abbildung des Propety-Elements aus der Schemadatei. Eine Property entspricht einen einfachen Attribut (Keine 1:n Assoziationen)
+ * 
+ * @author mkortz
+ * 
+ */
+public class DBSchemaPropertyPattern extends DBSchemaPattern {
   
+  /**
+   * Name des abzubildenden Attributes in der Datenbank.
+   */
   private String databaseName;
+  /**
+   * Typ des abzubildenden Attributes in der Datenbank.
+   */
   private String type;
   
+  /**
+   * Istantiiert eine Property-Schablone aus dem übergebenen Element. 
+   * @param el Das XML-Element aus dem die Schablone instantiiert wird.
+   */
   public DBSchemaPropertyPattern(Element el) {
 
     this.definitonType = SchemaType.PROPERTY;
@@ -22,13 +38,11 @@ public class DBSchemaPropertyPattern extends DBSchemaDefinition {
     if (TypeNameAttrib != null)
       this.type = TypeNameAttrib.getValue();
   }
-
   
-  public String getClassPropertyName()
-  {
-    return name;
-  }
-  
+  /**
+   * Gibt den Namen der Spalte zurück welche das Attribut der Klasse repräsentiert. 
+   * @return Der Name der Spalte für das Attribut.
+   */
   public String getDatabaseFieldName()
   {
     return databaseName;
@@ -36,7 +50,7 @@ public class DBSchemaPropertyPattern extends DBSchemaDefinition {
   
   /**
    * liefert den Typ des Feldes zurück.
-   * @return
+   * @return Der Typ des Feldes in der Datenbank.
    */
   public String getType(){
     return type;
@@ -46,7 +60,7 @@ public class DBSchemaPropertyPattern extends DBSchemaDefinition {
    * Gibt für die übergebene Klasse und Objekt den Wert des Attributes zurück.
    * @param c Die Klasse in welchem das Attribut definiert ist.
    * @param o Das Objekt aus dem der Wert geholt werden soll.
-   * @return
+   * @return Der Wert des Attributes als Object. 
    * @throws SecurityException
    * @throws NoSuchFieldException
    * @throws IllegalArgumentException

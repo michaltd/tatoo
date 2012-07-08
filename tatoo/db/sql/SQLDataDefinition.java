@@ -5,17 +5,24 @@ import java.sql.SQLException;
 
 import tatoo.db.DataDefinition;
 
+/**
+ * Implementierung der Datadefiniton für die Verbindung mit der SQL-Datenbank H2.
+ * @see tatoo.db.DataDefinition
+ * @author mkortz
+ *
+ */
 public class SQLDataDefinition extends DataDefinition {
 	
 	protected Connection dbconn;
 
 	public SQLDataDefinition(Connection sqlConnection, DBSchema schema) {
+	  super(schema);
 		dbconn = sqlConnection;
-		this.schema = schema;
+//		this.schema = schema;
 	}
 
 	@Override
-	protected boolean createTable() {
+	protected boolean create() {
 		String sqlString = "CREATE TABLE \"" + t_Name + "\" (";
 		for (String columnName: t_columns.keySet() ){
 			sqlString += columnName + " " + t_columns.get(columnName) + ",";
@@ -32,7 +39,7 @@ public class SQLDataDefinition extends DataDefinition {
 	}
 
 	@Override
-	protected boolean dropTable() {
+	protected boolean drop() {
 		String sqlString = "DROP TABLE \"" + t_Name + "\";";
 		return execute(sqlString);
 	}

@@ -7,7 +7,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import tatoo.model.entities.EntityModelEvent;
+import tatoo.model.entities.events.EntityModelEvent;
 import tatoo.view.AbstractNodePanel;
 
 @SuppressWarnings("serial")

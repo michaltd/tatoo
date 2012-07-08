@@ -13,6 +13,12 @@ import tatoo.db.DataManipulation;
 import tatoo.db.Dataset;
 import tatoo.db.Query;
 
+/**
+ * Implementierung der DBConnection für die Verbindung mit der SQL-Datenbank H2.
+ * @see tatoo.db.DBConnection
+ * @author mkortz
+ *
+ */
 public class SQLConnection extends DBConnection {
 
 	private Class<?> database = null;
@@ -63,47 +69,7 @@ public class SQLConnection extends DBConnection {
 	@Override
 	protected DataManipulation createDataManipulation() {
 		return new SQLDataManipulation(connection, schema);
-	}
-	
-	@Override
-	/**
-	 * schreibt das Objekt o in die Datenbank.
-	 * @param Object o Das Objekt das Serialisiert werden soll
-	 */
-  public void write(Dataset o) {
-	  //1. prüfen ob Objekt bereits eingetragen ist
-	  //2. wenn ja: Objekt anpassen
-	  //3. wenn nein: Objekt eintragen
-	  //4. schon fertig :)
-	  
-	  //1. prüfen ob Objekt bereits eingetragen ist ...
-	  // ... dazu zunächst prüfen ob die ID des objektes > 0 ist. Wenn die id == 0 ist das objekt neu
-	  // und noch nicht in der DB eingetragen
-	  if (o.getId() > 0)
-	    //2. wenn ja: Objekt anpassen
-	    createDataManipulation().update(o);
-	  else
-	    // 3. wenn nein: Objekt eintragen
-	    createDataManipulation().insert(o);
-	  
-	  //4. schon fertig :)
-  }
-	
-	
-	
-  @Override
-  public Dataset read(Class<?> c, long id) {
-    if (connect())
-    {
-      LinkedList<Dataset> results = createQuery().get(c).addCondition("\"dataset\".dataset_id=" + id).execute();
-      if (results == null || results.isEmpty())
-        return null;
-      else
-        return results.getFirst();
-    }
-    return null;
-    
-  }
+	}	
   
 	
 }
