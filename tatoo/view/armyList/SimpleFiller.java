@@ -50,7 +50,7 @@ public class SimpleFiller extends AbstractNodePanel {
 		
 		final EntityModel simpleFillerModel = model;
 		
-		JButton decrement = new JButton("<"){ 
+		JButton decrement = new JButton("-"){ 
 				@Override
 				public synchronized void addMouseListener(MouseListener l) {
 					super.addMouseListener(new MouseListener(){
@@ -81,7 +81,7 @@ public class SimpleFiller extends AbstractNodePanel {
 		valueFieldPanel.add(valueField, BorderLayout.CENTER);
 		valuePanel.add(valueFieldPanel, BorderLayout.CENTER );
 		
-		JButton increment = new JButton(">"){ 
+		JButton increment = new JButton("+"){ 
 			@Override
 			public synchronized void addMouseListener(MouseListener l) {
 				super.addMouseListener(new MouseListener(){

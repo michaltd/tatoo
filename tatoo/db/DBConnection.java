@@ -34,7 +34,7 @@ public abstract class DBConnection {
     /**
      * Verbindung zur Datenbank H2
      */
-    H2("org.h2.Driver", "jdbc:h2:./db/tatoo", "db/sql/db_schema.xml"),
+    H2("org.h2.Driver", "jdbc:h2:./db/tatoo", "tatoo/db/sql/db_schema.xml"),
     /**
      * Verbindung zu einer XML-Struktur
      */
@@ -66,7 +66,7 @@ public abstract class DBConnection {
     /**
      * Gibt zurück wo die Verbindung zur Datenstruktur aufgebaut werden kann.
      * 
-     * @return
+     * @return Der Connection-String
      */
     public String getConnectionString() {
       return connectionString;
@@ -75,7 +75,7 @@ public abstract class DBConnection {
     /**
      * Gibt den Benutzernamen zurück der für die Verbindung gebraucht wird.
      * 
-     * @return Den Benutzernamen.
+     * @return Der Benutzername
      */
     public String getUSER() {
       return USER;
@@ -84,7 +84,7 @@ public abstract class DBConnection {
     /**
      * Gibt das Passwort zurück, welches für die Verbindung gebraucht wird.
      * 
-     * @return
+     * @return das Passwort
      */
     public String getPASSWD() {
       return PASSWD;
@@ -93,7 +93,7 @@ public abstract class DBConnection {
     /**
      * Gibt den Pfad zurück an dem die Schemadatei für die Verbindung liegt.
      * 
-     * @return
+     * @return Den Pfad zur Schema-Datei
      */
     public String getPathToSchema() {
       return this.pathToSchemaFile;
@@ -150,8 +150,8 @@ public abstract class DBConnection {
    * angepasst, alle anderen neu geschrieben. Datasets erhalten nach den
    * Schreibvorgang ihre ID.
    * 
-   * @param Object
-   *          o Das Objekt das geschrieben werden soll.
+   * @param o
+   *          Das Objekt das geschrieben werden soll.
    * @return gibt true zurück wenn das schreiben geklappt hat. False sonst.
    */
   public final boolean write(Dataset o) {

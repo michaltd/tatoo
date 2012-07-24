@@ -18,7 +18,7 @@ public class DataHandler {
    * Hält alle Datasets vor, welche wärend eines Lesevorgangs ausgelesen, oder während
    * eines Schreibvorgangs geschrieben wurden.
    * So können Referenzen auf diese bereits gelesenen Objekte in neu gelesene Objekte eingefügt werden.
-   * Das Problem besteht beim Einlesen von Entity-Bäumen. Listener z.B. in einer tieferen Baumebene
+   * Das Problem besteht beim Einlesen von ArmyListEntity-Bäumen. Listener z.B. in einer tieferen Baumebene
    * beobachten hier manchmal Knoten in einer höheren Ebene. Um sie nicht ein zweites mal zu instanziieren wird die 
    * Referenz dann aus dem EntityCache geholt.
    * @see #addToCache(Dataset)

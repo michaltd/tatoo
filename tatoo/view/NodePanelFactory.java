@@ -5,7 +5,7 @@ import java.util.Map;
 
 import tatoo.model.EntityModel;
 import tatoo.model.entities.AbstractEntity;
-import tatoo.model.entities.Entity;
+import tatoo.model.entities.ArmyListEntity;
 import tatoo.view.armyList.SimpleAnyOfUpgradePanel;
 import tatoo.view.armyList.SimpleArmyListPanel;
 import tatoo.view.armyList.SimpleCategoryPanel;

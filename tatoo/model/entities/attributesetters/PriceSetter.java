@@ -12,7 +12,7 @@ public class PriceSetter implements AttribSetter {
 	 */
 	@Override
 	public void setAttrib(EntityModel em, Condition c) {
-	  em.setPrice((NumberCondition<Integer>)c);
+	  em.setPrice((Integer)c.getValue());
 	}
 
 }

@@ -5,6 +5,7 @@ import java.util.EventListener;
 import javax.swing.event.EventListenerList;
 
 import tatoo.db.Dataset;
+import tatoo.model.entities.AbstractEntity;
 
 /**
  * Grundklasse aller Conditions welche in irgendeiner Form mit Zahlen zu tun
@@ -15,16 +16,38 @@ import tatoo.db.Dataset;
  */
 public abstract class AbstractNumberCondition<T> extends Dataset implements
     NumberCondition<T> {
-
+  
   /** Liste der Listener */
   private EventListenerList listenerList = new EventListenerList();
-
+  
+  private AbstractEntity ownerNode;
+  
+//  /**
+//   * Helferattribut. Enthält beim Klonen dieser Condition die Kopie.
+//   */
+//  private AbstractNumberCondition<T> copy;
+  
+  public abstract AbstractNumberCondition<T> clone() throws CloneNotSupportedException;
+//  {
+// 
+//  }
+//  
+  public void setOwner(AbstractEntity ownerNode){
+    this.ownerNode = ownerNode;
+  }
+  
+  
+  public AbstractEntity getOwnerNode(){
+    return ownerNode;
+  }
+  
   /**
    * Fügt der Listenerliste einen weiteren Listener hinzu
    * 
    * @param l
    *          Der Listener
    */
+  @Override
   public void addChangeListener(ConditionListener l) {
     listenerList.add(ConditionListener.class, l);
   }
@@ -35,6 +58,7 @@ public abstract class AbstractNumberCondition<T> extends Dataset implements
    * @param l
    *          der Listender der entfernt werden soll.
    */
+  @Override
   public void removeChangeListener(ConditionListener l) {
     listenerList.remove(ConditionListener.class, l);
   }

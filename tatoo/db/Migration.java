@@ -156,7 +156,7 @@ public abstract class Migration implements Comparable<Migration> {
   /**
    * Gibt die Versionsnummer der Migration zurück.
    * 
-   * @return
+   * @return die Versionsnummer der Migration
    */
   public abstract VersionNumber getVersion();
 

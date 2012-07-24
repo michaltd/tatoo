@@ -30,7 +30,7 @@ public interface ArmyListEntityModel {
   public int getTotalPrice();
 
   /**
-   * Gibt Anzahl zurück, die im Entity derzeit eingestellt ist.
+   * Gibt Anzahl zurück, die im ArmyListEntity derzeit eingestellt ist.
    * @return Die Anzahl des Entitys.
    */
   public int getCount();

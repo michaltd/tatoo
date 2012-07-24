@@ -1,5 +1,9 @@
 package tatoo.model.conditions;
 
+import java.util.IdentityHashMap;
+
+import tatoo.model.entities.AbstractEntity;
+
 /**
  * Stellt eine NumberCondition dar, die von einer anderen NumberCondition
  * abhängt und dadurch während der Laufzeit andere Werte annehmen kann. Die
@@ -89,42 +93,52 @@ public class CalculatedNumber extends AbstractNumberCondition<Integer>
   /**
    * Die sourcecondition.
    */
-  NumberCondition<Integer> source = new SimpleNumber(0);
+  NumberCondition<Integer> source;
   /**
    * Die Valuecondition.
    */
-  NumberCondition<Integer> value = new SimpleNumber(0);
+  NumberCondition<Integer> value;
   /**
    * Die Arithmetik mit der source und value berechnet werden.
    */
   Arithmetic arith;
+  
+  IdentityHashMap<AbstractEntity, CalculatedNumber> copies = new IdentityHashMap<AbstractEntity, CalculatedNumber>();
 
   public CalculatedNumber() {
+    this( new SimpleNumber(0), new SimpleNumber(0), Arithmetic.ADD );
   }
 
-  public CalculatedNumber(NumberCondition<Integer> condition, Integer value,
-      Arithmetic a) {
-    this.source = condition;
-    this.arith = a;
-    this.value.setValue(value);
-    condition.addChangeListener(this);
+
+  public CalculatedNumber(NumberCondition<Integer> src, Integer value, Arithmetic a) {
+    this( src, new SimpleNumber(value), a);
   }
 
-  public CalculatedNumber(NumberCondition<Integer> src,
-      NumberCondition<Integer> value, Arithmetic a) {
+  public CalculatedNumber(NumberCondition<Integer> src, NumberCondition<Integer> value, Arithmetic a) {
     this.source = src;
+    this.source.setOwner(getOwnerNode());
     this.arith = a;
     this.value = value;
+    this.value.setOwner(getOwnerNode());
     src.addChangeListener(this);
     value.addChangeListener(this);
   }
-
-  /**
-   * Setzt eine neue source-Condition
-   * @param src die Sourcecoondition.
-   */
-  public void setCalculationSource(NumberCondition<Integer> src) {
-    source = src;
+  
+  @Override
+  public AbstractNumberCondition<Integer> clone() throws CloneNotSupportedException {
+    
+    AbstractEntity e = getOwnerNode();
+    // zunächst mal eine neue Condition erzeugen:
+    CalculatedNumber copy = new CalculatedNumber();
+    // gibt es eine Kopie für source? die nehmen. Ansonsten source clonen.
+    copy.source = (NumberCondition<Integer>) source.clone();
+    copy.source.addChangeListener(this);
+    copy.value = (NumberCondition<Integer>) value.clone();
+    copy.value.addChangeListener(this);
+    copy.arith = this.arith;
+    
+    copies.put(e, copy);
+    return copy;
   }
 
   @Override
@@ -138,12 +152,11 @@ public class CalculatedNumber extends AbstractNumberCondition<Integer>
   }
 
   public String toString() {
-    return "";
+    return getValue().toString();
   }
 
   @Override
   public void valueChanged() {
     fireValueChanged();
   }
-
 }

@@ -33,7 +33,7 @@ public abstract class Query extends DataHandler {
    * Condition gesetzt. Es werden nur Datensätze geändert, welche mit der
    * Condition übereinstimmen.
    * 
-   * @param string
+   * @param condition
    *          Der String muss in der Form "name=bedingung" vorliegen. z.B.
    *          dataset_id=5
    * @return Ein Objekt dieser Abfrage.
@@ -45,7 +45,7 @@ public abstract class Query extends DataHandler {
    * Namen der Felder enthalten, nach denen sortiert werden soll. Die Felder
    * müssen als ein langer String übergeben werden.
    * 
-   * @param string
+   * @param order
    *          Der String muss in der Form "name=bedingung" vorliegen. z.B.
    *          dataset_id=5
    * @return Ein Objekt dieser Abfrage.

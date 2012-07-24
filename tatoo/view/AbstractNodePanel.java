@@ -1,60 +1,49 @@
 package tatoo.view;
 
-import java.awt.Color;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
-import javax.swing.border.LineBorder;
 
 import tatoo.model.EntityModel;
 import tatoo.model.EntityModelListener;
 
 /**
- * general implementation for all node panels.
- * This abstract class make some Methods and Attributes available, which makes
- * the implementation of NodePanels easyer. 
- * It consider of EmptyEntities, the model of an Entity and so on.
+ * Grundlegende Implementation für alle Node Panel. Ein NodePanel ist ein JPanel welches für einen bestimmten Knotentyp geschrieben ist.
+ * Es legt verschiedene Eigenschaften für die Darstellung des Knotens fest.
+ * @see tatoo.model.entities.AbstractEntity.EntityType
+ * 
  * @author mkortz
  *
  */
 @SuppressWarnings("serial")
 public abstract class AbstractNodePanel extends JPanel implements NodePanel, EntityModelListener {
 
-	/** the model of this NodePanel */
+	/** Das Model dieses NodePanels */
 	protected EntityModel model;
-	/** show empty nodes? */
+	/** Legt fest ob leere Entitys dargestellt werden sollen oder nicht.  */
 	protected boolean showEmptyEntities = true;
-	/** alignment of panel */
+	/** legt die ausrichtung des Panels fest. */
 	private int alignment;
-	/** show childs */
+	/** legt fest ob die Kindsknoten dargestellt werden sollen oder nicht. */
 	protected boolean showChilds = true;
 	
 	/**
-	 * Panel for the Content of this Node Panel
+	 * JPanel für den Inhalt des NodePanels
 	 */
 	protected JPanel contentPanel = new JPanel();
 	
 	/**
-	 * Constructor to initialize this NodePanel without a node.
-	 * you have to care about setting the node later. 
-	 * Use {@link #AbstractNodePanel(Object)} to initialize with a node.
+	 * Konstruktor für ein leeres Nodepanel. Ein Knoten muss später mittels {@link #setNode(Object)} manuell hinzugefügt werden.
 	 */
 	protected AbstractNodePanel() {
 	} 
 	
-	/**
-	 * Constructor to initialize the model of the NodePanel.
-	 * @param node the node of this Panel
-	 */
 	public AbstractNodePanel(Object node){
 		setNode(node);
 	}
 	
 	/**
-	 * configure wether empty Entitys should be shown or not.
-	 * @param show show empty Entitys?
+	 * Setzt den Wert ob leere Entitys angezeigt werden sollen oder nicht.
+	 * @param show Leere Entitys anzeigen.
 	 */
 	public void showEmptyEntitys(boolean show){
 		showEmptyEntities = show;

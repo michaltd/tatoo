@@ -13,16 +13,4 @@ public interface NumberCondition<T> extends Condition<Number>,
   @Override
   public abstract int compareTo(NumberCondition<T> numbCond);
 
-  /**
-   * Fügt einen Listener hinzu der auf Veränderungen in der NumberCondition lauscht.
-   * @param l Der Listener
-   */
-  public void addChangeListener(ConditionListener l);
-
-  /**
-   * Entfernt einen Listener aus der Liste der Listener.
-   * @param l Der Listener der entfernt werden soll.
-   */
-  public void removeChangeListener(ConditionListener l);
-
 }

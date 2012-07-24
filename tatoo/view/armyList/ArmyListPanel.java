@@ -11,7 +11,7 @@ import javax.swing.JSplitPane;
 import tatoo.ArmyListInstanceMainPanel;
 import tatoo.ArmyListInstanceSidePanel;
 import tatoo.model.ArmyListModel;
-import tatoo.model.entities.Entity;
+import tatoo.model.entities.AbstractEntity;
 import tatoo.view.AbstractNodePanel;
 
 @SuppressWarnings("serial")
@@ -24,7 +24,7 @@ public class ArmyListPanel extends JPanel{
 	  this(new ArmyListInstanceSidePanel().armeeliste);
 	}
 
-  public ArmyListPanel(Entity armeeliste){
+  public ArmyListPanel(AbstractEntity armeeliste){
 		
 		this.setLayout(new BorderLayout());
 		//sideMenuModel = new ArmyListModel(new ArmyListInstanceSidePanel().armeeliste);
@@ -35,7 +35,6 @@ public class ArmyListPanel extends JPanel{
   	
   	armyListModel = new ArmyListModel(new ArmyListInstanceMainPanel().armeeliste);
   	ArmyTreePanel armyList = new ArmyTreePanel( armyListModel, "ArmyList");
-  	armyList.addMouseListener(new ArmyListListener());
 		
 		JScrollPane scrollPane = new JScrollPane(armyList);
 		scrollPane.setBorder(null);
@@ -49,27 +48,15 @@ public class ArmyListPanel extends JPanel{
 	private class SideMenuListener implements MouseListener{
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			armyListModel.insertEntitiy(sideMenuModel.getTreePathTo(((AbstractNodePanel)e.getSource()).getModel().getSource()));
+		  // das NodePanel das das Event ausgelöst hat aus dem event holen.
+		  AbstractNodePanel sourcePanel = (AbstractNodePanel)e.getSource();
+		  // Das NodePanel hat ein Model und daraus das ArmyListEntity holen
+		  Object entity = sourcePanel.getModel().getSource();
+		  // aus dem sideMenuModel den Pfad für dieses ArmyListEntity bestimmen...
+		  Object[] treePath = sideMenuModel.getTreePathTo(entity);
+		  // ... und an das armyListModel anhängen. 
+			armyListModel.insertCopyOf(treePath);
 		}
-
-		@Override
-		public void mouseEntered(MouseEvent e) {}
-
-		@Override
-		public void mouseExited(MouseEvent e) {}
-
-		@Override
-		public void mousePressed(MouseEvent e) {}
-
-		@Override
-		public void mouseReleased(MouseEvent e) {}
-
-	}
-	
-	private class ArmyListListener implements MouseListener{
-		
-		@Override
-		public void mouseClicked(MouseEvent e) {}
 
 		@Override
 		public void mouseEntered(MouseEvent e) {}

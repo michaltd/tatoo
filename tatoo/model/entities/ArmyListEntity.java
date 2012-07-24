@@ -1,39 +1,91 @@
 package tatoo.model.entities;
 
-import tatoo.model.conditions.NumberCondition;
+import tatoo.model.conditions.Condition.ConditionTypes;
 
-public abstract interface ArmyListEntity {
+public class ArmyListEntity extends AbstractEntity {
 
-  public abstract NumberCondition<Integer> getPrice();
+  /**
+   * Erzeugt ein neues ArmyListEntity vom Typ NODE.
+   */
+  public ArmyListEntity() {
+    this(EntityType.NODE, "");
+  }
 
-  public abstract void setPrice(int price);
-  
-  public abstract void setPrice(NumberCondition<Integer> price);
+  /**
+   * Erzeugt ein neues ArmyListEntity mit dem übergebenen Typen und Namen.
+   */
+  public ArmyListEntity(EntityType type, String name) {
+    this(type, name, 0);
+  }
 
-  public abstract String getName();
+  /**
+   * Erzeugt ein neues ArmyListEntity mit dem übergebenen Typen, Namen und
+   * Preis.
+   */
+  public ArmyListEntity(EntityType type, String name, int price) {
+    super(type);
+    setName(name);
+    setAttribute(price, ConditionTypes.PRICE);
+  }
 
-  public abstract void setName(String name);
+  public ArmyListEntity clone() {
 
-  public abstract NumberCondition<Integer> getCount();
+    ArmyListEntity e = new ArmyListEntity();
+    
+    // typ und Name setzen
+    e.type = this.type;
+    e.setName(this.getName());
 
-  public abstract void setCount(int count);
-  
-  public abstract void setCount(NumberCondition<Integer> count);
+    // dann die Conditions Klonen
+    try {
+      // Klon des Attributes PRICE erzeugen.
+      ConditionTypes attType = ConditionTypes.PRICE;
+      e.setAttribute(this.getAttribute(attType).clone(), attType);
 
-  public abstract NumberCondition<Integer> getMinCount();
+      // Klon des Attributes COUNT erzeugen.
+      attType = ConditionTypes.COUNT;
+      e.setAttribute(this.getAttribute(attType).clone(), attType);
 
-  public abstract void setMinCount(int minCount);
+      // Klon des Attributes MIN_COUNT erzeugen.
+      attType = ConditionTypes.MIN_COUNT;
+      e.setAttribute(this.getAttribute(attType).clone(), attType);
 
-  public abstract void setMinCount(NumberCondition<Integer> minCount);
+      // Klon des Attributes MAX_COUNT erzeugen.
+      attType = ConditionTypes.MAX_COUNT;
+      e.setAttribute(this.getAttribute(attType).clone(), attType);
 
-  public abstract NumberCondition<Integer> getMaxCount();
+    } catch (CloneNotSupportedException e1) {
+      e1.printStackTrace();
+    }
+    
+    // zum Schluss die entities durchgehen und wenn es sich nicht um 
+    // ROOT, CATEGORY, NODE Entitys handelt Klonen:
+    for (AbstractEntity ae : entities){
+      if ( ae.getType() != EntityType.ROOT && ae.getType() != EntityType.CATEGORY &&  ae.getType() != EntityType.NODE)
+      {
+        e.addEntity(ae.clone());        
+      }
+    }
+    
+    return e;
+  }
 
-  public abstract void setMaxCount(int maxCount);
-  
-  public abstract void setMaxCount(NumberCondition<Integer> maxCount);
+  public int getTotalPrice() {
+    int total = (Integer) getAttribute(ConditionTypes.PRICE).getValue();
+    for (AbstractEntity ae : entities)
+      total += ((ArmyListEntity) ae).getTotalPrice();
+    return total;
+  }
 
-  public abstract void getSpecialRules();
-
-  public abstract void addUpgrade(AbstractUpgrade upgrade);
+  @Override
+  public String toString() {
+    // String returnString = "";
+    // for (AbstractEntity ae : entities)
+    // returnString += ae.toString();
+    String priceString = "";
+    // if (price > 0)
+    // priceString = "->" + price;
+    return getName() + priceString; // + returnString;
+  }
 
 }

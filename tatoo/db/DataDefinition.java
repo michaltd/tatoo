@@ -49,7 +49,7 @@ public abstract class DataDefinition extends DataHandler{
 	/**
 	 * Fügt ein Datenfeld hinzu. Der übergebene String muss das folgende Format besitzen: "name:typ". Hat er das nicht wird eine 
 	 * {@link DataDefinitionException} ausgelöst. Gibt diese Datendefinition als {@link DataHandler} zurück.
-	 * @param Der übergebene String muss das folgende Format besitzen: "name:typ". 
+	 * @param column Der übergebene String muss das folgende Format besitzen: "name:typ". 
 	 * @return Das Objekt dieser DataDefinition
 	 */
 	public DataHandler addColumn(String column) {
@@ -62,7 +62,7 @@ public abstract class DataDefinition extends DataHandler{
 	/**
    * Fügt mehrere Datenfelder hinzu. Die übergebenen String müssen das folgende Format besitzen: "name:typ". 
    * Haben sie das nicht wird eine {@link DataDefinitionException} ausgelöst. Gibt diese Datendefinition als {@link DataHandler} zurück.
-   * @param Der übergebene String muss das folgende Format besitzen: "name:typ". 
+   * @param columns Der übergebene String muss das folgende Format besitzen: "name:typ". 
    * @return Das Objekt dieser DataDefinition
    */
 	public DataHandler addColumns(String... columns) {

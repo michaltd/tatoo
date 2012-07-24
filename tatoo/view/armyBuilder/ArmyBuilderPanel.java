@@ -23,7 +23,7 @@ import javax.swing.tree.TreePath;
 
 import tatoo.model.ArmyListModel;
 import tatoo.model.EntityModel;
-import tatoo.model.entities.Entity;
+import tatoo.model.entities.ArmyListEntity;
 import tatoo.model.entities.events.EntityModelEvent;
 
 
@@ -169,18 +169,12 @@ public class ArmyBuilderPanel extends JPanel implements ActionListener {
     }
     else {
 //TODO was ist das für ein Blödsinn, das View kennt die Daten? Neeee... noch mal überarbeiten!
-      if (o instanceof Entity) {
+      if (o instanceof ArmyListEntity) {
         if (!(sidebar.getComponent(0) instanceof EntityEditPane)) {
           sidebar.removeAll();
           sidebar.add(new EntityEditPane(entityModel));
         }
       }
-//      else if (o instanceof Old_Upgrade) {
-//        if (!(sidebar.getComponent(0) instanceof UpgradeEditPanel)) {
-//          sidebar.removeAll();
-//          sidebar.add(new UpgradeEditPanel(entityModel));
-//        }
-//      }
       sidebar.revalidate();
     }
   }

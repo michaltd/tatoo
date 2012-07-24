@@ -19,7 +19,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import tatoo.ArmyListInstanceSidePanel;
 import tatoo.VersionNumber;
 import tatoo.model.ArmyListModel;
-import tatoo.model.entities.Entity;
+import tatoo.model.entities.AbstractEntity;
 import tatoo.resources.TextWrapper;
 import tatoo.view.armyBuilder.ArmyBuilderPanel;
 import tatoo.view.armyList.ArmyListPanel;
@@ -82,7 +82,7 @@ public class MainWindow extends JFrame implements ActionListener, ItemListener {
 
   
   //TODO: nur zu Testzwecken eingefügt. wieder entfernen
-  private Entity armylist = new ArmyListInstanceSidePanel().armeeliste ;
+  private AbstractEntity armylist = new ArmyListInstanceSidePanel().armeeliste ;
   /**
    * Shows the ArmyList in the Main Window
    */
@@ -138,10 +138,10 @@ public class MainWindow extends JFrame implements ActionListener, ItemListener {
     frame.addMenuBarToPane(frame);
     // Set up the content pane.
     //TODO muss noch ersetzt werden, durch den zuletzt angezeigten bzw. gespeicherten
-    frame.showArmyBuilder();
-    //frame.showArmyList();
+    //frame.showArmyBuilder();
+    frame.showArmyList();
     // Display the window.
-    frame.setSize(new Dimension(800, 500));
+    frame.setSize(new Dimension(1024, 800));
     frame.setResizable(true);
     frame.setVisible(true);
   }

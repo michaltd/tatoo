@@ -4,9 +4,11 @@
 	</head>
 <body>
 	<p>Enthält die Entitys welche die Einzelnen Einheiten, Modelle usw. darstellen.</p>
-	<p>Das Konstrukt der Entities ist etwas kompliziert. Es wird zur zeit noch eine kette gebildet von mehreren #
-	möglichen abstractentitys bis am Ende ein RealEntity steckt. Dieses Konzept hat sich selbst überholt und wird
-	vermutlich über kurz oder lang noch mal komplett überarbeitet. 
+	<p>Das Konstrukt der Entities ist etwas kompliziert. Entitys erben von {@link tatoo.model.entities.AbstractUpgrade} alle Methoden welche 
+	durch das {@link tatoo.model.entities.AbstractEntity} bereitgestellt werden. Ein Entity selbst besitzt aber keine Werte bzw. die Werte sind
+	alle null. Das <code>AbstractUpgrade</code> kapselt nur ein {@link tatoo.model.entities.RealEntity} dessen Werte dann zurück gegeben werden.
+	Dieses Konzept wurde eingefügt weil am Anfang Upgrades von Entitys einfach dazwischen geschoben wurden und so eine "Kette" von 
+	Entitys entstand. Das Konzept hat sich überholt und wird vermutlich über kurz oder lang noch mal komplett überarbeitet. </br>
 	</p>
 @author mkortz
 

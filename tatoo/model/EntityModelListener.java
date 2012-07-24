@@ -5,14 +5,14 @@ import java.util.EventListener;
 import tatoo.model.entities.events.EntityModelEvent;
 
 /**
- * Grundlage für alle Listener auf das Entity Model
+ * Grundlage für alle Listener auf das ArmyListEntity Model
  * @author mkortz
  *
  */
 public interface EntityModelListener extends EventListener {
   
   /**
-   * Wird ausgelöst wenn sich das Entity des Models geändert hat. 
+   * Wird ausgelöst wenn sich das ArmyListEntity des Models geändert hat. 
    */
   public void SourceChanged();
 

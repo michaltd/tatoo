@@ -1,24 +1,12 @@
 package tatoo.db.sql;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
-import java.util.AbstractMap.SimpleEntry;
 
-import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
 
 import tatoo.db.sql.DBSchemaPattern.SchemaType;
 
@@ -87,7 +75,7 @@ public class DBSchema {
    * Gibt für die übergebene Klasse die <code>DBSchemaPattern</code> zurück. Ist für die KLasse keine
    * Definition vorhanden wird <code>null</code> zurückgegeben.
    * @param cl
-   * @return
+   * @return Das Pattern für die übergebene Klasse
    */
   public DBSchemaPattern getTable(Class<?> cl){    
     return schema.get(cl.getSimpleName());

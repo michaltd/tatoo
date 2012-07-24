@@ -8,7 +8,7 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreePath;
 
 import tatoo.model.entities.AbstractEntity;
-import tatoo.model.entities.Entity;
+import tatoo.model.entities.ArmyListEntity;
 import tatoo.resources.TextWrapper;
 
 /**
@@ -26,7 +26,7 @@ public class ArmyListModel implements ArmyModel {
   private EventListenerList listenerList = new EventListenerList();
 
   /**
-   * Instantiiert einen neuen Entity-Baum mit root als Wurzelknoten.
+   * Instantiiert einen neuen ArmyListEntity-Baum mit root als Wurzelknoten.
    * 
    * @param root
    *          Die Wurzel des Baumes
@@ -155,7 +155,7 @@ public class ArmyListModel implements ArmyModel {
     AbstractEntity changedEntity = (AbstractEntity) path.getLastPathComponent();
     changedEntity.setName(newValue.toString());
 
-    int[] idx = { getIndexOfChild(((Entity) changedEntity).getParent(),
+    int[] idx = { getIndexOfChild(((AbstractEntity) changedEntity).getParent(),
         changedEntity) };
     Object[] o = { changedEntity };
 
@@ -167,8 +167,8 @@ public class ArmyListModel implements ArmyModel {
   /**
    * Gibt den Pfad zum dem übergebenen Knoten zurück.
    * 
-   * @param Der
-   *          Knoten dessen Pfad ermittelt werden soll.
+   * @param o
+   *          Der Knoten dessen Pfad ermittelt werden soll.
    * @return Den Pfad zum Knoten als ein Array von Objects.
    */
   public Object[] getTreePathTo(Object o) {
@@ -179,14 +179,18 @@ public class ArmyListModel implements ArmyModel {
    * Gibt den Knotenpfad zurück. Ruft sich selbst rekursiv auf. Wird es von
    * aussen aufgerufen muss immer 0 also levelCount übergeben werden.
    * 
-   * @param e Das Entity dessen Pfad zurückgegeben werden soll
-   * @param levelCount die Baumtiefe in der sich der gesuchte Knoten befindet. Wird von außen immer mit 0 aufgerufen!
+   * @param e
+   *          Das ArmyListEntity dessen Pfad zurückgegeben werden soll
+   * @param levelCount
+   *          die Baumtiefe in der sich der gesuchte Knoten befindet. Wird von
+   *          außen immer mit 0 aufgerufen!
    * @return den Pfad des Baumes als ArrayList
    */
-  //TODO: hmmm wieso existiert hier levelCount?? so viel schneller wird die Methode dadurch nicht.
+  // TODO: hmmm wieso existiert hier levelCount?? so viel schneller wird die
+  // Methode dadurch nicht.
   private ArrayList<Object> getNodePath(AbstractEntity e, int levelCount) {
     ArrayList<Object> o;
-    Entity ent = (Entity) e;
+    AbstractEntity ent = (AbstractEntity) e;
     if (ent.getParent() == null)
       o = new ArrayList<Object>(levelCount);
     else
@@ -194,19 +198,21 @@ public class ArmyListModel implements ArmyModel {
     o.add(e);
     return o;
   }
-  
+
   /**
    * Fügt dem Entitybaum einen weiteren leeren Knoten hinzu
-   * @param parent Der Knoten dem ein Knoten angehängt werden soll.
+   * 
+   * @param parent
+   *          Der Knoten dem ein Knoten angehängt werden soll.
    * @return gibt den angehängten Knoten zurück
    */
   // TODO: throw ClassCastException?
   public AbstractEntity insertNewEntityInto(Object parent) {
 
-    // create new Entity with the given Name from language-file
-    AbstractEntity newEntity = new Entity( AbstractEntity.EntityType.NODE,
+    // create new ArmyListEntity with the given Name from language-file
+    AbstractEntity newEntity = new ArmyListEntity(AbstractEntity.EntityType.NODE,
         TextWrapper.getString("ArmyListModel.0"));
-    // create an Array with the new Entity as Element
+    // create an Array with the new ArmyListEntity as Element
     Object[] child = { newEntity };
 
     AbstractEntity paren;
@@ -224,44 +230,60 @@ public class ArmyListModel implements ArmyModel {
         getNodePath(paren, 0).toArray(), idx, child);
     fireTreeNodesInserted(e);
     return newEntity;
-  }
+  }  
 
+  
   @Override
-  public AbstractEntity insertEntitiy(Object[] treePath) {
+  public AbstractEntity insertCopyOf(Object[] treePath) {
+    
+    // Wenn der Root in der Armeeliste noch keine Kinder hat, handelt es sich um den Standardmäßig eingefügten Knoten, welcher 
+    // nur eingefügt wurde weil es sonst in der Anzeige zu Exceptions kommt. Er muss also ersetzt
+    // werden durch den ersten Knoten im TreePath als neue Wurzel.
+    if (((AbstractEntity) getRoot()).getChildCount() == 0
+        && treePath.length > 0) {
+      // Kopie erzeugen:
+      armyList = ((AbstractEntity) treePath[0]).clone();
+      
+    }
+    if (armyList == null)
+      return null;
     // das erste Object im Array MUSS der root-Knoten sein, sonst ist es kein
     // gültiger Pfad!
-    // Wenn der Root in der Armeeliste noch keine Kinder hat muss er ersetzt werden durch den ersten Knoten im TreePath
-    if (((AbstractEntity)getRoot()).getChildCount() == 0 && treePath.length > 0){
-      armyList = (AbstractEntity) treePath[0];
-    }
+    // TODO: hier eventuell Exception schmeißen bei ungültigem Pfad.
     if (treePath[0].equals(getRoot()) && treePath.length > 1) {
       boolean found = false;
       AbstractEntity treeNode = armyList;
+      AbstractEntity parent = treeNode;
       // den Pfad vom Knoten eins bis Ende durchlaufen
       for (int i = 1; i < treePath.length - 1; i++) {
         // prüfen ob der Knoten schon enthalten ist
         // aber nur wenn es sich nicht um das Pfadblatt handelt.
-        // wenn der Knoten nicht enthalten ist anlegen
+        // wenn der Knoten nicht enthalten ist: anlegen
         found = false;
         for (int j = 0; j < treeNode.getChildCount() && !found; j++) {
           if (treeNode.getEntityAt(j).equals((AbstractEntity) treePath[i])) {
             found = true;
+            parent = treeNode;
             treeNode = treeNode.getEntityAt(j);
           }
         }
         if (!found) {
-          AbstractEntity newNode = (AbstractEntity) treePath[i];
+          AbstractEntity newNode = ((AbstractEntity) treePath[i]).clone();
+          newNode.setParent(parent);
           treeNode.addEntity(newNode);
           int[] idx = { treeNode.getChildCount() };
           Object[] child = { newNode };
           TreeModelEvent e = new TreeModelEvent(this, getTreePathTo(treeNode),
               idx, child);
           fireTreeNodesInserted(e);
+          parent = treeNode;
           treeNode = newNode;
         }
       }
-      // den letzten Knoten auf jeden Fall hinzufügen
-      AbstractEntity newNode = (AbstractEntity) treePath[treePath.length - 1];
+      // den letzten Knoten auf jeden Fall hinzufügen 
+      // (hier darf nicht mehr auf equals getestet werden)
+      AbstractEntity newNode = ((AbstractEntity) treePath[treePath.length - 1]).clone();
+      newNode.setParent(parent);
       treeNode.addEntity(newNode);
       int[] idx = { treeNode.getChildCount() };
       Object[] child = { newNode };
@@ -275,10 +297,12 @@ public class ArmyListModel implements ArmyModel {
 
   /**
    * Entfernt den übergebenen Knoten aus dem Baum.
-   * @param Der Knoten der entfernt werden soll
+   * 
+   * @param node
+   *          Der Knoten der entfernt werden soll
    */
   public void removeNodeFromParent(Object node) {
-    Entity delEntity = (Entity) node;
+    AbstractEntity delEntity = (AbstractEntity) node;
     AbstractEntity parent = delEntity.getParent();
     parent.removeEntity(delEntity);
 

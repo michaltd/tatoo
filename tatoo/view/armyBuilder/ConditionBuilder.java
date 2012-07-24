@@ -18,7 +18,7 @@ import javax.swing.border.CompoundBorder;
 import tatoo.model.EntityModel;
 import tatoo.model.conditions.SimpleNumber;
 import tatoo.model.entities.AbstractEntity;
-import tatoo.model.entities.Entity;
+import tatoo.model.entities.ArmyListEntity;
 import tatoo.model.entities.attributesetters.AttribSetter;
 import tatoo.resources.TextWrapper;
 import tatoo.view.ObservableJPanel;
