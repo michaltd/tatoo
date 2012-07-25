@@ -6,120 +6,114 @@ import tatoo.db.DBFactory;
 import tatoo.view.MainWindow;
 
 /**
- * Einstiegspunkt für tatoo.
- * Enthält die main Methode und wichtige globale Objekte. Setzt ausserdem das LookAndFeel von Swing.
+ * Einstiegspunkt für tatoo. Enthält die main Methode und wichtige globale Objekte. Setzt ausserdem das LookAndFeel von
+ * Swing.
+ *
  * @author mkortz
  */
 public class Tatoo {
 
-	/**
-	 * Die Versionsnummer als String. Finale Konstante, welche vor dem Kompilieren des Nightly Builds mal
-	 * automatisch gesetzt werden soll... oder so
-	 */
-	private static final String versionString = "00.2712.00";
+    /**
+     * Die Versionsnummer als String. Finale Konstante, welche vor dem Kompilieren des Nightly Builds mal automatisch
+     * gesetzt werden soll... oder so
+     */
+    private static final String versionString = "00.2712.00";
+    /**
+     * Enthält die aktuelle Versionsnummer.
+     */
+    public final static VersionNumber VERSION = new VersionNumber(versionString);
+    /**
+     * Enthält das tatoo-Object
+     */
+    private static Tatoo tatoo;
+    // Die DBFactory sollte nur einmal initialisiert werden, weil dann auch Schema nur einmal eingelesen wird usw.
+    // Es handelt sich hier also um ein globales Objekt. Nicht schön, aber performanter als jedesmal beim Datenbankzugriff
+    // alles neu zu initialisieren.
+    /**
+     * Referenz auf die globale DBFactory.
+     *
+     * @see tatoo.db.DBFactory
+     */
+    private DBFactory dbfact;
 
-	/**
-	 * Enthält die aktuelle Versionsnummer.
-	 */
-	public final static VersionNumber VERSION = new VersionNumber(versionString);
+    /**
+     * Einsprungspunkt für tatoo. Instantiiert Tatoo und führt {@link Tatoo#init(String[])} aus.
+     *
+     * @param args
+     */
+    public static void main(String[] args) {
+        if (tatoo == null) {
+            tatoo = new Tatoo();
+        }
 
-	/**
-	 * Enthält das tatoo-Object
-	 */
-	private static Tatoo tatoo;
-	// Die DBFactory sollte nur einmal initialisiert werden, weil dann auch Schema nur einmal eingelesen wird usw.
-	// Es handelt sich hier also um ein globales Objekt. Nicht schön, aber performanter als jedesmal beim Datenbankzugriff
-	// alles neu zu initialisieren.
-	/**
-	 * Referenz auf die globale DBFactory.
-	 * @see tatoo.db.DBFactory
-	 */
-	private DBFactory dbfact;
+        tatoo.init(args);
+    }
 
-	/**
-	 * Einsprungspunkt für tatoo. Instantiiert Tatoo und führt {@link Tatoo#init(String[])} aus.
-	 * @param args
-	 */
-	public static void main(String[] args)
-	{
-		if (tatoo == null)
-		{
-			tatoo = new Tatoo();
-		}
+    /**
+     * Führt benötigte Initialisierungen aus. Instantiiert die {@link DBFactory}, setzt das Look and Feel mittels
+     * {@link #setLookAndFeel()} und ruft das Hauptfenster mittels
+     * {@link tatoo.view.MainWindow#createAndShowGUI(VersionNumber))} auf.
+     *
+     * @param args
+     */
+    private void init(String[] args) {
+        // Datenbank initialisieren und ggf. updaten
+        dbfact = DBFactory.getInstance();
 
-		tatoo.init(args);
-	}
+        if (args.length > 0 && args[0].equals("up")) {
+            dbfact.getConnection().migrate();
+        } else {
+            dbfact.getConnection().migrate(new VersionNumber(1));
+            return;
+        }
 
-	/**
-	 * Führt benötigte Initialisierungen aus.
-	 * Instantiiert die {@link DBFactory}, setzt das Look and Feel mittels {@link #setLookAndFeel()} und
-	 * ruft das Hauptfenster mittels {@link tatoo.view.MainWindow#createAndShowGUI(VersionNumber))} auf.
-	 * @param args
-	 */
-	private void init(String[] args)
-	{
-		// Datenbank initialisieren und ggf. updaten
-		dbfact = DBFactory.getInstance();
+        // lookAndFeel setzen:
+        setLookAndFeel();
+        // Hauptfenster öffnen
+        MainWindow.createAndShowGUI(VERSION);
+    }
 
-		if (args.length > 0 && args[0].equals("up"))
-		{
-			dbfact.getConnection().migrate();
-		}
-		else
-		{
-			dbfact.getConnection().migrate(new VersionNumber(1));
-			return;
-		}
+    /**
+     * setzt das Look and Feel von Swing. Versucht zunächst das Nimbus LAF zu setzen. Wenn das fehlschlägt wird das
+     * native LAF ausprobiert und beim nochmaligen Fehlschlag das garantiert vorhandene Motif LAF.
+     */
+    private void setLookAndFeel() {
+        try {
+            setNimbusLookAndFeel();
+        } catch (Exception e) {
+            System.err.println("Error setting Nimbus LAF: " + e + "\n Trying native LAF!");
+            try {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            } catch (Exception ex) {
+                System.err.println("Error setting native LAF: " + ex + "\n Falling back to Motif LAF!");
+                setMotifLookAndFeel();
+            }
+        }
+    }
 
-		// lookAndFeel setzen:
-		setLookAndFeel();
-		// Hauptfenster öffnen
-		MainWindow.createAndShowGUI(VERSION);
-	}
+    /**
+     * Setzt das Motif-LAF
+     */
+    private void setMotifLookAndFeel() {
+        try {
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
+        } catch (Exception e) {
+            System.out.println("Error setting Motif LAF: " + e);
+            System.exit(1);
+        }
+    }
 
-	/**
-	 * setzt das Look and Feel von Swing. Versucht zunächst das Nimbus LAF zu setzen. Wenn das fehlschlägt wird das native LAF ausprobiert
-	 * und beim nochmaligen Fehlschlag das garantiert vorhandene Motif LAF.
-	 */
-	private void setLookAndFeel()
-	{
-		try {
-			setNimbusLookAndFeel();
-		} catch (Exception e) {
-			System.err.println("Error setting Nimbus LAF: " + e + "\n Trying native LAF!");
-			try{
-				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			}catch(Exception ex){
-				System.err.println("Error setting native LAF: " + ex + "\n Falling back to Motif LAF!");
-				setMotifLookAndFeel();
-			}
-		}
-	}
-
-	/**
-	 * Setzt das Motif-LAF
-	 */
-	private void setMotifLookAndFeel()
-	{
-		try {
-			UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
-		} catch (Exception e) {
-			System.out.println("Error setting Motif LAF: " + e);
-			System.exit(1);
-		}
-	}
-
-	/**
-	 * Versucht das Nimbus LAF zu setzen.
-	 * @throws Exception Wenn das Nimbus LAF nicht gesetzt werden kann wird diese Exception geworfen.
-	 */
-	private void setNimbusLookAndFeel() throws Exception
-	{
-		for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-			if ("Nimbus".equals(info.getName())) {
-				UIManager.setLookAndFeel(info.getClassName());
-				break;
-			}
-		}
-	}
+    /**
+     * Versucht das Nimbus LAF zu setzen.
+     *
+     * @throws Exception Wenn das Nimbus LAF nicht gesetzt werden kann wird diese Exception geworfen.
+     */
+    private void setNimbusLookAndFeel() throws Exception {
+        for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+            if ("Nimbus".equals(info.getName())) {
+                UIManager.setLookAndFeel(info.getClassName());
+                break;
+            }
+        }
+    }
 }
