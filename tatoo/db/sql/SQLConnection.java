@@ -23,7 +23,7 @@ public class SQLConnection extends DBConnection {
 
 	private Class<?> database = null;
 	private Connection connection = null;
-	
+
 	public SQLConnection(DBases dbase) {
 		this.dbase = dbase;
 		try {
@@ -35,8 +35,11 @@ public class SQLConnection extends DBConnection {
 		schema = new DBSchema(dbase.getPathToSchema());
 	}
 
-	public boolean connect() {
+	@Override
+	public boolean connect()
+	{
 		if (database != null && connection == null)
+		{
 			try {
 				connection = DriverManager.getConnection(
 						dbase.getConnectionString(), dbase.getUSER(), dbase.getPASSWD());
@@ -44,10 +47,14 @@ public class SQLConnection extends DBConnection {
 			  System.err.println("Kein Zugriff auf die Datenbank.");
 				e.printStackTrace();
 			}
+		}
+
 		return connection != null;
 	}
 
-	public boolean close() {
+	@Override
+	public boolean close()
+	{
 		try {
 			connection.close();
 		} catch (SQLException e) {
@@ -55,12 +62,12 @@ public class SQLConnection extends DBConnection {
 		}
 		return true;
 	}
-	
+
 	@Override
-  public Query createQuery(){
+	public Query createQuery(){
 		return new SQLQuery(connection, schema);
 	}
-	
+
 	@Override
 	protected DataDefinition createDataDefinition() {
 		return new SQLDataDefinition(connection, schema);
@@ -69,7 +76,7 @@ public class SQLConnection extends DBConnection {
 	@Override
 	protected DataManipulation createDataManipulation() {
 		return new SQLDataManipulation(connection, schema);
-	}	
-  
-	
+	}
+
+
 }
