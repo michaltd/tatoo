@@ -58,18 +58,15 @@ public class Tatoo {
 	 */
 	private void init(String[] args)
 	{
-		System.out.println("1");
 		// Datenbank initialisieren und ggf. updaten
 		dbfact = DBFactory.getInstance();
-		System.out.println("2");
+
 		if (args.length > 0 && args[0].equals("up"))
 		{
-			System.out.println("3");
 			dbfact.getConnection().migrate();
 		}
 		else
 		{
-			System.out.println("4");
 			dbfact.getConnection().migrate(new VersionNumber(1));
 			return;
 		}
@@ -77,7 +74,6 @@ public class Tatoo {
 		// lookAndFeel setzen:
 		setLookAndFeel();
 		// Hauptfenster öffnen
-		System.out.println("5");
 		MainWindow.createAndShowGUI(VERSION);
 	}
 
