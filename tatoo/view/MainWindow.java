@@ -4,8 +4,10 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
 import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.JComponent;
@@ -13,6 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
@@ -24,8 +27,8 @@ import tatoo.resources.TextWrapper;
 import tatoo.view.armyBuilder.ArmyBuilderPanel;
 import tatoo.view.armyList.ArmyListPanel;
 
-//TODO: Fehler log ins Programm verlegen. Sprich: ich brauche eine Umleitung der 
-// Standardausgabe (Fehlerausgabe) in eine von mir kontrollierte Konsole (Textfeld) 
+//TODO: Fehler log ins Programm verlegen. Sprich: ich brauche eine Umleitung der
+// Standardausgabe (Fehlerausgabe) in eine von mir kontrollierte Konsole (Textfeld)
 
 /**
  * Main Window and Container of tatoo
@@ -38,7 +41,7 @@ public class MainWindow extends JFrame implements ActionListener, ItemListener {
   private Container contentPanel = this.getContentPane();
   /** Serves the actual language */
   private TextWrapper textWrapper;
-  
+
   /**
    * Constructor for the Main Window
    * @param name The name of the Main Window
@@ -51,7 +54,7 @@ public class MainWindow extends JFrame implements ActionListener, ItemListener {
 
   /**
    * Adds the Menu bar to the Main Window
-   * Build the menu and add it to the Main Window 
+   * Build the menu and add it to the Main Window
    * @param frame The Frame where the Menu is added
    */
   private void addMenuBarToPane(final JFrame frame) {
@@ -75,12 +78,13 @@ public class MainWindow extends JFrame implements ActionListener, ItemListener {
     JMenuItem closeItem = new JMenuItem("Schließen");
     closeItem.setName("closeFrame");
     closeItem.addActionListener(this);
+    closeItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_MASK));
     showMenu.add(closeItem);
 
     frame.setJMenuBar(menuBar);
   }
 
-  
+
   //TODO: nur zu Testzwecken eingefügt. wieder entfernen
   private AbstractEntity armylist = new ArmyListInstanceSidePanel().armeeliste ;
   /**
@@ -112,9 +116,9 @@ public class MainWindow extends JFrame implements ActionListener, ItemListener {
 
   //TODO: übersetzung enthält
   /**
-   * Method to add Components to the Compoonent-Panel. 
-   * Ensures, that the Panel is empty before adding new components. This Method should only called once 
-   * with another Panel, which "enthält" the components to show. 
+   * Method to add Components to the Compoonent-Panel.
+   * Ensures, that the Panel is empty before adding new components. This Method should only called once
+   * with another Panel, which "enthält" the components to show.
    * @param component the components to add
    */
   private void addComponentsToPane(JComponent component) {
@@ -130,7 +134,7 @@ public class MainWindow extends JFrame implements ActionListener, ItemListener {
    */
   //TODO: so aktualisieren, dass übergeben werden kann mit welchem "Fenster" die GUI aufgebaut werden soll?
   public static void createAndShowGUI(VersionNumber version) {
-    
+
     // Create and set up the window.
     MainWindow frame = new MainWindow("TabletopOrganisation - Version " + version );
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
