@@ -21,17 +21,7 @@ public abstract class AbstractNumberCondition<T> extends Dataset implements
   private EventListenerList listenerList = new EventListenerList();
   
   private AbstractEntity ownerNode;
-  
-//  /**
-//   * Helferattribut. Enthält beim Klonen dieser Condition die Kopie.
-//   */
-//  private AbstractNumberCondition<T> copy;
-  
-  public abstract AbstractNumberCondition<T> clone() throws CloneNotSupportedException;
-//  {
-// 
-//  }
-//  
+
   public void setOwner(AbstractEntity ownerNode){
     this.ownerNode = ownerNode;
   }

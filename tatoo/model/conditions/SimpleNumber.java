@@ -39,20 +39,19 @@ public class SimpleNumber extends AbstractNumberCondition<Integer> {
   }
   
   @Override
-  public SimpleNumber clone() throws CloneNotSupportedException {
+  public SimpleNumber cloneFor(AbstractEntity entity) throws CloneNotSupportedException {
     
-    AbstractEntity e = getOwnerNode();    
+    AbstractEntity owner = entity;    
     
-    SimpleNumber copy = copies.get(e);
+    SimpleNumber copy = copies.get(owner);
     
     if (copy == null){
       copy = new SimpleNumber(number);
-      copies.put(e, copy);
+      copies.put(owner, copy);
     }
     return copy;
   }
-
-
+  
   @Override
   public Integer getValue() {
     return number;

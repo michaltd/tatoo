@@ -4,88 +4,77 @@ import tatoo.model.conditions.Condition.ConditionTypes;
 
 public class ArmyListEntity extends AbstractEntity {
 
-  /**
-   * Erzeugt ein neues ArmyListEntity vom Typ NODE.
-   */
-  public ArmyListEntity() {
-    this(EntityType.NODE, "");
-  }
-
-  /**
-   * Erzeugt ein neues ArmyListEntity mit dem übergebenen Typen und Namen.
-   */
-  public ArmyListEntity(EntityType type, String name) {
-    this(type, name, 0);
-  }
-
-  /**
-   * Erzeugt ein neues ArmyListEntity mit dem übergebenen Typen, Namen und
-   * Preis.
-   */
-  public ArmyListEntity(EntityType type, String name, int price) {
-    super(type);
-    setName(name);
-    setAttribute(price, ConditionTypes.PRICE);
-  }
-
-  public ArmyListEntity clone() {
-
-    ArmyListEntity e = new ArmyListEntity();
-    
-    // typ und Name setzen
-    e.type = this.type;
-    e.setName(this.getName());
-
-    // dann die Conditions Klonen
-    try {
-      // Klon des Attributes PRICE erzeugen.
-      ConditionTypes attType = ConditionTypes.PRICE;
-      e.setAttribute(this.getAttribute(attType).clone(), attType);
-
-      // Klon des Attributes COUNT erzeugen.
-      attType = ConditionTypes.COUNT;
-      e.setAttribute(this.getAttribute(attType).clone(), attType);
-
-      // Klon des Attributes MIN_COUNT erzeugen.
-      attType = ConditionTypes.MIN_COUNT;
-      e.setAttribute(this.getAttribute(attType).clone(), attType);
-
-      // Klon des Attributes MAX_COUNT erzeugen.
-      attType = ConditionTypes.MAX_COUNT;
-      e.setAttribute(this.getAttribute(attType).clone(), attType);
-
-    } catch (CloneNotSupportedException e1) {
-      e1.printStackTrace();
+    /**
+     * Erzeugt ein neues ArmyListEntity vom Typ NODE.
+     */
+    public ArmyListEntity() {
+        this( EntityType.NODE, "" );
     }
-    
-    // zum Schluss die entities durchgehen und wenn es sich nicht um 
-    // ROOT, CATEGORY, NODE Entitys handelt Klonen:
-    for (AbstractEntity ae : entities){
-      if ( ae.getType() != EntityType.ROOT && ae.getType() != EntityType.CATEGORY &&  ae.getType() != EntityType.NODE)
-      {
-        e.addEntity(ae.clone());        
-      }
+
+    /**
+     * Erzeugt ein neues ArmyListEntity mit dem übergebenen Typen und Namen.
+     */
+    public ArmyListEntity( EntityType type, String name ) {
+        this( type, name, 0 );
     }
-    
-    return e;
-  }
 
-  public int getTotalPrice() {
-    int total = (Integer) getAttribute(ConditionTypes.PRICE).getValue();
-    for (AbstractEntity ae : entities)
-      total += ((ArmyListEntity) ae).getTotalPrice();
-    return total;
-  }
+    /**
+     * Erzeugt ein neues ArmyListEntity mit dem übergebenen Typen, Namen und
+     * Preis.
+     */
+    public ArmyListEntity( EntityType type, String name, int price ) {
+        super( type );
+        setName( name );
+        setAttribute( price, ConditionTypes.PRICE );
+    }
 
-  @Override
-  public String toString() {
-    // String returnString = "";
-    // for (AbstractEntity ae : entities)
-    // returnString += ae.toString();
-    String priceString = "";
-    // if (price > 0)
-    // priceString = "->" + price;
-    return getName() + priceString; // + returnString;
-  }
+    @Override
+    public ArmyListEntity cloneFor( AbstractEntity parent ) throws CloneNotSupportedException {
+
+        ArmyListEntity e = new ArmyListEntity();
+
+        if ( parent == null && this.getType() != EntityType.ROOT )
+            throw new CloneNotSupportedException( "Get null as parent but cloning a non-root node." );
+        else e.setParent( parent );
+
+        // typ und Name setzen
+        e.type = this.type;
+        e.setName( this.getName() );
+
+        // dann die Conditions Klonen
+        for ( ConditionTypes attType : ConditionTypes.values() ) {
+            e.setAttribute( this.getAttribute( attType ).cloneFor( getEntityNode( e ) ), attType );
+            e.getAttribute( attType ).addChangeListener( e );
+        }
+
+        // zum Schluss die entities durchgehen und wenn es sich NICHT um
+        // ROOT, CATEGORY, NODE Entitys handelt Klonen:
+        for ( AbstractEntity ae : entities ) {
+            if ( ae.getType() != EntityType.ROOT && ae.getType() != EntityType.CATEGORY
+                            && ae.getType() != EntityType.NODE ) {
+                e.addEntity( ae.cloneFor( e ) );
+            }
+        }
+
+        return e;
+    }
+
+    public int getTotalPrice() {
+        int total = (Integer) getAttribute( ConditionTypes.PRICE ).getValue();
+        for ( AbstractEntity ae : entities )
+            total += ( (ArmyListEntity) ae ).getTotalPrice();
+        return total;
+    }
+
+    @Override
+    public String toString() {
+        // String returnString = "";
+        // for (AbstractEntity ae : entities)
+        // returnString += ae.toString();
+        String priceString = "";
+        // if (price > 0)
+        // priceString = "->" + price;
+        return getName() + priceString; // + returnString;
+    }
 
 }

@@ -33,14 +33,21 @@ public interface Condition<T> extends Cloneable {
    */
   public void setValue(T val);
   
-  
-  public abstract Condition<T> clone() throws CloneNotSupportedException;
+  /**
+   * Erstellt einen Klon für die Condition. Der Klon wird dem übergebenen Entity zugeordnet.
+   * @param entity Das Entity dem der Klon zugeordnet werden soll.
+   * @return Die geklonte Condition
+   * @throws CloneNotSupportedException
+   */
+  public abstract Condition<T> cloneFor(AbstractEntity entity) throws CloneNotSupportedException;
   
   /**
    * Fügt einen Listener hinzu der auf Veränderungen in der NumberCondition lauscht.
    * @param l Der Listener
    */
   public void addChangeListener(ConditionListener l);
+  
+  public void fireValueChanged();
 
   /**
    * Entfernt einen Listener aus der Liste der Listener.

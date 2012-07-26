@@ -125,19 +125,19 @@ public class CalculatedNumber extends AbstractNumberCondition<Integer>
   }
   
   @Override
-  public AbstractNumberCondition<Integer> clone() throws CloneNotSupportedException {
+  public AbstractNumberCondition<Integer> cloneFor(AbstractEntity entity) throws CloneNotSupportedException {
     
-    AbstractEntity e = getOwnerNode();
+    AbstractEntity owner = entity;
     // zunächst mal eine neue Condition erzeugen:
     CalculatedNumber copy = new CalculatedNumber();
     // gibt es eine Kopie für source? die nehmen. Ansonsten source clonen.
-    copy.source = (NumberCondition<Integer>) source.clone();
-    copy.source.addChangeListener(this);
-    copy.value = (NumberCondition<Integer>) value.clone();
-    copy.value.addChangeListener(this);
+    copy.source = (NumberCondition<Integer>) source.cloneFor(owner);
+    copy.source.addChangeListener(copy);
+    copy.value = (NumberCondition<Integer>) value.cloneFor(owner);
+    copy.value.addChangeListener(copy);
     copy.arith = this.arith;
     
-    copies.put(e, copy);
+    copies.put(owner, copy);
     return copy;
   }
 
@@ -159,4 +159,5 @@ public class CalculatedNumber extends AbstractNumberCondition<Integer>
   public void valueChanged() {
     fireValueChanged();
   }
+
 }
