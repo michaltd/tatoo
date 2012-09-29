@@ -3,6 +3,7 @@ package tatoo;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import tatoo.db.DBFactory;
+import tatoo.model.conditions.ConditionParser;
 import tatoo.view.MainWindow;
 
 /**

@@ -15,7 +15,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-import tatoo.model.EntityModel;
+import tatoo.model.ArmyListEntityModel;
 import tatoo.model.entities.events.EntityModelEvent;
 import tatoo.view.AbstractNodePanel;
 
@@ -48,7 +48,7 @@ public class SimpleFiller extends AbstractNodePanel {
 		
 		int width = 23;
 		
-		final EntityModel simpleFillerModel = model;
+		final ArmyListEntityModel simpleFillerModel = model;
 		
 		JButton decrement = new JButton("-"){ 
 				@Override
@@ -56,7 +56,7 @@ public class SimpleFiller extends AbstractNodePanel {
 					super.addMouseListener(new MouseListener(){
 						@Override
 						public void mouseClicked(MouseEvent e) {
-							simpleFillerModel.setCount(simpleFillerModel.getCount()-1);
+						    simpleFillerModel.setCount( Integer.parseInt( simpleFillerModel.getCount() ) - 1);
 						}
 						@Override	public void mouseEntered(MouseEvent e) {}
 						@Override	public void mouseExited(MouseEvent e) {}
@@ -87,7 +87,7 @@ public class SimpleFiller extends AbstractNodePanel {
 				super.addMouseListener(new MouseListener(){
 					@Override
 					public void mouseClicked(MouseEvent e) {
-						simpleFillerModel.setCount(simpleFillerModel.getCount() + 1);
+						    simpleFillerModel.setCount(Integer.parseInt( simpleFillerModel.getCount() ) + 1);
 					}
 					@Override	public void mouseEntered(MouseEvent e) {}
 					@Override	public void mouseExited(MouseEvent e) {}
@@ -104,7 +104,8 @@ public class SimpleFiller extends AbstractNodePanel {
 		
 		JPanel valueContainerPane = new JPanel();
 		valueContainerPane.add(valuePanel);
-		priceLabel.setText(((Integer)model.getPrice()).toString());
+//		priceLabel.setText(((Integer)model.getPrice()).toString());
+		priceLabel.setText(model.getPrice());
 		priceLabel.setHorizontalTextPosition(SwingConstants.RIGHT);
 		JPanel pricePanel = new JPanel();
 		pricePanel.setLayout(new BorderLayout());
@@ -126,7 +127,7 @@ public class SimpleFiller extends AbstractNodePanel {
 	
 	private void setCount(){
 		valueField.setText( model.getCount() + "/" + model.getMaxCount());
-		priceLabel.setText(((Integer)model.getPrice()).toString());
+		priceLabel.setText(model.getPrice());
 	}
 
 	@Override

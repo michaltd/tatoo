@@ -3,7 +3,7 @@ package tatoo.view;
 import java.util.HashMap;
 import java.util.Map;
 
-import tatoo.model.EntityModel;
+import tatoo.model.ArmyListEntityModel;
 import tatoo.model.entities.AbstractEntity;
 import tatoo.model.entities.ArmyListEntity;
 import tatoo.view.armyList.SimpleAnyOfUpgradePanel;
@@ -58,7 +58,7 @@ public class NodePanelFactory {
 	}
 	
 	public NodePanel getNodePanel(Object node){
-		return buildNodePane(new EntityModel(node).getNodeType(), node);
+		return buildNodePane(new ArmyListEntityModel(node).getNodeType(), node);
 	}
 	
 	private NodePanel buildNodePane(int category, Object node){
@@ -70,7 +70,7 @@ public class NodePanelFactory {
 			panel.showEmptyEntitys(entity.isShowEmptyEntities());	
 			panel.showChilds(entity.isShowChilds());
 			
-			panel.setModel(new EntityModel(node));
+			panel.setModel(new ArmyListEntityModel(node));
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {

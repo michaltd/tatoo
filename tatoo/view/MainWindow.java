@@ -142,8 +142,8 @@ public class MainWindow extends JFrame implements ActionListener, ItemListener {
     frame.addMenuBarToPane(frame);
     // Set up the content pane.
     //TODO muss noch ersetzt werden, durch den zuletzt angezeigten bzw. gespeicherten
-    //frame.showArmyBuilder();
-    frame.showArmyList();
+    frame.showArmyBuilder();
+//    frame.showArmyList();
     // Display the window.
     frame.setSize(new Dimension(1024, 800));
     frame.setResizable(true);

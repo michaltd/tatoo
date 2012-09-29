@@ -3,7 +3,7 @@ package tatoo.view;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
-import tatoo.model.EntityModel;
+import tatoo.model.ArmyListEntityModel;
 import tatoo.model.EntityModelListener;
 
 /**
@@ -18,7 +18,7 @@ import tatoo.model.EntityModelListener;
 public abstract class AbstractNodePanel extends JPanel implements NodePanel, EntityModelListener {
 
 	/** Das Model dieses NodePanels */
-	protected EntityModel model;
+	protected ArmyListEntityModel model;
 	/** Legt fest ob leere Entitys dargestellt werden sollen oder nicht.  */
 	protected boolean showEmptyEntities = true;
 	/** legt die ausrichtung des Panels fest. */
@@ -66,14 +66,14 @@ public abstract class AbstractNodePanel extends JPanel implements NodePanel, Ent
 	 * @param node the Node 
 	 */
 	private void setNode(Object node){
-		model = new EntityModel(node);
+		model = new ArmyListEntityModel(node);
 	}
 	
-	public EntityModel getModel() {
+	public ArmyListEntityModel getModel() {
 		return model;
 	}
 
-	public void setModel(EntityModel model) {
+	public void setModel(ArmyListEntityModel model) {
 		this.model = model;
 	}
 	

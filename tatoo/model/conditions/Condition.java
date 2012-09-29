@@ -56,6 +56,8 @@ public interface Condition<T> extends Cloneable {
   public void removeChangeListener(ConditionListener l);
 
   public void setOwner(AbstractEntity entityNode);
+  
+  public AbstractEntity getOwnerNode();
 
 
 }

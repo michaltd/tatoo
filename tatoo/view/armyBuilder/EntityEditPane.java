@@ -14,152 +14,193 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.Popup;
-import javax.swing.PopupFactory;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 
-import tatoo.model.EntityModel;
-import tatoo.model.entities.attributesetters.PriceSetter;
+import tatoo.model.ArmyBuilderEntityModel;
+import tatoo.model.conditions.ConditionParseException;
 
 /**
  * Panel to edit Entities.
+ * 
  * @author mkortz
  */
-@SuppressWarnings("serial")
-public class EntityEditPane extends ArmyListEditPanel implements ActionListener {
+@SuppressWarnings( "serial" )
+public class EntityEditPane extends ArmyBuilderEditPanel implements ActionListener {
 
-  private EntityEditPane thisPane = this;
-  private JLabel title;
-  private JTextField points;
-	private JTextField minCount;
-  private JTextField maxCount;
-  Popup popup;
-  ConditionBuilder condBuilder;
+    // private EntityEditPane thisPane = this;
+    private JLabel     title;
+    private JTextField count;
+    private JTextField points;
+    private JTextField minCount;
+    private JTextField maxCount;
+    Popup              popup;
+    private boolean    textFieldModified = false;
 
-  public EntityEditPane(EntityModel entityModel) {
-    super(entityModel);
-    showValues();
-  }
-
-  /**
-   * arrange Components on Criteria builder.
-   */
-  @Override
-  public void buildPanel() {
-
-    title = new JLabel();
-    title.setPreferredSize(new Dimension(width, 35));
-    title.setBorder(new LineBorder(Color.black));
-    title.setHorizontalAlignment(SwingConstants.CENTER);
-
-    JLabel pointsLabel = new JLabel("Points");
-    points = new JTextField();
-    points.setPreferredSize(new Dimension(50, 25));
-    points.getDocument().addDocumentListener(
-        new TextFieldChangeHandler(points) {
-          @Override
-          public void setValue(String val) {
-            try {
-              model.setPrice(new Integer(val));
-            } catch (NumberFormatException e) {
-              System.err.println("Wert entspricht keiner Zahl!");
-            }
-          };
-        });
-
-    final JButton pointsButton = new JButton();
-    pointsButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-      	condBuilder = new ConditionBuilder(new PriceSetter(), model);
-      	condBuilder.addActionListener(thisPane);
-        PopupFactory factory = PopupFactory.getSharedInstance();
-        if (popup != null)
-        	popup.hide();
-        popup = factory.getPopup(
-            thisPane, condBuilder, pointsButton.getLocationOnScreen().x -150, pointsButton.getLocationOnScreen().y + 20);
-        popup.show();
-      }
-    });
-    pointsButton.setPreferredSize(new Dimension(20, 20));
-
-    JPanel pointsPanel = new groupPane("Points");
-    pointsPanel.add(pointsLabel);
-    pointsPanel.add(points);
-    pointsPanel.add(pointsButton);
-
-    JLabel minCountLabel = new JLabel("Min Count");
-    minCount = new JTextField();
-    minCount.setPreferredSize(new Dimension(50, 25));
-    minCount.getDocument().addDocumentListener(
-        new TextFieldChangeHandler(minCount) {
-          @Override
-          public void setValue(String val) {
-            try {
-              model.setMinCount(new Integer(val));
-            } catch (NumberFormatException e) {
-              System.err.println("Wert entspricht keiner Zahl!");
-            }
-          };
-        });
-    JLabel maxCountLabel = new JLabel("Max Count");
-    maxCount = new JTextField();
-    maxCount.setPreferredSize(new Dimension(50, 25));
-    maxCount.getDocument().addDocumentListener(
-        new TextFieldChangeHandler(maxCount) {
-
-          @Override
-          public void setValue(String val) {
-            try {
-              model.setMaxCount(new Integer(val));
-            } catch (NumberFormatException e) {
-              System.err.println("Wert entspricht keiner Zahl!");
-            }
-          };
-        });
-    JPanel countPanel = new groupPane("Count");
-    countPanel.add(minCountLabel);
-    countPanel.add(minCount);
-    countPanel.add(maxCountLabel);
-    countPanel.add(maxCount);
-
-    JPanel editPane = new JPanel();
-    LayoutManager editPaneLayout = new BoxLayout(editPane, BoxLayout.Y_AXIS);
-    editPane.setLayout(editPaneLayout);
-    editPane.add(pointsPanel);
-    editPane.add(countPanel);
-    editPane.add(Box.createVerticalGlue());
-
-    setLayout(new BorderLayout());
-    setBackground(Color.white);
-    add(title, BorderLayout.NORTH);
-    add(editPane, BorderLayout.CENTER);
-
-  }
-
-  /**
-   * get Values from model and update EntityEditPanel.
-   */
-  @Override
-  void showValues() {
-    if (model == null) this.setEnabled(false);
-    else {
-      title.setText(model.getName());
-      points.setText(new Integer(model.getPrice()).toString());
-      minCount.setText(new Integer(model.getMinCount()).toString());
-      maxCount.setText(new Integer(model.getMaxCount()).toString());
+    public EntityEditPane( ArmyBuilderEntityModel entityModel ) {
+        super( entityModel );
+        showValues();
     }
-  }
 
-  /**
-   * Hides the performing popup and refreshes the Values in EditPanel.
-   * EntitiyEditPanel listens on Popup Windows. If an Action is performed
-   * from them this Method is called.
-   */
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		popup.hide();
-		showValues();
-	}
+    /**
+     * arrange Components on Criteria builder.
+     */
+    @Override
+    public void buildPanel() {
+
+        title = new JLabel();
+        title.setPreferredSize( new Dimension( width, 35 ) );
+        title.setBorder( new LineBorder( Color.black ) );
+        title.setHorizontalAlignment( SwingConstants.CENTER );
+
+        if ( count == null )
+            count = new JTextField();
+        if ( points == null )
+            points = new JTextField();
+        if ( minCount == null )
+            minCount = new JTextField();
+        if ( maxCount == null )
+            maxCount = new JTextField();
+
+        JPanel countPanel = buildAttribPanel( "Count", count );
+        count.getDocument().addDocumentListener( new TextFieldChangeHandler( count ) {
+
+            @Override
+            public void setValue( String val ) {
+                textFieldModified = true;
+                try {
+                    model.setCount( val );
+                    textFieldModified = false;
+                    count.setBackground( Color.WHITE );
+                }
+                catch ( ConditionParseException cpe ) {
+                    count.setBackground( new Color(255, 170, 170) );
+                }
+            };
+        } );
+        JPanel pointsPanel = buildAttribPanel( "Points", points );
+        points.getDocument().addDocumentListener( new TextFieldChangeHandler( points ) {
+
+            @Override
+            public void setValue( String val ) {
+                textFieldModified = true;
+                try {
+                    model.setPrice( val );
+                    textFieldModified = false;
+                    points.setBackground( Color.WHITE );
+                }
+                catch ( ConditionParseException cpe ) {
+                    points.setBackground(  new Color(255, 170, 170)  );
+                }
+            };
+        } );
+        JPanel minCountPanel = buildAttribPanel( "Min Count", minCount );
+        minCount.getDocument().addDocumentListener( new TextFieldChangeHandler( minCount ) {
+
+            @Override
+            public void setValue( String val ) {
+                textFieldModified = true;
+                try {
+                    model.setMinCount( val );
+                    textFieldModified = false;
+                    minCount.setBackground( Color.WHITE );
+                }
+                catch ( ConditionParseException cpe ) {
+                    minCount.setBackground(  new Color(255, 170, 170)  );
+                }
+            };
+        } );
+        JPanel maxCountPanel = buildAttribPanel( "Max Count", maxCount );
+        maxCount.getDocument().addDocumentListener( new TextFieldChangeHandler( maxCount ) {
+
+            @Override
+            public void setValue( String val ) {
+                textFieldModified = true;
+                try {
+                    model.setMaxCount( val );
+                    textFieldModified = false;
+                    maxCount.setBackground( Color.WHITE );
+                }
+                catch ( ConditionParseException cpe ) {
+                    maxCount.setBackground(  new Color(255, 170, 170)  );
+                }
+            };
+        } );
+
+        JPanel editPane = new JPanel();
+        LayoutManager editPaneLayout = new BoxLayout( editPane, BoxLayout.Y_AXIS );
+        editPane.setLayout( editPaneLayout );
+        editPane.add( countPanel );
+        editPane.add( pointsPanel );
+        editPane.add( minCountPanel );
+        editPane.add( maxCountPanel );
+        editPane.add( Box.createVerticalGlue() );
+
+        setLayout( new BorderLayout() );
+        setBackground( Color.white );
+        add( title, BorderLayout.NORTH );
+        add( editPane, BorderLayout.CENTER );
+
+    }
+
+    private JPanel buildAttribPanel( String title, JTextField textField ) {
+        JLabel titleLabel = new JLabel( title );
+
+        final JButton conditionBuilderButton = new JButton();
+        conditionBuilderButton.addActionListener( new ActionListener() {
+
+            @Override
+            public void actionPerformed( ActionEvent e ) {
+                // condBuilder = new ConditionBuilder(new PriceSetter(), model);
+                // condBuilder.addActionListener(thisPane);
+                // PopupFactory factory = PopupFactory.getSharedInstance();
+                // if (popup != null)
+                // popup.hide();
+                // popup = factory.getPopup(
+                // thisPane, condBuilder,
+                // conditionBuilderButton.getLocationOnScreen().x -150,
+                // conditionBuilderButton.getLocationOnScreen().y + 20);
+                // popup.show();
+            }
+        } );
+
+        JPanel attribPanel = new groupPane( title );
+        attribPanel.setLayout( new BorderLayout() );
+        attribPanel.add( BorderLayout.NORTH, titleLabel );
+        attribPanel.add( BorderLayout.CENTER, textField );
+        attribPanel.add( BorderLayout.EAST, conditionBuilderButton );
+
+        return attribPanel;
+    }
+
+    /**
+     * get Values from model and update EntityEditPanel.
+     */
+    @Override
+    void showValues() {
+        if ( model == null )
+            this.setEnabled( false );
+        else {
+            if ( !textFieldModified ) {
+                title.setText( model.getName() );
+
+                count.setText( model.getCount() );
+                points.setText( model.getPrice() );
+                minCount.setText( model.getMinCount() );
+                maxCount.setText( model.getMaxCount() );
+            }
+        }
+    }
+
+    /**
+     * Hides the performing popup and refreshes the Values in EditPanel.
+     * EntitiyEditPanel listens on Popup Windows. If an Action is performed from
+     * them this Method is called.
+     */
+    @Override
+    public void actionPerformed( ActionEvent e ) {
+        popup.hide();
+        showValues();
+    }
 
 }

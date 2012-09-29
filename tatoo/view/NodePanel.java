@@ -5,7 +5,7 @@ import java.awt.BorderLayout;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
-import tatoo.model.EntityModel;
+import tatoo.model.ArmyListEntityModel;
 
 /**
  * Interface for Panels for a node of {@link Armylist}. 
@@ -55,8 +55,8 @@ public interface NodePanel {
 	 */
 	public void showEmptyEntitys(boolean show);
 	
-	public EntityModel getModel();
+	public ArmyListEntityModel getModel();
 
-	public void setModel(EntityModel model);
+	public void setModel(ArmyListEntityModel model);
 
 }

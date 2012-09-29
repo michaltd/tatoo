@@ -1,5 +1,6 @@
 package tatoo.model.entities;
 
+import tatoo.model.conditions.Condition;
 import tatoo.model.conditions.Condition.ConditionTypes;
 
 public class ArmyListEntity extends AbstractEntity {
@@ -43,8 +44,10 @@ public class ArmyListEntity extends AbstractEntity {
 
         // dann die Conditions Klonen
         for ( ConditionTypes attType : ConditionTypes.values() ) {
-            e.setAttribute( this.getAttribute( attType ).cloneFor( getEntityNode( e ) ), attType );
-            e.getAttribute( attType ).addChangeListener( e );
+            Condition conditionClone = this.getAttribute( attType ).cloneFor( getEntityNode( e ) );
+            conditionClone.addChangeListener( e );
+            e.setAttribute(conditionClone , attType );
+            //e.getAttribute( attType ).addChangeListener( e );
         }
 
         // zum Schluss die entities durchgehen und wenn es sich NICHT um
@@ -66,15 +69,11 @@ public class ArmyListEntity extends AbstractEntity {
         return total;
     }
 
+    
+    
     @Override
     public String toString() {
-        // String returnString = "";
-        // for (AbstractEntity ae : entities)
-        // returnString += ae.toString();
-        String priceString = "";
-        // if (price > 0)
-        // priceString = "->" + price;
-        return getName() + priceString; // + returnString;
+        return getName();
     }
 
 }

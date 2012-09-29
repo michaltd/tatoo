@@ -41,6 +41,7 @@ public abstract class DBConnection {
          * Verbindung zu einer XML-Struktur
          */
         XML("tatoo.model.xmlConnector", "", "");
+        
         private final String driverString;
         private final String connectionString;
         private final String pathToSchemaFile;

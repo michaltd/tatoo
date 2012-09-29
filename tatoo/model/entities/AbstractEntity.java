@@ -5,9 +5,12 @@ import java.util.List;
 
 import javax.swing.event.EventListenerList;
 
+import tatoo.model.conditions.CalculatedNumber;
+import tatoo.model.conditions.CalculatedNumber.Arithmetic;
 import tatoo.model.conditions.Condition;
 import tatoo.model.conditions.Condition.ConditionTypes;
 import tatoo.model.conditions.ConditionListener;
+import tatoo.model.conditions.NumberCondition;
 import tatoo.model.conditions.SimpleNumber;
 
 /**
@@ -55,11 +58,12 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
      * Condition muss hier ein Speicherplatz im Array bereitgehalten werden.
      */
     @SuppressWarnings( "rawtypes" )
-    private Condition                    attributes[] = new Condition[Condition.ConditionTypes.values().length];
+    private CalculatedNumber             attributes[] = new CalculatedNumber[Condition.ConditionTypes.values().length];
 
     /** Liste von Listenern */
     private EventListenerList            listenerList = new EventListenerList();
 
+    /** Vater dieses Entities */
     private AbstractEntity               parent;
 
     protected ArrayList <AbstractEntity> entities     = new ArrayList <AbstractEntity>();
@@ -79,11 +83,12 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
      */
     private void init() {
 
-        SimpleNumber sn = new SimpleNumber( 0 );
-        setAttribute( sn, ConditionTypes.COUNT );
-
-        sn = new SimpleNumber( 0 );
-        setAttribute( sn, ConditionTypes.PRICE );
+        // intitialisieren der Attribute
+        for ( int i = 0; i < Condition.ConditionTypes.values().length; i++ ) {
+            SimpleNumber simpleNo = new SimpleNumber( 1 );
+            CalculatedNumber calcNo = new CalculatedNumber( simpleNo, 0, Arithmetic.MULTIPLY );
+            attributes[i] = calcNo;
+        }
 
     }
 
@@ -91,10 +96,9 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
      * Klont dieses Entity.
      * 
      * @param parent
-     *            Der Elternknoten. Der
-     *            Parent-Knoten wird für das klonen der Attribute des Entities
-     *            gebraucht. Wird der Root Knoten geklont kann hier
-     *            <code>null</code> übergeben werden.
+     *            Der Elternknoten. Der Parent-Knoten wird für das klonen der
+     *            Attribute des Entities gebraucht. Wird der Root Knoten geklont
+     *            kann hier <code>null</code> übergeben werden.
      * 
      * @return Das geklonte Entity
      * @throws CloneNotSupportedException
@@ -116,17 +120,25 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
      */
     @SuppressWarnings( "rawtypes" )
     public void setAttribute( Condition attribute, ConditionTypes type ) {
-        attribute.setOwner( getEntityNode( this ) );
-        attributes[type.ordinal()] = attribute;
-        attribute.fireValueChanged();
+        if ( attribute.getOwnerNode() == null )
+            attribute.setOwner( this );
+        // keine Kreise erzeugen indem die CalculatedCondition sich selbst als Source übergeben bekommt!
+        if (attributes[type.ordinal()] != attribute)
+        {
+            attributes[type.ordinal()].setValue( (NumberCondition <Integer>)attribute );
+            attribute.fireValueChanged();
+        }
     }
 
     /**
      * Durchläuft den Entity-Baum nach oben in Richtung root und gibt das erste
-     * Entity vom Typ <code>NODE</code> zurück.
+     * Entity vom Typ <code>NODE</code> zurück. Handelt es sich bei dem
+     * übergebenen Entity um ein Entity vom Typ CATEGORY oder ROOT wird dieses
+     * Entity zurück gegeben.
      * 
      * @param e
-     * @return
+     *            Das Entity dessen Ursprung zurückgegeben werden soll
+     * @return Das Ursprungsentity
      */
     protected AbstractEntity getEntityNode( AbstractEntity e ) {
         if ( e == null )
@@ -134,6 +146,18 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
         if ( e.getType() == EntityType.NODE || e.getType() == EntityType.CATEGORY || e.getType() == EntityType.ROOT )
             return e;
         else return getEntityNode( e.getParent() );
+    }
+
+    /**
+     * Durchläuft den Entity-Baum nach oben in Richtung root und gibt das erste
+     * Entity vom Typ <code>NODE</code> zurück. Handelt es sich bei dem
+     * übergebenen Entity um ein Entity vom Typ CATEGORY oder ROOT wird dieses
+     * Entity zurück gegeben.
+     * 
+     * @return Das Ursprungsentity
+     */
+    public AbstractEntity getEntityNode() {
+        return getEntityNode( this );
     }
 
     /**
@@ -147,7 +171,6 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
     public void setAttribute( int value, ConditionTypes type ) {
         Condition <Integer> attribute = getAttribute( type );
         attribute.setValue( value );
-        setAttribute( attribute, type );
     }
 
     /**
@@ -159,9 +182,10 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
      */
     @SuppressWarnings( "rawtypes" )
     public Condition getAttribute( ConditionTypes type ) {
-        if ( attributes[type.ordinal()] == null ) {
-            attributes[type.ordinal()] = new SimpleNumber( 0 );
+        if ( attributes[type.ordinal()] == null ) { return null;
+        // attributes[type.ordinal()] = new SimpleNumber( 0 );
         }
+        attributes[type.ordinal()].setOwner( this );
         return attributes[type.ordinal()];
     }
 
@@ -211,6 +235,18 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
         return name;
     }
 
+    /**
+     * Gibt den Namen samt Pfad zum Ursprungsknoten zurück.
+     * 
+     * @return
+     */
+    public String getFullName() {
+        if ( getParent() == null )
+            return getName();
+
+        return getName() + "." + getParent().toString();
+    }
+
     @Override
     public void setName( String name ) {
         this.name = name;
@@ -237,9 +273,7 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
         if ( hisName == null )
             hisName = "";
         // ID darf nicht verglichen werden, weil ArmyListEntity A == Enitiy B
-        // wenn
-        // die ID
-        // unterschiedlich ist.
+        // wenn die ID unterschiedlich ist.
         return thisName.equals( hisName )
                         && attributes[ConditionTypes.PRICE.ordinal()].getValue() == entity.getAttribute(
                                         ConditionTypes.PRICE ).getValue()
@@ -259,17 +293,19 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
     public void setParent( AbstractEntity parent ) {
         this.parent = parent;
 
-        // wenn der parent gesetzt wird, müssen die owner der attribute neu
-        // angepasst werden:
-        for ( ConditionTypes attType : ConditionTypes.values() ) {
-            if ( attributes[attType.ordinal()] != null )
-                attributes[attType.ordinal()].setOwner( getEntityNode( parent ) );
-        }
-
-        // Die Owner der Kinder müssen auch neu angepasst werden:
-        for ( AbstractEntity child : entities ) {
-            child.setParent( this );
-        }
+        // // wenn der parent gesetzt wird, müssen die owner der attribute neu
+        // // angepasst werden:
+        // for ( ConditionTypes attType : ConditionTypes.values() ) {
+        // if ( attributes[attType.ordinal()] != null )
+        // // attributes[attType.ordinal()].setOwner( getEntityNode( parent
+        // // ) );
+        // attributes[attType.ordinal()].setOwner( parent );
+        // }
+        //
+        // // Die Owner der Kinder müssen auch neu angepasst werden:
+        // for ( AbstractEntity child : entities ) {
+        // child.setParent( this );
+        // }
     }
 
     public Boolean addEntity( AbstractEntity entity ) {
@@ -289,6 +325,11 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
         return entities.get( new Integer( index ) );
     }
 
+    /**
+     * Gibt die Anzahl der Kinder zurück.
+     * 
+     * @return Die Anzahl der Kinder.
+     */
     public int getChildCount() {
         return entities.size();
     }
@@ -301,7 +342,16 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
         return entities.isEmpty();
     }
 
+    /**
+     * Gibt die Kinder des Entitys zurück.
+     * 
+     * @return Die Kinder des Entities.
+     */
     public List <AbstractEntity> getChilds() {
         return entities;
+    }
+
+    public boolean hasChilds() {
+        return !entities.isEmpty();
     }
 }

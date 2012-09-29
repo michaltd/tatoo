@@ -1,6 +1,8 @@
 tatoo ist eine Software zum erstellen von Armeeplänen für Tabletops. 
 Tatoo bietet dem Anwender die Möglichkeit sich ein eigenes Regelwerk zu erstellen, nach dem Armeelisten zusammengestellt werden dürfen.
 
+tatoo ist derzeit in einem sehr frühen pre Alpha Status. Es ist ein reines Hobby-Projekt und schreitet nur sehr langsam voran. Wichtige Grundlagen wurden zwar gelegt, daber die Anwendung ist noch nicht wirklich benutzbar. 
+
 Diese README-Datei ist lediglich dazu gedacht erste wichtige Hinweise zu geben was beim Kompilieren, ausführen und erstellen der Dokumentation für tatoo beachtet werden muss.
 
 Tatoo ist nahezu komplett per javadoc dokumentiert. Um diese Dokumentation zu erzeugen wird javadoc im Verzeichnis tatoo folgendermaßen aufgerufen. 

@@ -21,8 +21,9 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 
+import tatoo.model.ArmyBuilderEntityModel;
+import tatoo.model.ArmyListEntityModel;
 import tatoo.model.ArmyListModel;
-import tatoo.model.EntityModel;
 import tatoo.model.entities.ArmyListEntity;
 import tatoo.model.entities.events.EntityModelEvent;
 
@@ -33,7 +34,7 @@ public class ArmyBuilderPanel extends JPanel implements ActionListener {
   JTree tree = null;
   JPanel sidebar = null;
   ArmyListModel treeModel = null;
-  EntityModel entityModel = null;
+  ArmyBuilderEntityModel entityModel = null;
 
   private enum treeTableCommand {
 
@@ -67,7 +68,7 @@ public class ArmyBuilderPanel extends JPanel implements ActionListener {
     this.treeModel = model;
     treeModel.addTreeModelListener(new PrivTreeModelHandler());
     createBuilderPane(model);
-    entityModel = new EntityModel();
+    entityModel = new ArmyBuilderEntityModel();
     sidebar = new JPanel();
     add(sidebar, BorderLayout.EAST);
     setSidePane();
@@ -85,7 +86,7 @@ public class ArmyBuilderPanel extends JPanel implements ActionListener {
       public String convertValueToText(Object value, boolean selected,
           boolean expanded, boolean leaf, int row, boolean hasFocus) {
         if (value != null) {
-          String sValue = new EntityModel(value).getName();
+          String sValue = new ArmyListEntityModel(value).getName();
           if (sValue != null) { return sValue; }
         }
         return "";
