@@ -47,7 +47,7 @@ public interface Condition<T> extends Cloneable {
    */
   public void addChangeListener(ConditionListener l);
   
-  public void fireValueChanged();
+  public void fireValueChanged(Condition source);
 
   /**
    * Entfernt einen Listener aus der Liste der Listener.

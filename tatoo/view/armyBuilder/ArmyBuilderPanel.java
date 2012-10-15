@@ -26,6 +26,7 @@ import tatoo.model.ArmyListEntityModel;
 import tatoo.model.ArmyListModel;
 import tatoo.model.entities.ArmyListEntity;
 import tatoo.model.entities.events.EntityModelEvent;
+import tatoo.view.TatooPanel;
 
 
 @SuppressWarnings("serial")
@@ -69,7 +70,7 @@ public class ArmyBuilderPanel extends JPanel implements ActionListener {
     treeModel.addTreeModelListener(new PrivTreeModelHandler());
     createBuilderPane(model);
     entityModel = new ArmyBuilderEntityModel();
-    sidebar = new JPanel();
+    sidebar = new TatooPanel();
     add(sidebar, BorderLayout.EAST);
     setSidePane();
     tree.getSelectionModel().addTreeSelectionListener(
@@ -163,7 +164,7 @@ public class ArmyBuilderPanel extends JPanel implements ActionListener {
     int sidebarWidth = 300;
     Object o = entityModel.getSource();
     if (o == null) {
-      JPanel pane = new JPanel();
+      JPanel pane = new TatooPanel();
       pane.setLayout(new BoxLayout(pane, BoxLayout.X_AXIS));
       pane.add(Box.createHorizontalStrut(sidebarWidth));
       sidebar.add(pane);
@@ -222,7 +223,7 @@ public class ArmyBuilderPanel extends JPanel implements ActionListener {
 
     @Override
     public void treeNodesChanged(TreeModelEvent e) {
-      EntityModelEvent em = new EntityModelEvent(e.getSource(), "name");
+      EntityModelEvent em = new EntityModelEvent(e.getSource(), null);
       entityModel.fireAttribChanged(em);
     }
 

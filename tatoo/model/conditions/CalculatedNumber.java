@@ -133,6 +133,7 @@ public class CalculatedNumber extends AbstractNumberCondition <Integer> implemen
         // zunächst mal eine neue Condition erzeugen:
         
         CalculatedNumber copy = new CalculatedNumber();
+        copy.setOwner( entity );
 
         copy.source = (NumberCondition <Integer>) source.cloneFor( sourceNode );
         copy.source.addChangeListener( copy );
@@ -159,12 +160,13 @@ public class CalculatedNumber extends AbstractNumberCondition <Integer> implemen
     @Override
     public void setValue( Number val ) {
         value.setValue( val );
-        fireValueChanged();
+        fireValueChanged(this);
     }
     
     public void setValue (NumberCondition <Integer> val){
         value = val;
-        fireValueChanged();
+        value.addChangeListener( this );
+        fireValueChanged(this);
     }
 
     public void setSource( Condition src ) {
@@ -176,8 +178,8 @@ public class CalculatedNumber extends AbstractNumberCondition <Integer> implemen
     }
 
     @Override
-    public void valueChanged() {
-        fireValueChanged();
+    public void valueChanged(Condition source) {
+        fireValueChanged(source);
     }
 
 }

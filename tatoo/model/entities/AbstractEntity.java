@@ -87,7 +87,9 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
         for ( int i = 0; i < Condition.ConditionTypes.values().length; i++ ) {
             SimpleNumber simpleNo = new SimpleNumber( 1 );
             CalculatedNumber calcNo = new CalculatedNumber( simpleNo, 0, Arithmetic.MULTIPLY );
+            calcNo.setOwner( this );
             attributes[i] = calcNo;
+            attributes[i].addChangeListener( this );
         }
 
     }
@@ -126,7 +128,7 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
         if (attributes[type.ordinal()] != attribute)
         {
             attributes[type.ordinal()].setValue( (NumberCondition <Integer>)attribute );
-            attribute.fireValueChanged();
+            fireAttribChanged( type );
         }
     }
 
@@ -211,12 +213,13 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
 
     /**
      * Übergibt allen Listenern das AttribChangedEvent.
+     * @param attribute TODO
      */
-    public void fireAttribChanged() {
+    public void fireAttribChanged(ConditionTypes attribute) {
         Object[] listeners = listenerList.getListenerList();
         for ( int i = listeners.length - 2; i >= 0; i -= 2 ) {
             if ( listeners[i] == EntityListener.class ) {
-                ( (EntityListener) listeners[i + 1] ).AttribChanged( "someAttrib" );
+                ( (EntityListener) listeners[i + 1] ).AttribChanged( this, attribute );
             }
         }
     }
@@ -282,8 +285,10 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
     }
 
     @Override
-    public void valueChanged() {
-        fireAttribChanged();
+    public void valueChanged (Condition source) {
+        for (ConditionTypes type : ConditionTypes.values())
+            if (getAttribute( type ) == source)
+                fireAttribChanged(type);
     }
 
     public AbstractEntity getParent() {

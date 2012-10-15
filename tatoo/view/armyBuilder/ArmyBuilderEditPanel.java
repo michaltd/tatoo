@@ -12,7 +12,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import tatoo.model.ArmyBuilderEntityModel;
-import tatoo.model.ArmyListEntityModel;
 import tatoo.model.EntityModelListener;
 import tatoo.model.entities.events.EntityModelEvent;
 
@@ -67,8 +66,8 @@ public abstract class ArmyBuilderEditPanel extends JPanel implements EntityModel
         }
 
         public groupPane( String title, int height ) {
-            TitledBorder b = new TitledBorder( new LineBorder( Color.lightGray ), title );
-            b.setTitleColor( Color.lightGray );
+            TitledBorder b = new TitledBorder( new LineBorder( Color.LIGHT_GRAY ), title );
+            b.setTitleColor( Color.LIGHT_GRAY );
             b.setTitleFont( new Font( "Arial", Font.ITALIC, 12 ) );
             setBorder( b );
 //            setHeight( height );

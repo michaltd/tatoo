@@ -19,6 +19,7 @@ import javax.swing.border.LineBorder;
 
 import tatoo.model.ArmyBuilderEntityModel;
 import tatoo.model.conditions.ConditionParseException;
+import tatoo.view.TatooPanel;
 
 /**
  * Panel to edit Entities.
@@ -127,7 +128,7 @@ public class EntityEditPane extends ArmyBuilderEditPanel implements ActionListen
             };
         } );
 
-        JPanel editPane = new JPanel();
+        JPanel editPane = new TatooPanel();
         LayoutManager editPaneLayout = new BoxLayout( editPane, BoxLayout.Y_AXIS );
         editPane.setLayout( editPaneLayout );
         editPane.add( countPanel );

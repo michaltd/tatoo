@@ -63,7 +63,7 @@ public class SimpleNumber extends AbstractNumberCondition <Integer> {
     @Override
     public void setValue( Number val ) {
         number = val.intValue();
-        fireValueChanged();
+        fireValueChanged(this);
     }
 
     public String toString() {

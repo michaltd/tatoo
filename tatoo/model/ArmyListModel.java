@@ -8,6 +8,7 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreePath;
 
 import tatoo.model.entities.AbstractEntity;
+import tatoo.model.entities.AbstractEntity.EntityType;
 import tatoo.model.entities.ArmyListEntity;
 import tatoo.resources.TextWrapper;
 
@@ -144,6 +145,12 @@ public class ArmyListModel implements ArmyModel {
     public Object getRoot() {
         return armyList;
     }
+    
+    public EntityType getTypeOfNode (Object node) {
+        AbstractEntity ae = (AbstractEntity)node;
+        return ae.getType ();
+    }
+
 
     @Override
     public boolean isLeaf( Object node ) {
@@ -176,7 +183,7 @@ public class ArmyListModel implements ArmyModel {
 
     /**
      * Gibt den Knotenpfad zurück. Ruft sich selbst rekursiv auf. Wird es von
-     * aussen aufgerufen muss immer 0 also levelCount übergeben werden.
+     * aussen aufgerufen muss immer 0 als levelCount übergeben werden.
      * 
      * @param e
      *            Das ArmyListEntity dessen Pfad zurückgegeben werden soll
@@ -251,8 +258,7 @@ public class ArmyListModel implements ArmyModel {
         if ( armyList == null )
             return null;
         // das erste Object im Array MUSS der root-Knoten sein, sonst ist es
-        // kein
-        // gültiger Pfad!
+        // kein gültiger Pfad!
         // TODO: hier eventuell Exception schmeißen bei ungültigem Pfad.
         if ( treePath[0].equals( getRoot() ) && treePath.length > 1 ) {
             boolean found = false;
@@ -331,5 +337,4 @@ public class ArmyListModel implements ArmyModel {
 
         fireTreeNodesRemoved( e );
     }
-
 }

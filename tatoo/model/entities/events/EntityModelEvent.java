@@ -2,18 +2,20 @@ package tatoo.model.entities.events;
 
 import java.util.EventObject;
 
+import tatoo.model.conditions.Condition.ConditionTypes;
+
 
 @SuppressWarnings("serial")
 public class EntityModelEvent extends EventObject {
   
-  String attrib = "";
+  ConditionTypes attrib;
   
-  public EntityModelEvent(Object source, String attrib) {
+  public EntityModelEvent(Object source, ConditionTypes attrib) {
     super(source);
     this.attrib = attrib;
   }
   
-  public String getAttribChanged(){
+  public ConditionTypes getAttrib(){
   	return attrib;
   }
 

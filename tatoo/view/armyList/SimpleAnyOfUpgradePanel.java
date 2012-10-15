@@ -11,7 +11,6 @@ public class SimpleAnyOfUpgradePanel extends AbstractNodePanel {
 	@Override
 	public void create(JPanel parentPanel, JPanel contentPanel, boolean hasChilds) {
 		parentPanel.add(contentPanel);
-
 	}
 
 	@Override

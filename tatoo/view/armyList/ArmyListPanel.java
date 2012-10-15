@@ -8,10 +8,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 
-import tatoo.ArmyListInstanceMainPanel;
 import tatoo.ArmyListInstanceSidePanel;
 import tatoo.model.ArmyListModel;
 import tatoo.model.entities.AbstractEntity;
+import tatoo.model.entities.ArmyListEntity;
 import tatoo.view.AbstractNodePanel;
 
 @SuppressWarnings("serial")
@@ -20,9 +20,9 @@ public class ArmyListPanel extends JPanel{
 	ArmyListModel sideMenuModel;
 	ArmyListModel armyListModel;
 
-	public ArmyListPanel(){
-	  this(new ArmyListInstanceSidePanel().armeeliste);
-	}
+//	public ArmyListPanel(){
+//	  this(new ArmyListInstanceSidePanel().armeeliste);
+//	}
 
   public ArmyListPanel(AbstractEntity armeeliste){
 		
@@ -33,7 +33,7 @@ public class ArmyListPanel extends JPanel{
   	ArmyTreePanel sideMenu = new ArmyTreePanel( sideMenuModel, "Sidemenu");
   	sideMenu.addMouseListener(new SideMenuListener());
   	
-  	armyListModel = new ArmyListModel(new ArmyListInstanceMainPanel().armeeliste);
+  	armyListModel = new ArmyListModel(new ArmyListEntity(AbstractEntity.EntityType.ROOT, "Armeeliste"));
   	ArmyTreePanel armyList = new ArmyTreePanel( armyListModel, "ArmyList");
 		
 		JScrollPane scrollPane = new JScrollPane(armyList);

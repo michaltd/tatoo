@@ -1,28 +1,20 @@
 package tatoo.model;
 
-import javax.swing.event.EventListenerList;
-
 import tatoo.model.conditions.CalculatedNumber;
 import tatoo.model.conditions.Condition;
 import tatoo.model.conditions.Condition.ConditionTypes;
 import tatoo.model.conditions.SimpleNumber;
 import tatoo.model.entities.AbstractEntity;
+import tatoo.model.entities.AbstractEntity.EntityType;
 import tatoo.model.entities.ArmyListEntity;
-import tatoo.model.entities.EntityListener;
 import tatoo.model.entities.events.EntityModelEvent;
 
 /**
  * Model für Entities.
  * 
  * @author mkortz
- * 
  */
-public class ArmyListEntityModel implements EntityModel, EntityListener {
-
-    /** Das ArmyListEntity welches von diesem Model gekapselt wird */
-    AbstractEntity            entity       = null;
-    /** Liste von Listenern welche an diesem Model lauschen. */
-    private EventListenerList listenerList = new EventListenerList();
+public class ArmyListEntityModel extends AbstractEntityModel {
 
     /**
      * Instanziiert das Model mit dem Übergebenen ArmyListEntity.
@@ -30,50 +22,30 @@ public class ArmyListEntityModel implements EntityModel, EntityListener {
      * @param o
      *            Das ArmyListEntity das von dem Model gekapselt werden soll.
      */
-    public ArmyListEntityModel( Object o ) {
-        setSource( o );
+    public ArmyListEntityModel (Object o) {
+        setSource (o);
     }
 
     /**
      * Instanziiert ein leeres Model.
      */
-    public ArmyListEntityModel() {
-        
-    }
+    public ArmyListEntityModel () {
 
-    /**
-     * Fügt dem Model einen Listener hinzu
-     * 
-     * @param l
-     *            Der Listener
-     */
-    public void addEntityModelListener( EntityModelListener l ) {
-        listenerList.add( EntityModelListener.class, l );
-    }
-
-    /**
-     * Entfernt einen Listener aus der Liste der Listener
-     * 
-     * @param l
-     *            der Listener der entfernt werden soll.
-     */
-    public void removeEntityModelListener( EntityModelListener l ) {
-        listenerList.remove( EntityModelListener.class, l );
     }
 
     @Override
-    public String getCount() {
-        int realVal = (Integer) entity.getAttribute( ConditionTypes.COUNT ).getValue();
-        int maxVal = (Integer) entity.getAttribute( ConditionTypes.MAX_COUNT ).getValue();
-        int minVal = (Integer) entity.getAttribute( ConditionTypes.MIN_COUNT ).getValue();
+    public String getCount () {
+        int realVal = (Integer) entity.getAttribute (ConditionTypes.COUNT).getValue ();
+        int maxVal = (Integer) entity.getAttribute (ConditionTypes.MAX_COUNT).getValue ();
+        int minVal = (Integer) entity.getAttribute (ConditionTypes.MIN_COUNT).getValue ();
         int resultVal = realVal;
 
-        if ( realVal > maxVal )
+        if (realVal > maxVal)
             resultVal = maxVal;
-        else if ( realVal < minVal )
+        else if (realVal < minVal)
             resultVal = minVal;
 
-        return Integer.toString( resultVal );
+        return Integer.toString (resultVal);
     }
 
     /**
@@ -82,22 +54,22 @@ public class ArmyListEntityModel implements EntityModel, EntityListener {
      * @param count
      *            Die neue Anzahl des Entitys.
      */
-    public void setCount( int count ) {
-        if ( ( (Integer) entity.getAttribute( ConditionTypes.MIN_COUNT ).getValue() ) <= count
-                        && ( (Integer) entity.getAttribute( ConditionTypes.MAX_COUNT ).getValue() ) >= count ) {
-            entity.setAttribute( count, ConditionTypes.COUNT );
-            fireAttribChanged( new EntityModelEvent( this, "count" ) );
+    public void setCount (int count) {
+        if (((Integer) entity.getAttribute (ConditionTypes.MIN_COUNT).getValue ()) <= count
+                        && ((Integer) entity.getAttribute (ConditionTypes.MAX_COUNT).getValue ()) >= count) {
+            entity.setAttribute (count, ConditionTypes.COUNT);
+            fireAttribChanged (new EntityModelEvent (entity, ConditionTypes.COUNT));
         }
     }
-    
-    public void setCount( Condition condition ) {
-        entity.setAttribute( condition, ConditionTypes.COUNT );
-        fireAttribChanged( new EntityModelEvent( this, "count" ) );
+
+    public void setCount (Condition condition) {
+        entity.setAttribute (condition, ConditionTypes.COUNT);
+        fireAttribChanged (new EntityModelEvent (entity, ConditionTypes.COUNT));
     }
 
     @Override
-    public String getMaxCount() {
-        return ((Integer) entity.getAttribute( ConditionTypes.MAX_COUNT ).getValue()).toString();
+    public String getMaxCount () {
+        return ((Integer) entity.getAttribute (ConditionTypes.MAX_COUNT).getValue ()).toString ();
     }
 
     /**
@@ -106,18 +78,18 @@ public class ArmyListEntityModel implements EntityModel, EntityListener {
      * @param maxCount
      *            die Maximale Anzahl.
      */
-    public void setMaxCount( String maxCount ) throws NumberFormatException {
-        int value = Integer.parseInt( maxCount );
-        entity.setAttribute( value, ConditionTypes.MAX_COUNT );
+    public void setMaxCount (String maxCount) throws NumberFormatException {
+        int value = Integer.parseInt (maxCount);
+        entity.setAttribute (value, ConditionTypes.MAX_COUNT);
     }
-    
-    public void setMaxCount( Condition condition ) {
-        entity.setAttribute( condition, ConditionTypes.MAX_COUNT );        
+
+    public void setMaxCount (Condition condition) {
+        entity.setAttribute (condition, ConditionTypes.MAX_COUNT);
     }
 
     @Override
-    public String getMinCount() {
-        return ((Integer)entity.getAttribute( ConditionTypes.MIN_COUNT ).getValue()).toString();
+    public String getMinCount () {
+        return ((Integer) entity.getAttribute (ConditionTypes.MIN_COUNT).getValue ()).toString ();
     }
 
     /**
@@ -126,18 +98,18 @@ public class ArmyListEntityModel implements EntityModel, EntityListener {
      * @param minCount
      *            die Minimale Anzahl.
      */
-    public void setMinCount( String minCount ) throws NumberFormatException {
-        int value = Integer.parseInt( minCount );
-        entity.setAttribute( value, ConditionTypes.MIN_COUNT );
+    public void setMinCount (String minCount) throws NumberFormatException {
+        int value = Integer.parseInt (minCount);
+        entity.setAttribute (value, ConditionTypes.MIN_COUNT);
     }
-    
-    public void setMinCount( Condition condition ) {
-        entity.setAttribute( condition, ConditionTypes.MIN_COUNT );        
+
+    public void setMinCount (Condition condition) {
+        entity.setAttribute (condition, ConditionTypes.MIN_COUNT);
     }
 
     @Override
-    public String getName() {
-        return entity.getName();
+    public String getName () {
+        return entity.getName ();
     }
 
     /**
@@ -146,15 +118,15 @@ public class ArmyListEntityModel implements EntityModel, EntityListener {
      * @param name
      *            Der Name des Entitys.
      */
-    public void setName( String name ) {
-        entity.setName( name );
-        EntityModelEvent e = new EntityModelEvent( entity, "name" );
-        fireAttribChanged( e );
+    public void setName (String name) {
+        entity.setName (name);
+        EntityModelEvent e = new EntityModelEvent (entity, null);
+        fireAttribChanged (e);
     }
 
     @Override
-    public String getPrice() {
-        return entity.getAttribute( ConditionTypes.PRICE ).toString();
+    public String getPrice () {
+        return entity.getAttribute (ConditionTypes.PRICE).toString ();
     }
 
     /**
@@ -163,22 +135,22 @@ public class ArmyListEntityModel implements EntityModel, EntityListener {
      * @param val
      *            Der Preis
      */
-    public void setPrice( String val ) {
+    public void setPrice (String val) {
         try {
-            int value = Integer.parseInt( val );
-            CalculatedNumber condition = (CalculatedNumber)entity.getAttribute( ConditionTypes.PRICE );
-            condition.setValue( new SimpleNumber( value ) );
+            int value = Integer.parseInt (val);
+            CalculatedNumber condition = (CalculatedNumber) entity.getAttribute (ConditionTypes.PRICE);
+            condition.setValue (new SimpleNumber (value));
         }
-        catch (NumberFormatException nfe){}        
+        catch (NumberFormatException nfe) {}
     }
 
-    public void setPrice( Condition price ) {
-        entity.setAttribute( price, ConditionTypes.PRICE );
+    public void setPrice (Condition price) {
+        entity.setAttribute (price, ConditionTypes.PRICE);
     }
 
     @Override
-    public int getTotalPrice() {
-        return ( (ArmyListEntity) entity ).getTotalPrice();
+    public int getTotalPrice () {
+        return ((ArmyListEntity) entity).getTotalPrice ();
     }
 
     /**
@@ -188,14 +160,14 @@ public class ArmyListEntityModel implements EntityModel, EntityListener {
      *            Das ArmyListEntity welches von dem Model gekapselt werden
      *            soll.
      */
-    public void setSource( Object o ) {
+    public void setSource (Object o) {
         try {
             entity = (AbstractEntity) o;
-            entity.addEntityListener( this );
-            fireSourceChanged();
+            entity.addEntityListener (this);
+            fireSourceChanged ();
         }
-        catch ( ClassCastException e ) {
-            System.err.println( "Objekt: \"" + o.toString() + "\" is not an ArmyListEntity!" );
+        catch (ClassCastException e) {
+            System.err.println ("Objekt: \"" + o.toString () + "\" is not an ArmyListEntity!");
         }
     }
 
@@ -204,45 +176,20 @@ public class ArmyListEntityModel implements EntityModel, EntityListener {
      * 
      * @return Das gekapselte ArmyListEntity als Object.
      */
-    public Object getSource() {
+    public Object getSource () {
         return entity;
     }
 
-    /**
-     * Informiert alle Listener und löst dort das SourceChangedEvent aus.
-     */
-    public void fireSourceChanged() {
-        Object[] listeners = listenerList.getListenerList();
-        for ( int i = listeners.length - 2; i >= 0; i -= 2 ) {
-            if ( listeners[i] == EntityModelListener.class ) {
-                ( (EntityModelListener) listeners[i + 1] ).SourceChanged();
-            }
-        }
+    public boolean isOneOfUpgrade () {
+        return entity.getParent ().getType () == EntityType.ONEOFUPGRADE;
     }
 
-    /**
-     * Informiert alle Listener und löst dort das AttribChangedEvent aus.
-     * 
-     * @param e
-     *            Das Event, das übergeben werden soll.
-     */
-    public void fireAttribChanged( EntityModelEvent e ) {
-        Object[] listeners = listenerList.getListenerList();
-        for ( int i = listeners.length - 2; i >= 0; i -= 2 ) {
-            if ( listeners[i] == EntityModelListener.class ) {
-                ( (EntityModelListener) listeners[i + 1] ).AttribChanged( e );
-            }
-        }
+    public EntityType getSourceType () {
+        return entity.getType ();
     }
 
-    @Override
-    public void AttribChanged( String attrib ) {
-        EntityModelEvent e = new EntityModelEvent( entity, "name" );
-        fireAttribChanged( e );
-    }
-
-    public int getNodeType() {
-        return entity.getType().ordinal();
+    public int getNodeType () {
+        return entity.getType ().ordinal ();
     }
 
 }

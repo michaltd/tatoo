@@ -14,6 +14,7 @@ import javax.swing.border.LineBorder;
 
 import tatoo.model.entities.events.EntityModelEvent;
 import tatoo.view.AbstractNodePanel;
+import tatoo.view.TatooPanel;
 
 @SuppressWarnings("serial")
 public class SimpleNodePanel extends AbstractNodePanel {
@@ -21,26 +22,25 @@ public class SimpleNodePanel extends AbstractNodePanel {
 	@Override
 	public void create(JPanel parentPanel, JPanel contentPanel ,boolean hasChilds) {
 		
-		JPanel containerPanel = new JPanel();
+		JPanel containerPanel = new TatooPanel();
 		containerPanel.setLayout(new BorderLayout());		
 
-		LineBorder border =  new LineBorder(Color.lightGray);
+		LineBorder border =  new LineBorder(Color.LIGHT_GRAY);
 		Border compount_innerBorder = BorderFactory.createCompoundBorder(
 				new EmptyBorder(3, 0, 2, 0), border );
 		Border compount = BorderFactory.createCompoundBorder(
 				compount_innerBorder, new EmptyBorder(3,3,3,3) );
 		containerPanel.setBorder(compount);
 		
-		JPanel headerPanel = new JPanel();
+		JPanel headerPanel = new TatooPanel();
 		headerPanel.setLayout(new BoxLayout(headerPanel,BoxLayout.Y_AXIS));
 		
-		JPanel namePanel = new JPanel();
+		JPanel namePanel = new TatooPanel();
 		namePanel.setLayout(new BoxLayout(namePanel, BoxLayout.X_AXIS));
 	
 		JLabel nameLabel = new JLabel("<html><b><i>"+model.getName()+"</i></b></html>");
 		nameLabel.setHorizontalAlignment(JLabel.LEFT);
 		
-//		JLabel priceLabel = new JLabel(((Integer)model.getPrice()).toString());
 		JLabel priceLabel = new JLabel(model.getPrice());
 		
 		namePanel.add(nameLabel);

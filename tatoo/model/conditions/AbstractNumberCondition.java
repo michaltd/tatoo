@@ -39,6 +39,8 @@ public abstract class AbstractNumberCondition<T> extends Dataset implements Numb
     @Override
     public void addChangeListener( ConditionListener l ) {
         listenerList.add( ConditionListener.class, l );
+        if (this.ownerNode == null && l instanceof AbstractEntity)
+            listenerList.remove( ConditionListener.class, l );
     }
 
     /**
@@ -55,11 +57,11 @@ public abstract class AbstractNumberCondition<T> extends Dataset implements Numb
     /**
      * Informiert alle Listener, dass ein ValueChanged Event ausgelöst wurde.
      */
-    public void fireValueChanged() {
+    public void fireValueChanged(Condition source) {
         Object[] listeners = listenerList.getListenerList();
         for ( int i = listeners.length - 2; i >= 0; i -= 2 ) {
             if ( EventListener.class.isAssignableFrom( (Class <?>) listeners[i] ) ) {
-                ( (ConditionListener) listeners[i + 1] ).valueChanged();
+                ( (ConditionListener) listeners[i + 1] ).valueChanged(this);
             }
         }
     }

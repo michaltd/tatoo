@@ -69,8 +69,7 @@ public class NodePanelFactory {
 			panel.setAlignment(entity.getAlignment());
 			panel.showEmptyEntitys(entity.isShowEmptyEntities());	
 			panel.showChilds(entity.isShowChilds());
-			
-			panel.setModel(new ArmyListEntityModel(node));
+			panel.setModel (new ArmyListEntityModel(node));
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {

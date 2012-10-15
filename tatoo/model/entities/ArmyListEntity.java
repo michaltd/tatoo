@@ -32,22 +32,21 @@ public class ArmyListEntity extends AbstractEntity {
     @Override
     public ArmyListEntity cloneFor( AbstractEntity parent ) throws CloneNotSupportedException {
 
-        ArmyListEntity e = new ArmyListEntity();
+        ArmyListEntity new_entity = new ArmyListEntity();
 
         if ( parent == null && this.getType() != EntityType.ROOT )
             throw new CloneNotSupportedException( "Get null as parent but cloning a non-root node." );
-        else e.setParent( parent );
+        else new_entity.setParent( parent );
 
         // typ und Name setzen
-        e.type = this.type;
-        e.setName( this.getName() );
+        new_entity.type = this.type;
+        new_entity.setName( this.getName() );
 
         // dann die Conditions Klonen
         for ( ConditionTypes attType : ConditionTypes.values() ) {
-            Condition conditionClone = this.getAttribute( attType ).cloneFor( getEntityNode( e ) );
-            conditionClone.addChangeListener( e );
-            e.setAttribute(conditionClone , attType );
-            //e.getAttribute( attType ).addChangeListener( e );
+            Condition conditionClone = this.getAttribute( attType ).cloneFor( getEntityNode( new_entity ) );
+            conditionClone.addChangeListener( new_entity );
+            new_entity.setAttribute(conditionClone , attType );
         }
 
         // zum Schluss die entities durchgehen und wenn es sich NICHT um
@@ -55,11 +54,11 @@ public class ArmyListEntity extends AbstractEntity {
         for ( AbstractEntity ae : entities ) {
             if ( ae.getType() != EntityType.ROOT && ae.getType() != EntityType.CATEGORY
                             && ae.getType() != EntityType.NODE ) {
-                e.addEntity( ae.cloneFor( e ) );
+                new_entity.addEntity( ae.cloneFor( new_entity ) );
             }
         }
 
-        return e;
+        return new_entity;
     }
 
     public int getTotalPrice() {

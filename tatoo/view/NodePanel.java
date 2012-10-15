@@ -1,11 +1,11 @@
 package tatoo.view;
 
-import java.awt.BorderLayout;
-
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
+import tatoo.model.AbstractEntityModel;
 import tatoo.model.ArmyListEntityModel;
+import tatoo.model.EntityModelListener;
 
 /**
  * Interface for Panels for a node of {@link Armylist}. 
@@ -14,7 +14,7 @@ import tatoo.model.ArmyListEntityModel;
  * @author mkortz
  *
  */
-public interface NodePanel {
+public interface NodePanel extends EntityModelListener {
 	
 	/**
    * Specifies that components should be laid out left to right.
@@ -55,7 +55,7 @@ public interface NodePanel {
 	 */
 	public void showEmptyEntitys(boolean show);
 	
-	public ArmyListEntityModel getModel();
+	public AbstractEntityModel getModel();
 
 	public void setModel(ArmyListEntityModel model);
 

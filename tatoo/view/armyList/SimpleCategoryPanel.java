@@ -9,6 +9,7 @@ import javax.swing.border.EmptyBorder;
 
 import tatoo.model.entities.events.EntityModelEvent;
 import tatoo.view.AbstractNodePanel;
+import tatoo.view.TatooPanel;
 
 @SuppressWarnings("serial")
 public class SimpleCategoryPanel extends AbstractNodePanel {
@@ -22,11 +23,11 @@ public class SimpleCategoryPanel extends AbstractNodePanel {
 		nameButton.setText(model.getName());
 		nameButton.setFocusable(false);
 		
-		JPanel borderPanel = new JPanel();
+		JPanel borderPanel = new TatooPanel();
 		borderPanel.setLayout(new BorderLayout());
 		borderPanel.setBorder(new EmptyBorder(0, 3, 0, 2));
 		
-		JPanel fillerPanel = new JPanel();
+		JPanel fillerPanel = new TatooPanel();
 		fillerPanel.setLayout(new BorderLayout());
 		
 		fillerPanel.add(contentPanel, BorderLayout.NORTH);
