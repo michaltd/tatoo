@@ -58,7 +58,9 @@ public class NodePanelFactory {
 	}
 	
 	public NodePanel getNodePanel(Object node){
-		return buildNodePane(new ArmyListEntityModel(node).getNodeType(), node);
+	    
+//		return buildNodePane(new ArmyListEntityModel(node).getNodeType(), node);
+	    return buildNodePane(new ArmyListEntityModel(node).getSourceType().ordinal(), node);
 	}
 	
 	private NodePanel buildNodePane(int category, Object node){

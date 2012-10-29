@@ -25,223 +25,203 @@ import tatoo.model.ArmyBuilderEntityModel;
 import tatoo.model.ArmyListEntityModel;
 import tatoo.model.ArmyListModel;
 import tatoo.model.entities.ArmyListEntity;
+import tatoo.model.entities.AbstractEntity.EntityType;
 import tatoo.model.entities.events.EntityModelEvent;
 import tatoo.view.TatooPanel;
 
-
-@SuppressWarnings("serial")
+@SuppressWarnings ("serial")
 public class ArmyBuilderPanel extends JPanel implements ActionListener {
 
-  JTree tree = null;
-  JPanel sidebar = null;
-  ArmyListModel treeModel = null;
-  ArmyBuilderEntityModel entityModel = null;
+    JTree                  tree        = null;
+    JPanel                 sidebar     = null;
+    ArmyListModel          treeModel   = null;
+    ArmyBuilderEntityModel entityModel = null;
 
-  private enum treeTableCommand {
+    private enum treeTableCommand {
 
-    ADD_ITEM("Add Item"),
-    REMOVE_ITEM("Remove Item"),
-    ADD_OR_UPGRADE("Add Upgrade(OR)"),
-    ADD_AND_UPGRADE("Add Upgrade(AND)"),
-    REMOVE_UPGRADE("Remove Upgrade");
+        ADD_ITEM ("Add Item", EntityType.NODE),
+        REMOVE_ITEM ("Remove Item", null);
 
-    private final String text;
+        private final String     text;
+        private final EntityType type;
 
-    private treeTableCommand(String text) {
-      this.text = text;
-    }
-
-    public String getText() {
-      return text;
-    }
-
-    public String getCommand() {
-      return (new Integer(ordinal()).toString());
-    }
-  }
-
-  /**
-   * creates a new ArmyBuilder Panel with the given model
-   * @param model the model which holds the values that should be shown
-   */
-  public ArmyBuilderPanel(ArmyListModel model) {
-    this.setLayout(new BorderLayout());
-    this.treeModel = model;
-    treeModel.addTreeModelListener(new PrivTreeModelHandler());
-    createBuilderPane(model);
-    entityModel = new ArmyBuilderEntityModel();
-    sidebar = new TatooPanel();
-    add(sidebar, BorderLayout.EAST);
-    setSidePane();
-    tree.getSelectionModel().addTreeSelectionListener(
-        new PrivTreeSelectionHandler());
-    createPopupMenu();
-  }
-
-  private void createBuilderPane(ArmyListModel model) {
-  	//create a new tree
-  	//Override the method to get the value of the node as text
-    tree = new JTree(model) {
-
-      @Override
-      public String convertValueToText(Object value, boolean selected,
-          boolean expanded, boolean leaf, int row, boolean hasFocus) {
-        if (value != null) {
-          String sValue = new ArmyListEntityModel(value).getName();
-          if (sValue != null) { return sValue; }
+        private treeTableCommand (String text, EntityType type) {
+            this.text = text;
+            this.type = type;
         }
-        return "";
-      }
-    };
-    tree.setEditable(true);
-    tree.setRootVisible(true);
 
-    JScrollPane pane = new JScrollPane(tree);
-    this.add(pane, BorderLayout.CENTER);
+        public String getText () {
+            return text;
+        }
 
-  }
-  
-  public void createPopupMenu() {
-    JMenuItem menuItem;
-
-    JPopupMenu popup = new JPopupMenu();
-
-    menuItem = new JMenuItem(treeTableCommand.ADD_ITEM.getText());
-    menuItem.setActionCommand(treeTableCommand.ADD_ITEM.getCommand());
-    menuItem.addActionListener(this);
-    popup.add(menuItem);
-    menuItem = new JMenuItem(treeTableCommand.REMOVE_ITEM.getText());
-    menuItem.setActionCommand(treeTableCommand.REMOVE_ITEM.getCommand());
-    menuItem.addActionListener(this);
-    popup.add(menuItem);
-    popup.addSeparator();
-    menuItem = new JMenuItem(treeTableCommand.ADD_OR_UPGRADE.getText());
-    menuItem.setActionCommand(treeTableCommand.ADD_OR_UPGRADE.getCommand());
-    menuItem.addActionListener(this);
-    popup.add(menuItem);
-    menuItem = new JMenuItem(treeTableCommand.ADD_AND_UPGRADE.getText());
-    menuItem.setActionCommand(treeTableCommand.ADD_AND_UPGRADE.getCommand());
-    menuItem.addActionListener(this);
-    popup.add(menuItem);
-    menuItem = new JMenuItem(treeTableCommand.REMOVE_UPGRADE.getText());
-    menuItem.setActionCommand(treeTableCommand.REMOVE_UPGRADE.getCommand());
-    menuItem.addActionListener(this);
-    popup.add(menuItem);
-
-    MouseListener popupListener = new PopupListener(popup);
-    tree.addMouseListener(popupListener);
-  }
-
-  //TODO: Warum existiert das so in dieser Form?? Eigentlich sollte es doch auch inline gehen?
-  @Override
-  public void actionPerformed(ActionEvent e) {
-    if (e.getActionCommand().equals(treeTableCommand.ADD_ITEM.getCommand())) {
-      Object o = tree.getLastSelectedPathComponent();
-      Object entity = treeModel.insertNewEntityInto(o);
-      Object[] path = treeModel.getTreePathTo(entity);
-      tree.startEditingAtPath(new TreePath(path));
+        public String getCommand () {
+            return (new Integer (ordinal ()).toString ());
+        }
     }
-    else if (e.getActionCommand().equals(
-        treeTableCommand.REMOVE_ITEM.getCommand())) {
-      Object o = tree.getLastSelectedPathComponent();
-      treeModel.removeNodeFromParent(o);
+
+    /**
+     * creates a new ArmyBuilder Panel with the given model
+     * 
+     * @param model
+     *            the model which holds the values that should be shown
+     */
+    public ArmyBuilderPanel (ArmyListModel model) {
+        this.setLayout (new BorderLayout ());
+        this.treeModel = model;
+        treeModel.addTreeModelListener (new PrivTreeModelHandler ());
+        createBuilderPane (model);
+        entityModel = new ArmyBuilderEntityModel ();
+        sidebar = new TatooPanel ();
+        add (sidebar, BorderLayout.EAST);
+        setSidePane ();
+        tree.getSelectionModel ().addTreeSelectionListener (new PrivTreeSelectionHandler ());
+        createPopupMenu ();
     }
-    else if (e.getActionCommand().equals(
-        treeTableCommand.ADD_OR_UPGRADE.getCommand())) {
+
+    private void createBuilderPane (ArmyListModel model) {
+        // create a new tree
+        // Override the method to get the value of the node as text
+        tree = new JTree (model) {
+
+            @Override
+            public String convertValueToText (Object value, boolean selected, boolean expanded, boolean leaf, int row,
+                            boolean hasFocus) {
+                if (value != null) {
+                    String sValue = new ArmyListEntityModel (value).getName ();
+                    if (sValue != null) { return sValue; }
+                }
+                return "";
+            }
+        };
+        tree.setEditable (true);
+        tree.setRootVisible (true);
+
+        JScrollPane pane = new JScrollPane (tree);
+        this.add (pane, BorderLayout.CENTER);
 
     }
-    else if (e.getActionCommand().equals(
-        treeTableCommand.ADD_AND_UPGRADE.getCommand())) {
 
-    }
-    else if (e.getActionCommand().equals(
-        treeTableCommand.REMOVE_UPGRADE.getCommand())) {
+    public void createPopupMenu () {
+        JMenuItem menuItem;
 
-    }
-  }
+        JPopupMenu popup = new JPopupMenu ();
 
-  public void setSidePane() {
-    int sidebarWidth = 300;
-    Object o = entityModel.getSource();
-    if (o == null) {
-      JPanel pane = new TatooPanel();
-      pane.setLayout(new BoxLayout(pane, BoxLayout.X_AXIS));
-      pane.add(Box.createHorizontalStrut(sidebarWidth));
-      sidebar.add(pane);
+        menuItem = new JMenuItem (treeTableCommand.ADD_ITEM.getText ());
+        menuItem.setActionCommand (treeTableCommand.ADD_ITEM.getCommand ());
+        menuItem.addActionListener (this);
+        popup.add (menuItem);
+        menuItem = new JMenuItem (treeTableCommand.REMOVE_ITEM.getText ());
+        menuItem.setActionCommand (treeTableCommand.REMOVE_ITEM.getCommand ());
+        menuItem.addActionListener (this);
+        popup.add (menuItem);
+
+        MouseListener popupListener = new PopupListener (popup);
+        tree.addMouseListener (popupListener);
     }
-    else {
+
+    // TODO: Warum existiert das so in dieser Form?? Eigentlich sollte es doch
+    // auch inline gehen?
+    @Override
+    public void actionPerformed (ActionEvent e) {
+        if (e.getActionCommand ().equals (treeTableCommand.ADD_ITEM.getCommand ())) {
+            Object o = tree.getLastSelectedPathComponent ();
+            Object entity = treeModel.insertNewEntity (o);
+            Object[] path = treeModel.getTreePathTo (entity);
+            tree.startEditingAtPath (new TreePath (path));
+        }
+        else if (e.getActionCommand ().equals (treeTableCommand.REMOVE_ITEM.getCommand ())) {
+            Object o = tree.getLastSelectedPathComponent ();
+            treeModel.removeNodeFromParent (o);
+        }
+    }
+
+    public void setSidePane () {
+        int sidebarWidth = 300;
+        Object o = entityModel.getSource ();
+        if (o == null) {
+            JPanel pane = new TatooPanel ();
+            pane.setLayout (new BoxLayout (pane, BoxLayout.X_AXIS));
+            pane.add (Box.createHorizontalStrut (sidebarWidth));
+            sidebar.add (pane);
+        }
+        else {
 //TODO was ist das für ein Blödsinn, das View kennt die Daten? Neeee... noch mal überarbeiten!
-      if (o instanceof ArmyListEntity) {
-        if (!(sidebar.getComponent(0) instanceof EntityEditPane)) {
-          sidebar.removeAll();
-          sidebar.add(new EntityEditPane(entityModel));
+            if (o instanceof ArmyListEntity) {
+                if ( !(sidebar.getComponent (0) instanceof EntityEditPane)) {
+                    sidebar.removeAll ();
+                    sidebar.add (new EntityEditPane (entityModel));
+                }
+            }
+            sidebar.revalidate ();
         }
-      }
-      sidebar.revalidate();
-    }
-  }
-
-
-  class PopupListener extends MouseAdapter {
-
-    JPopupMenu popup;
-
-    PopupListener(JPopupMenu popupMenu) {
-      popup = popupMenu;
-    }
-    public void mousePressed(MouseEvent e) {maybeShowPopup(e);}
-
-    public void mouseReleased(MouseEvent e) {
-      if (e.getButton() == MouseEvent.BUTTON3) setSelection(e.getPoint());
-      maybeShowPopup(e);
     }
 
-    private void setSelection(Point p) {
-      int row = tree.getRowForLocation(p.x, p.y);
-      if (row < 0) tree.removeSelectionInterval(0, tree.getRowCount());
-      else tree.setSelectionInterval(row, row);
-    }
-    private void maybeShowPopup(MouseEvent e) {
-      if (e.isPopupTrigger()) {
-         popup.show(e.getComponent(), e.getX(), e.getY());
-      }
-    }
-  }
+    class PopupListener extends MouseAdapter {
 
-  private class PrivTreeSelectionHandler implements TreeSelectionListener {
+        JPopupMenu popup;
 
-    @Override
-    public void valueChanged(TreeSelectionEvent e) {
-      Object o = e.getPath().getLastPathComponent();
-      entityModel.setSource(o);
-      setSidePane();
-    }
+        PopupListener (JPopupMenu popupMenu) {
+            popup = popupMenu;
+        }
 
-  }
+        public void mousePressed (MouseEvent e) {
+            maybeShowPopup (e);
+        }
 
-  private class PrivTreeModelHandler implements TreeModelListener {
+        public void mouseReleased (MouseEvent e) {
+            if (e.getButton () == MouseEvent.BUTTON3)
+                setSelection (e.getPoint ());
+            maybeShowPopup (e);
+        }
 
-    @Override
-    public void treeNodesChanged(TreeModelEvent e) {
-      EntityModelEvent em = new EntityModelEvent(e.getSource(), null);
-      entityModel.fireAttribChanged(em);
-    }
+        private void setSelection (Point p) {
+            int row = tree.getRowForLocation (p.x, p.y);
+            if (row < 0)
+                tree.removeSelectionInterval (0, tree.getRowCount ());
+            else tree.setSelectionInterval (row, row);
+        }
 
-    @Override
-    public void treeNodesInserted(TreeModelEvent e) {
-    // nothing to do here
+        private void maybeShowPopup (MouseEvent e) {
+            if (e.isPopupTrigger ()) {
+                popup.show (e.getComponent (), e.getX (), e.getY ());
+            }
+        }
     }
 
-    @Override
-    public void treeNodesRemoved(TreeModelEvent e) {
-    // nothing to do here
+    private class PrivTreeSelectionHandler implements TreeSelectionListener {
+
+        @Override
+        public void valueChanged (TreeSelectionEvent e) {
+            Object o = e.getPath ().getLastPathComponent ();
+            entityModel.setSource (o);
+            setSidePane ();
+        }
+
     }
 
-    @Override
-    public void treeStructureChanged(TreeModelEvent e) {
-    // nothing to do here
-    }
+    private class PrivTreeModelHandler implements TreeModelListener {
 
-  }
+        @Override
+        public void treeNodesChanged (TreeModelEvent e) {
+            EntityModelEvent em = new EntityModelEvent (e.getSource (), null);
+            entityModel.fireAttribChanged (em);
+        }
+
+        @Override
+        public void treeNodesInserted (TreeModelEvent e) {
+            // nothing to do here
+        }
+
+        @Override
+        public void treeNodesRemoved (TreeModelEvent e) {
+            // nothing to do here
+        }
+
+        @Override
+        public void treeStructureChanged (TreeModelEvent e) {
+            // nothing to do here
+        }
+
+    }
 
 }

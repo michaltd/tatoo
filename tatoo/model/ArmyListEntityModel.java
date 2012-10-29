@@ -188,8 +188,8 @@ public class ArmyListEntityModel extends AbstractEntityModel {
         return entity.getType ();
     }
 
-    public int getNodeType () {
-        return entity.getType ().ordinal ();
-    }
+//    public int getNodeType () {
+//        return entity.getType ().ordinal ();
+//    }
 
 }
