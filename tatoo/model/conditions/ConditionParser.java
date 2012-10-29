@@ -18,7 +18,6 @@ import tatoo.model.entities.AbstractEntity.EntityType;
  * gegeben sein und die zu erzeugenden Conditions als Formel beschreiben.
  * 
  * @author mkortz
- * 
  */
 public class ConditionParser {
 
@@ -40,28 +39,30 @@ public class ConditionParser {
      */
     private ParseNode           rootEntity;
 
-    public ConditionParser( AbstractEntity rootNode ) {
-        rootEntity = new ParseNode( rootNode );
-        buildParseTree( rootNode );
+    public ConditionParser (AbstractEntity rootNode) {
+        rootEntity = new ParseNode (rootNode);
+        buildParseTree (rootNode);
     }
 
-    private void buildParseTree( AbstractEntity entity ) {
-        buildParseTree( entity, rootEntity );
-        if (entity.hasChilds()){;}
+    private void buildParseTree (AbstractEntity entity) {
+        buildParseTree (entity, rootEntity);
+        if (entity.hasChilds ()) {
+            ;
+        }
     }
 
-    private void buildParseTree( AbstractEntity entity, ParseNode parseNode ) {
+    private void buildParseTree (AbstractEntity entity, ParseNode parseNode) {
 
-        for ( AbstractEntity ae : entity.getChilds() ) {
-            if ( ae.getType() == EntityType.ROOT || ae.getType() == EntityType.CATEGORY
-                            || ae.getType() == EntityType.NODE || ae.getType() == EntityType.UPGRADE ) {
-                ParseNode newChild = new ParseNode( ae );
-                parseNode.addChild( newChild );
-                buildParseTree( ae, newChild );
+        for (AbstractEntity ae : entity.getChilds ()) {
+            if (ae.getType () == EntityType.ROOT || ae.getType () == EntityType.CATEGORY
+                            || ae.getType () == EntityType.NODE || ae.getType () == EntityType.UPGRADE) {
+                ParseNode newChild = new ParseNode (ae);
+                parseNode.addChild (newChild);
+                buildParseTree (ae, newChild);
             }
-            else{
-            if (ae.hasChilds())
-                buildParseTree( ae, parseNode );
+            else {
+                if (ae.hasChilds ())
+                    buildParseTree (ae, parseNode);
             }
         }
 
@@ -72,52 +73,52 @@ public class ConditionParser {
      * aus dem String.
      * 
      * @param infix
-     *            Infixterm mit Conditdions als Operanden.
+     * Infixterm mit Conditdions als Operanden.
      * @return der durch den übergebenen String festgelegte Condition-Baum
      */
-    public Condition createCondition( String infix ) {
-        Condition result = evaluatePostfix( convertToPostfix( infix ) );
+    public Condition createCondition (String infix) {
+        Condition result = evaluatePostfix (convertToPostfix (infix));
         if (result == null)
-            throw new ConditionParseException();
+            throw new ConditionParseException ();
         return result;
     }
 
-    private ArrayList <String> convertToPostfix( String infixExpr ) {
+    private ArrayList <String> convertToPostfix (String infixExpr) {
         // whitespaces entfernen und zu array machen
-        String[] terms = toTermArray( infixExpr.replaceAll( "\\s", "" ) );
-        
-        Stack <String> stack = new Stack <String>();
-        ArrayList <String> out = new ArrayList <String>();
+        String[] terms = toTermArray (infixExpr.replaceAll ("\\s", ""));
 
-        for ( String term : terms ) {
-            if ( isOperator( term ) ) {
-                while ( !stack.isEmpty() && !stack.peek().equals( "(" ) ) {
-                    if ( operatorGreaterOrEqual( stack.peek().toCharArray()[0], term.toCharArray()[0] ) ) {
-                        out.add( stack.pop() );
+        Stack <String> stack = new Stack <String> ();
+        ArrayList <String> out = new ArrayList <String> ();
+
+        for (String term : terms) {
+            if (isOperator (term)) {
+                while ( !stack.isEmpty () && !stack.peek ().equals ("(")) {
+                    if (operatorGreaterOrEqual (stack.peek ().toCharArray ()[0], term.toCharArray ()[0])) {
+                        out.add (stack.pop ());
                     }
                     else {
                         break;
                     }
                 }
-                stack.push( term );
+                stack.push (term);
             }
-            else if ( term.equals( "(" ) ) {
-                stack.push( term );
+            else if (term.equals ("(")) {
+                stack.push (term);
             }
-            else if ( term.equals( ")" ) ) {
-                while ( !stack.isEmpty() && !stack.peek().equals( "(" ) ) {
-                    out.add( stack.pop() );
+            else if (term.equals (")")) {
+                while ( !stack.isEmpty () && !stack.peek ().equals ("(")) {
+                    out.add (stack.pop ());
                 }
-                if ( !stack.isEmpty() ) {
-                    stack.pop();
+                if ( !stack.isEmpty ()) {
+                    stack.pop ();
                 }
             }
-            else if ( isOperand( term ) ) {
-                out.add( term );
+            else if (isOperand (term)) {
+                out.add (term);
             }
         }
-        while ( !stack.empty() ) {
-            out.add( stack.pop() );
+        while ( !stack.empty ()) {
+            out.add (stack.pop ());
         }
         return out;
     }
@@ -128,24 +129,26 @@ public class ConditionParser {
      * @param postfixExpr
      * @return
      */
-    @SuppressWarnings( { "rawtypes", "unchecked" } )
-    private Condition evaluatePostfix( ArrayList <String> postfixExpr ) {
-        Stack <Condition> stack = new Stack <Condition>();
-        if (postfixExpr.size() == 0)
-            throw new ConditionParseException();
-        for ( String term : postfixExpr ) {
-            if ( isOperator( term ) ) {
+    @SuppressWarnings ({"rawtypes", "unchecked"})
+    private Condition evaluatePostfix (ArrayList <String> postfixExpr) {
+        Stack <Condition> stack = new Stack <Condition> ();
+        if (postfixExpr.size () == 0)
+            throw new ConditionParseException ();
+        for (String term : postfixExpr) {
+            if (isOperator (term)) {
                 NumberCondition <Integer> op1;
                 NumberCondition <Integer> op2;
-                try{
-                    op1 = (NumberCondition <Integer>) stack.pop();
-                    op2 = (NumberCondition <Integer>) stack.pop();
-                }catch (EmptyStackException ese){
-                    throw new ConditionParseException();
+                try {
+                    op1 = (NumberCondition <Integer>) stack.pop ();
+                    op2 = (NumberCondition <Integer>) stack.pop ();
                 }
-                if (op1 == null || op2 == null) throw new ConditionParseException();
+                catch (EmptyStackException ese) {
+                    throw new ConditionParseException ();
+                }
+                if (op1 == null || op2 == null)
+                    throw new ConditionParseException ();
                 Arithmetic ar = null;
-                switch ( term.charAt( 0 ) ) {
+                switch (term.charAt (0)) {
                     case '*':
                         ar = Arithmetic.MULTIPLY;
                         break;
@@ -159,69 +162,71 @@ public class ConditionParser {
                         ar = Arithmetic.SUBTRACT;
                         break;
                 }
-                stack.push( new CalculatedNumber( (NumberCondition <Integer>) op2, op1, ar ) );
+                stack.push (new CalculatedNumber ((NumberCondition <Integer>) op2, op1, ar));
             }
-            else if ( isOperand( term ) ) {
+            else if (isOperand (term)) {
                 // Condition suchen bzw. instantiieren und auf den Stack legen.
 
                 // Das ist einfach wenn es sich um eine Zahl handelt:
-                if ( term.matches( "[0-9]+" ) ) {
-                    stack.push( new SimpleNumber( Integer.parseInt( term ) ) );
+                if (term.matches ("[0-9]+")) {
+                    stack.push (new SimpleNumber (Integer.parseInt (term)));
                 }
                 // ansonsten muss es sich um den Pfad zu einer Condition
                 // handeln.
                 else {
-                    stack.push( getCondition( term ) );
+                    stack.push (getCondition (term));
                 }
             }
         }
-        return stack.pop();
+        return stack.pop ();
     }
 
     /**
      * Sucht die Condition aus dem EntityBaum heraus und gibt sie zurück.
      * 
      * @param term
-     *            Der Term, der den Ort der Condition beschreibt.
+     * Der Term, der den Ort der Condition beschreibt.
      * @return Die Condition.
      */
-    private Condition getCondition( String term ) {
+    private Condition getCondition (String term) {
 
         ParseNode tmp_node = rootEntity;
 
         // zunächst den Term auteilen
-        String [] terms = term.split( "\\." );
-        
+        String[] terms = term.split ("\\.");
+
         // den ersten term prüfen. Es muss sich hier um den rootNode handeln
-        if (!terms[0].equalsIgnoreCase( rootEntity.entity.getName() ))
-            throw new ConditionParseException();
-            // TODO: eventuell hier zurückliefern WELCHER Term nicht stimmt?
-        
-        for ( int i = 1; i < terms.length; i++ ) {
-            
+        if ( !terms[0].equalsIgnoreCase (rootEntity.entity.getName ()))
+            throw new ConditionParseException ();
+        // TODO: eventuell hier zurückliefern WELCHER Term nicht stimmt?
+
+        for (int i = 1; i < terms.length; i++ ) {
+
             // zunächst versuchen den Conditiontype zu holen
             ConditionTypes conditionType = null;
             try {
-                conditionType = ConditionTypes.valueOf( terms[i].toUpperCase() );
+                conditionType = ConditionTypes.valueOf (terms[i].toUpperCase ());
             }
-            catch ( IllegalArgumentException iae ) {}
+            catch (IllegalArgumentException iae) {}
 
-            // ist der Conditiontype nicht null, kann das entsprechende Attribut geholt werden ...
-            if ( conditionType != null ) {
-                return tmp_node.entity.getAttribute( conditionType );
+            // ist der Conditiontype nicht null, kann das entsprechende Attribut
+            // geholt werden ...
+            if (conditionType != null) {
+                return tmp_node.entity.getAttribute (conditionType);
             }
             else {
-                // ... ansonsten versuchen den Knoten als Kind des elternknotens zu beziehen:
-                ParseNode pn = tmp_node.getChild( terms[i] );
-                if ( pn == null )
+                // ... ansonsten versuchen den Knoten als Kind des elternknotens
+                // zu beziehen:
+                ParseNode pn = tmp_node.getChild (terms[i]);
+                if (pn == null)
                     // wenn der Knoten leer ist ist der Term falsch
-                    throw new ConditionParseException();
+                    throw new ConditionParseException ();
                 else
-                    // ansonsten den neuen tmp_node zuweisen
-                    tmp_node = pn;
+                // ansonsten den neuen tmp_node zuweisen
+                tmp_node = pn;
             }
         }
-        throw new ConditionParseException();
+        throw new ConditionParseException ();
     }
 
     /**
@@ -230,162 +235,162 @@ public class ConditionParser {
      * Terms.
      * 
      * @param infixExpr
-     *            der Term in Infixform
+     * der Term in Infixform
      * @return das Array aus operanden und Operatoren
      */
-    private String[] toTermArray( String infixExpr ) {
-        ArrayList <String> resultArr = new ArrayList <String>();
+    private String[] toTermArray (String infixExpr) {
+        ArrayList <String> resultArr = new ArrayList <String> ();
         String resultString = "";
-        for ( int i = 0; i < infixExpr.length(); i++ ) {
-            String c = infixExpr.substring( i, i + 1 );
-            if ( isOperator( c ) ) {
-                if ( resultString.length() > 0 ) {
-                    resultArr.add( resultString );
-                    resultString = new String();
+        for (int i = 0; i < infixExpr.length (); i++ ) {
+            String c = infixExpr.substring (i, i + 1);
+            if (isOperator (c)) {
+                if (resultString.length () > 0) {
+                    resultArr.add (resultString);
+                    resultString = new String ();
                 }
-                resultArr.add( c );
+                resultArr.add (c);
             }
-            else if ( isParenthesis( c ) ) {
-                if ( resultString.length() > 0 ) {
-                    resultArr.add( resultString );
-                    resultString = new String();
+            else if (isParenthesis (c)) {
+                if (resultString.length () > 0) {
+                    resultArr.add (resultString);
+                    resultString = new String ();
                 }
-                resultArr.add( c );
+                resultArr.add (c);
             }
             else {
                 resultString += c;
             }
         }
-        if ( resultString.length() > 0 )
-            resultArr.add( resultString );
-        return resultArr.toArray( new String[resultArr.size()] );
+        if (resultString.length () > 0)
+            resultArr.add (resultString);
+        return resultArr.toArray (new String[resultArr.size ()]);
     }
 
-    private int getPrecedence( char operator ) {
+    private int getPrecedence (char operator) {
         int ret = 0;
-        if ( operator == '-' || operator == '+' ) {
+        if (operator == '-' || operator == '+') {
             ret = 1;
         }
-        else if ( operator == '*' || operator == '/' ) {
+        else if (operator == '*' || operator == '/') {
             ret = 2;
         }
         return ret;
     }
 
-    public String getConditionString( AbstractEntity entity, Condition condition ) {
+    public String getConditionString (AbstractEntity entity, Condition condition) {
         String resultString = "";
-        AbstractEntity owner = condition.getOwnerNode();
+        AbstractEntity owner = condition.getOwnerNode ();
 
-        if ( owner != null ) {
-            if ( entity == owner ) {
-                if ( condition instanceof SimpleNumber ) {
-                    resultString += condition.getValue().toString();
+        if (owner != null) {
+            if (entity == owner) {
+                if (condition instanceof SimpleNumber) {
+                    resultString += condition.getValue ().toString ();
                 }
-                else if ( condition instanceof CalculatedNumber ) {
+                else if (condition instanceof CalculatedNumber) {
 
-                    resultString += buildCalculatedNumberString( entity, (CalculatedNumber) condition );
+                    resultString += buildCalculatedNumberString (entity, (CalculatedNumber) condition);
                 }
                 else {
-                    throw new ConditionParseException();
+                    throw new ConditionParseException ();
                 }
             }
             else {
                 ConditionTypes type = null;
-                for ( ConditionTypes t : ConditionTypes.values() )
-                    if ( owner.getAttribute( t ) == condition ) {
+                for (ConditionTypes t : ConditionTypes.values ())
+                    if (owner.getAttribute (t) == condition) {
                         type = t;
                         break;
                     }
-                if ( type == null )
-                    resultString += condition.getValue().toString();
+                if (type == null)
+                    resultString += condition.getValue ().toString ();
                 else {
-                    resultString += getEntityName( rootEntity, owner );
-                    resultString += "." + type.name();
+                    resultString += getEntityName (rootEntity, owner);
+                    resultString += "." + type.name ();
                 }
             }
         }
         else {
-            if ( condition instanceof CalculatedNumber )
-                resultString += buildCalculatedNumberString( entity, (CalculatedNumber) condition );
-            else resultString += condition.getValue().toString();
+            if (condition instanceof CalculatedNumber)
+                resultString += buildCalculatedNumberString (entity, (CalculatedNumber) condition);
+            else resultString += condition.getValue ().toString ();
         }
 
         return resultString;
     }
 
-    private String getEntityName( ParseNode searchNode, AbstractEntity entity ) {
-        if ( searchNode.entity == entity )
-            return searchNode.entity.getName();
-        else for ( ParseNode child : searchNode.getChilds() ) {
-            String foundNode = getEntityName( child, entity );
-            if ( foundNode != null )
-                return searchNode.entity.getName() + "." + foundNode;
+    private String getEntityName (ParseNode searchNode, AbstractEntity entity) {
+        if (searchNode.entity == entity)
+            return searchNode.entity.getName ();
+        else for (ParseNode child : searchNode.getChilds ()) {
+            String foundNode = getEntityName (child, entity);
+            if (foundNode != null)
+                return searchNode.entity.getName () + "." + foundNode;
         }
         return null;
     }
 
-    private String buildCalculatedNumberString( AbstractEntity entity, CalculatedNumber calcNumber ) {
+    private String buildCalculatedNumberString (AbstractEntity entity, CalculatedNumber calcNumber) {
 
-        Condition<Number> sourceCondition = calcNumber.getSourceCondition();
-        Condition<Number> valueCondition = calcNumber.getValueCondition();
-        
+        Condition <Number> sourceCondition = calcNumber.getSourceCondition ();
+        Condition <Number> valueCondition = calcNumber.getValueCondition ();
+
         if (sourceCondition instanceof SimpleNumber && valueCondition instanceof SimpleNumber)
-            return calcNumber.getValue().toString();
+            return calcNumber.getValue ().toString ();
 
         boolean sourceParenthesis = false;
-        if ( sourceCondition instanceof CalculatedNumber
-                        && getPrecedence( ( (CalculatedNumber) sourceCondition ).arith.toString().toCharArray()[0] ) < getPrecedence( calcNumber.arith.toString().toCharArray()[0] ) ) {
+        if (sourceCondition instanceof CalculatedNumber
+                        && getPrecedence (((CalculatedNumber) sourceCondition).arith.toString ().toCharArray ()[0]) < getPrecedence (calcNumber.arith.toString ().toCharArray ()[0])) {
             sourceParenthesis = true;
         }
         boolean valueParenthesis = false;
-        if ( valueCondition instanceof CalculatedNumber
-                        && getPrecedence( ( (CalculatedNumber) valueCondition ).arith.toString().toCharArray()[0] ) < getPrecedence( calcNumber.arith.toString().toCharArray()[0] ) ) {
+        if (valueCondition instanceof CalculatedNumber
+                        && getPrecedence (((CalculatedNumber) valueCondition).arith.toString ().toCharArray ()[0]) < getPrecedence (calcNumber.arith.toString ().toCharArray ()[0])) {
             valueParenthesis = true;
         }
 
         String sourceResult;
         String arithResult;
         String valueResult;
-        
-        sourceResult = getConditionString( entity, sourceCondition );
-        arithResult = " " + calcNumber.arith.toString() + " ";
-        valueResult = getConditionString( entity, valueCondition );
-        
+
+        sourceResult = getConditionString (entity, sourceCondition);
+        arithResult = " " + calcNumber.arith.toString () + " ";
+        valueResult = getConditionString (entity, valueCondition);
+
         // * 1 ausschließen
-        if (arithResult.equals( " * " )){
-            if (sourceResult.equals("1")){
+        if (arithResult.equals (" * ")) {
+            if (sourceResult.equals ("1")) {
                 sourceResult = "";
                 arithResult = "";
             }
-            if (valueResult.equals("1")){
+            if (valueResult.equals ("1")) {
                 valueResult = "";
                 arithResult = "";
             }
         }
-        
+
         // klammern setzen
-        if ( sourceParenthesis && valueResult.length() > 0 )
+        if (sourceParenthesis && valueResult.length () > 0)
             sourceResult = "(" + sourceResult + ")";
-        if ( valueParenthesis && sourceResult.length() > 0 )
+        if (valueParenthesis && sourceResult.length () > 0)
             valueResult = "(" + valueResult + ")";
 
         return sourceResult + arithResult + valueResult;
     }
 
-    private boolean operatorGreaterOrEqual( char op1, char op2 ) {
-        return getPrecedence( op1 ) >= getPrecedence( op2 );
+    private boolean operatorGreaterOrEqual (char op1, char op2) {
+        return getPrecedence (op1) >= getPrecedence (op2);
     }
 
-    private boolean isOperator( String val ) {
-        return operators.indexOf( val ) >= 0;
+    private boolean isOperator (String val) {
+        return operators.indexOf (val) >= 0;
     }
 
-    private boolean isParenthesis( String val ) {
-        return parenthesis.indexOf( val ) >= 0;
+    private boolean isParenthesis (String val) {
+        return parenthesis.indexOf (val) >= 0;
     }
 
-    private boolean isOperand( String val ) {
-        return val.matches( operands );
+    private boolean isOperand (String val) {
+        return val.matches (operands);
     }
 
     private class ParseNode {
@@ -394,30 +399,30 @@ public class ConditionParser {
 
         ParseNode                   parent;
 
-        HashMap <String, ParseNode> childs = new HashMap <String, ParseNode>();
+        HashMap <String, ParseNode> childs = new HashMap <String, ParseNode> ();
 
-        public ParseNode( AbstractEntity entity ) {
+        public ParseNode (AbstractEntity entity) {
             this.entity = entity;
         }
 
-        public Collection <ParseNode> getChilds() {
-            return childs.values();
+        public Collection <ParseNode> getChilds () {
+            return childs.values ();
         }
 
-        public AbstractEntity getNode() {
+        public AbstractEntity getNode () {
             return entity;
         }
 
-        public ParseNode getParent() {
+        public ParseNode getParent () {
             return parent;
         }
 
-        public ParseNode getChild( String s ) {
-            return childs.get( s.toLowerCase().replaceAll( "\\s", "" ) );
+        public ParseNode getChild (String s) {
+            return childs.get (s.toLowerCase ().replaceAll ("\\s", ""));
         }
 
-        public void addChild( ParseNode node ) {
-            childs.put( node.entity.getName().toLowerCase().replaceAll( "\\s", "" ), node );
+        public void addChild (ParseNode node) {
+            childs.put (node.entity.getName ().toLowerCase ().replaceAll ("\\s", ""), node);
             node.parent = this;
         }
 

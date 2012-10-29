@@ -130,13 +130,12 @@ public class ArmyBuilderEntityModel extends ArmyListEntityModel {
 
     public EntityType[] getPossibleNodeTypes () {
         EntityType[] resultTypes;
-        if (entity.getParent () != null){
+        if (entity.getParent () != null) {
             EntityType parentType = entity.getParent ().getType ();
             resultTypes = parentType.getChildTypes ();
         }
-        else
-            resultTypes = new EntityType[] {EntityType.ROOT};
-                 
-        return resultTypes; 
+        else resultTypes = new EntityType[] {EntityType.ROOT};
+
+        return resultTypes;
     }
 }

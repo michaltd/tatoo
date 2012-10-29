@@ -43,10 +43,9 @@ public class ArmyTreePanel extends JPanel implements MouseListener {
      * wenn welche existieren, und baut so das JPanel.
      * 
      * @param node
-     *            Der Knoten für den das JPanel zusemmengestelltwerden soll.
+     * Der Knoten für den das JPanel zusemmengestelltwerden soll.
      * @param panel
-     *            Das Eltern-JPanel auf dem die Knoten dargestellt werden
-     *            sollen.
+     * Das Eltern-JPanel auf dem die Knoten dargestellt werden sollen.
      */
     public void buildPanel (Object node, JPanel panel, NodePanelFactory nodeFactory) {
         buildPanel (new ArrayList <OneOfUpgradeModel> (), null, node, panel, nodeFactory);
@@ -57,15 +56,15 @@ public class ArmyTreePanel extends JPanel implements MouseListener {
      * Methode.
      * 
      * @param oneOfUpgradeModel
-     *            TODO
+     * TODO
      * @param parentPanel
-     *            das ElternPanel auf dem die Knoten dargestellt werden sollen.
+     * das ElternPanel auf dem die Knoten dargestellt werden sollen.
      * @param node
-     *            Der darzustellende Knoten.
+     * Der darzustellende Knoten.
      * @param panel
-     *            Das Panel auf dem der übergebene Knoten dargestellt wird.
+     * Das Panel auf dem der übergebene Knoten dargestellt wird.
      * @param nodeFactory
-     *            Die Factory welche das Panel für den Knoten baut.
+     * Die Factory welche das Panel für den Knoten baut.
      */
     private void buildPanel (ArrayList <OneOfUpgradeModel> oneOfUpgradeModel, AbstractNodePanel parentPanel,
                     Object node, JPanel panel, NodePanelFactory nodeFactory) {

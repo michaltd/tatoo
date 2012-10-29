@@ -47,7 +47,7 @@ public class SimpleFiller extends AbstractNodePanel {
 
         JPanel valuePanel = new TatooPanel ();
         valuePanel.setLayout (new BorderLayout ());
-        
+
         final ArmyListEntityModel simpleFillerModel = model;
 
         JButton decrement = new JButton ("-");

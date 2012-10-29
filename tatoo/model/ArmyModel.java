@@ -21,7 +21,7 @@ public interface ArmyModel extends TreeModel {
      * Level 1 entspricht usw. bis der Knoten o erreicht ist.
      * 
      * @param o
-     *            Der Knoten von welchem der Pfad zurück gegeben werden soll.
+     * Der Knoten von welchem der Pfad zurück gegeben werden soll.
      * @return Array von Knoten-Objekten
      */
     public abstract Object[] getTreePathTo (Object o);
@@ -32,7 +32,7 @@ public interface ArmyModel extends TreeModel {
      * angehängt. Ansonsten an das übergebene Parent-Objekt.
      * 
      * @param parent
-     *            Der Parent-Knoten an den das neue Objekt angehängt werden soll
+     * Der Parent-Knoten an den das neue Objekt angehängt werden soll
      * @return das neue Element
      */
     public abstract AbstractEntity insertNewEntity (Object parent);
@@ -48,7 +48,7 @@ public interface ArmyModel extends TreeModel {
      * inserted, nothing happens and the return value is null.
      * 
      * @param treePath
-     *            Path to the node inserted
+     * Path to the node inserted
      * @return the node inserted
      */
     public abstract AbstractEntity insertCopyOf (Object[] treePath);
@@ -58,7 +58,7 @@ public interface ArmyModel extends TreeModel {
      * Knoten Kinder hat.
      * 
      * @param node
-     *            Der zu entfernende Knoten.
+     * Der zu entfernende Knoten.
      */
     public abstract void removeNodeFromParent (Object node);
 

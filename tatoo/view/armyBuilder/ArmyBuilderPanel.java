@@ -63,7 +63,7 @@ public class ArmyBuilderPanel extends JPanel implements ActionListener {
      * creates a new ArmyBuilder Panel with the given model
      * 
      * @param model
-     *            the model which holds the values that should be shown
+     * the model which holds the values that should be shown
      */
     public ArmyBuilderPanel (ArmyListModel model) {
         this.setLayout (new BorderLayout ());
@@ -145,7 +145,8 @@ public class ArmyBuilderPanel extends JPanel implements ActionListener {
             sidebar.add (pane);
         }
         else {
-//TODO was ist das für ein Blödsinn, das View kennt die Daten? Neeee... noch mal überarbeiten!
+            // TODO was ist das für ein Blödsinn, das View kennt die Daten?
+            // Neeee... noch mal überarbeiten!
             if (o instanceof ArmyListEntity) {
                 if ( !(sidebar.getComponent (0) instanceof EntityEditPane)) {
                     sidebar.removeAll ();

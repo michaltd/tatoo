@@ -29,7 +29,7 @@ public class ArmyListModel implements ArmyModel {
      * Instantiiert einen neuen ArmyListEntity-Baum mit root als Wurzelknoten.
      * 
      * @param root
-     *            Die Wurzel des Baumes
+     * Die Wurzel des Baumes
      */
     public ArmyListModel (AbstractEntity root) {
         armyList = root;
@@ -39,7 +39,7 @@ public class ArmyListModel implements ArmyModel {
      * Löst ein TreeNodesChangedEvent aus.
      * 
      * @param e
-     *            Das Event welches an die Listener übergeben wird.
+     * Das Event welches an die Listener übergeben wird.
      */
     public void fireTreeNodesChanged (TreeModelEvent e) {
         Object[] listeners = listenerList.getListenerList ();
@@ -54,7 +54,7 @@ public class ArmyListModel implements ArmyModel {
      * Löst ein TreeNodesInsertedEvent aus.
      * 
      * @param e
-     *            Das Event welches an die Listener übergeben wird.
+     * Das Event welches an die Listener übergeben wird.
      */
     public void fireTreeNodesInserted (TreeModelEvent e) {
         Object[] listeners = listenerList.getListenerList ();
@@ -69,7 +69,7 @@ public class ArmyListModel implements ArmyModel {
      * Löst ein TreeNodesRemovedEvent aus.
      * 
      * @param e
-     *            Das Event welches an die Listener übergeben wird.
+     * Das Event welches an die Listener übergeben wird.
      */
     // TODO: noch mal überarbeiten, so dass nicht das Event übergeben wird,
     // sondern eine Referenz auf das auslösende Objekt.
@@ -86,7 +86,7 @@ public class ArmyListModel implements ArmyModel {
      * Löst ein TreeStructureChangedEvent aus.
      * 
      * @param e
-     *            Das Event welches an die Listener übergeben wird.
+     * Das Event welches an die Listener übergeben wird.
      */
     // TODO: noch mal überarbeiten, so dass nicht das Event übergeben wird,
     // sondern eine Referenz auf das auslösende Objekt.
@@ -114,9 +114,9 @@ public class ArmyListModel implements ArmyModel {
      * <code>parent</code> zurück.
      * 
      * @param parent
-     *            Der Knoten dessen Kindsknoten zurückgegeben werden soll.
+     * Der Knoten dessen Kindsknoten zurückgegeben werden soll.
      * @param index
-     *            Der index des Kindsknotens, der zurückgegeben werden soll.
+     * Der index des Kindsknotens, der zurückgegeben werden soll.
      * @return Den Kindknoten mit dem Index <code>index</code> als Objekt.
      */
     public Object getChild (Object parent, int index) {
@@ -167,7 +167,7 @@ public class ArmyListModel implements ArmyModel {
      * Gibt den Pfad zum dem übergebenen Knoten zurück.
      * 
      * @param o
-     *            Der Knoten dessen Pfad ermittelt werden soll.
+     * Der Knoten dessen Pfad ermittelt werden soll.
      * @return Den Pfad zum Knoten als ein Array von Objects.
      */
     public Object[] getTreePathTo (Object o) {
@@ -179,10 +179,10 @@ public class ArmyListModel implements ArmyModel {
      * aussen aufgerufen muss immer 0 als levelCount übergeben werden.
      * 
      * @param e
-     *            Das ArmyListEntity dessen Pfad zurückgegeben werden soll
+     * Das ArmyListEntity dessen Pfad zurückgegeben werden soll
      * @param levelCount
-     *            die Baumtiefe in der sich der gesuchte Knoten befindet. Wird
-     *            von außen immer mit 0 aufgerufen!
+     * die Baumtiefe in der sich der gesuchte Knoten befindet. Wird von außen
+     * immer mit 0 aufgerufen!
      * @return den Pfad des Baumes als ArrayList
      */
     // TODO: hmmm wieso existiert hier levelCount?? so viel schneller wird die
@@ -201,26 +201,26 @@ public class ArmyListModel implements ArmyModel {
      * Fügt dem Entitybaum einen weiteren leeren Knoten hinzu
      * 
      * @param parent
-     *            Der Knoten dem ein Knoten angehängt werden soll.
+     * Der Knoten dem ein Knoten angehängt werden soll.
      * @return gibt den angehängten Knoten zurück
      */
     // TODO: throw ClassCastException?
     public AbstractEntity insertNewEntity (Object parent) {
 
         EntityType type = EntityType.UPGRADE;
-//        EntityType type;
-//        switch (((AbstractEntity)parent).getType ().ordinal ())
-//        {
-//            case ROOT: 
-//                type = EntityType.CATEGORY;
-//                break;
-//            case CATEGORY:
-//                type = EntityType.NODE;
-//                break;
-//            default:
-//                type = EntityType.UPGRADE;
-//                break;
-//        }
+        // EntityType type;
+        // switch (((AbstractEntity)parent).getType ().ordinal ())
+        // {
+        // case ROOT:
+        // type = EntityType.CATEGORY;
+        // break;
+        // case CATEGORY:
+        // type = EntityType.NODE;
+        // break;
+        // default:
+        // type = EntityType.UPGRADE;
+        // break;
+        // }
         // create new ArmyListEntity with the given Name from language-file
         AbstractEntity newEntity = new ArmyListEntity (type, TextWrapper.getString ("ArmyListModel.0"));
         // create an Array with the new ArmyListEntity as Element
@@ -330,7 +330,7 @@ public class ArmyListModel implements ArmyModel {
      * Entfernt den übergebenen Knoten aus dem Baum.
      * 
      * @param node
-     *            Der Knoten der entfernt werden soll
+     * Der Knoten der entfernt werden soll
      */
     public void removeNodeFromParent (Object node) {
         AbstractEntity delEntity = (AbstractEntity) node;

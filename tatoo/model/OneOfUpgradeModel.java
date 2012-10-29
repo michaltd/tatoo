@@ -66,7 +66,7 @@ public class OneOfUpgradeModel implements EntityListener {
             for (Component c : container.getComponents ()) {
                 if (p != targetPanel) {
                     c.setEnabled (conditionValue == 0 && count == 0);
-//                    c.setVisible (conditionValue == 0 && count == 0);
+                    // c.setVisible (conditionValue == 0 && count == 0);
                     for (Component co : ((Container) c).getComponents ())
                         if (co instanceof JRadioButton) {
                             ((JRadioButton) co).setEnabled (false);

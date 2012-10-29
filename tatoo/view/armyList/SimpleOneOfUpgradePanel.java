@@ -17,8 +17,8 @@ import tatoo.view.CurlyBraceBorder;
 
 /**
  * Panel für einen OneOfUpgrade-Knoten.
+ * 
  * @author mkortz
- *
  */
 @SuppressWarnings ("serial")
 public class SimpleOneOfUpgradePanel extends AbstractNodePanel {
@@ -41,7 +41,7 @@ public class SimpleOneOfUpgradePanel extends AbstractNodePanel {
         contentPanels.add (contentPanel);
         childPanel.setLayout (new BorderLayout ());
         JRadioButton radioButton = new JRadioButton ();
-        radioButton.setEnabled(false);
+        radioButton.setEnabled (false);
         childPanel.add (radioButton, BorderLayout.CENTER);
         radioButtons.add (radioButton);
         if (hasChilds)

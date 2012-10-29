@@ -51,7 +51,8 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
 
         static {
 
-            // jedes Attribut muss zunächst instanziiert und dann auf jeden Fall mögliche Kinder zugewiesen bekommen!
+            // jedes Attribut muss zunächst instanziiert und dann auf jeden Fall
+            // mögliche Kinder zugewiesen bekommen!
             // Neue Attribute dürfen unter values nicht vergessen werden!
             UPGRADE = new EntityType (5, "UPGRADE");
             ONEOFUPGRADE = new EntityType (4, "ONEOFUPGRADE");
@@ -66,7 +67,7 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
             NODE.setChildTypes (new EntityType[] {ANYOFUPGRADE, ONEOFUPGRADE, UPGRADE});
             CATEGORY.setChildTypes (new EntityType[] {NODE});
             ROOT.setChildTypes (new EntityType[] {CATEGORY});
-            
+
             values = new EntityType[] {ROOT, CATEGORY, NODE, ANYOFUPGRADE, ONEOFUPGRADE, UPGRADE};
         }
 
@@ -226,7 +227,7 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
     public void setAttribute (int value, ConditionTypes type) {
         Condition <Integer> attribute = getAttribute (type);
         attribute.setValue (value);
-        fireAttribChanged(type);
+        fireAttribChanged (type);
     }
 
     /**
@@ -319,7 +320,7 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
     @Override
     public void setName (String name) {
         this.name = name;
-        fireAttribChanged(null);
+        fireAttribChanged (null);
     }
 
     /**

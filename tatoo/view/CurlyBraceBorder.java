@@ -16,10 +16,10 @@ public class CurlyBraceBorder extends AbstractBorder {
      * 
      */
     private static final long serialVersionUID = 4722014839583908976L;
-    protected int      thickness;
-    protected Color    lineColor;
-    protected Position position;
-    protected Position direction;
+    protected int             thickness;
+    protected Color           lineColor;
+    protected Position        position;
+    protected Position        direction;
 
     public enum Position {
         LEFT,
@@ -32,10 +32,10 @@ public class CurlyBraceBorder extends AbstractBorder {
      * zeigt nach Rechts.
      * 
      * @param color
-     *            die Farbe für die Klammer
+     * die Farbe für die Klammer
      */
-    public CurlyBraceBorder( Color color ) {
-        this( color, 10 );
+    public CurlyBraceBorder (Color color) {
+        this (color, 10);
     }
 
     /**
@@ -43,12 +43,12 @@ public class CurlyBraceBorder extends AbstractBorder {
      * Die Klammer wird auf der rechten Seite gezeichnet und zeigt nach Rechts.
      * 
      * @param color
-     *            die Farbe für die Klammer
+     * die Farbe für die Klammer
      * @param thickness
-     *            die Breite der Klammer
+     * die Breite der Klammer
      */
-    public CurlyBraceBorder( Color color, int thickness ) {
-        this( color, thickness, Position.RIGHT );
+    public CurlyBraceBorder (Color color, int thickness) {
+        this (color, thickness, Position.RIGHT);
     }
 
     /**
@@ -56,14 +56,14 @@ public class CurlyBraceBorder extends AbstractBorder {
      * Position. Die Klammer zeigt nach Rechts.
      * 
      * @param color
-     *            die Farbe für die Klammer
+     * die Farbe für die Klammer
      * @param thickness
-     *            die Breite der Klammer
+     * die Breite der Klammer
      * @param position
-     *            Die Position der Klammer
+     * Die Position der Klammer
      */
-    public CurlyBraceBorder( Color color, int thickness, Position position ) {
-        this( color, thickness, position, Position.RIGHT );
+    public CurlyBraceBorder (Color color, int thickness, Position position) {
+        this (color, thickness, position, Position.RIGHT);
     }
 
     /**
@@ -71,15 +71,15 @@ public class CurlyBraceBorder extends AbstractBorder {
      * Position und Zeigerichtung.
      * 
      * @param color
-     *            die Farbe für die Klammer
+     * die Farbe für die Klammer
      * @param thickness
-     *            die Breite der Klammer
+     * die Breite der Klammer
      * @param position
-     *            Die Position der Klammer
+     * Die Position der Klammer
      * @param die
-     *            Richtung in die die Klammer zeigt.
+     * Richtung in die die Klammer zeigt.
      */
-    public CurlyBraceBorder( Color color, int thickness, Position position, Position direction ) {
+    public CurlyBraceBorder (Color color, int thickness, Position position, Position direction) {
         lineColor = color;
         this.thickness = thickness;
         this.position = position;
@@ -90,24 +90,24 @@ public class CurlyBraceBorder extends AbstractBorder {
      * Malt die Klammer für die übergebene Komponente.
      * 
      * @param c
-     *            the component for which this border is being painted
+     * the component for which this border is being painted
      * @param g
-     *            the paint graphics
+     * the paint graphics
      * @param x
-     *            the x position of the painted border
+     * the x position of the painted border
      * @param y
-     *            the y position of the painted border
+     * the y position of the painted border
      * @param width
-     *            the width of the painted border
+     * the width of the painted border
      * @param height
-     *            the height of the painted border
+     * the height of the painted border
      */
-    public void paintBorder( Component c, Graphics g, int x, int y, int width, int height ) {
-        if ( ( this.thickness > 0 ) && ( g instanceof Graphics2D ) ) {
+    public void paintBorder (Component c, Graphics g, int x, int y, int width, int height) {
+        if ((this.thickness > 0) && (g instanceof Graphics2D)) {
             Graphics2D g2d = (Graphics2D) g;
 
-            Color oldColor = g2d.getColor();
-            g2d.setColor( this.lineColor );
+            Color oldColor = g2d.getColor ();
+            g2d.setColor (this.lineColor);
 
             int startx;
             int starty;
@@ -121,34 +121,34 @@ public class CurlyBraceBorder extends AbstractBorder {
             int endy;
             int endCPx;
             int endCPy;
-            
+
             int offset = thickness * 2;
-            int spearheadOffset = height/2;
-            
-            if (direction == Position.RIGHT){
+            int spearheadOffset = height / 2;
+
+            if (direction == Position.RIGHT) {
                 startx = endx = x;
                 starty = startCPy = y - 1;
                 startCPx = endCPx = startx + offset;
                 spearheadx = x + thickness;
                 spearheady = spearheadCPy = y + spearheadOffset;
-                endy = endCPy = y + height-2;
+                endy = endCPy = y + height - 2;
                 spearheadCPx = spearheadx - offset;
             }
-            else if (direction == Position.LEFT){
-                startx = endx = x+thickness;
+            else if (direction == Position.LEFT) {
+                startx = endx = x + thickness;
                 starty = startCPy = y - 1;
                 startCPx = endCPx = startx - offset;
                 spearheadx = x;
                 spearheady = spearheadCPy = spearheadOffset;
-                endy = endCPy = y + height -2 ;
+                endy = endCPy = y + height - 2;
                 spearheadCPx = spearheadx + offset;
             }
-            else{
+            else {
                 startx = startCPx = spearheadx = spearheadCPx = endx = endCPx = 0;
                 starty = startCPy = spearheady = spearheadCPy = endy = endCPy = 0;
             }
-            
-            if (position == Position.RIGHT){
+
+            if (position == Position.RIGHT) {
                 startx += width - thickness;
                 startCPx += width - thickness;
                 spearheadx += width - thickness;
@@ -156,24 +156,18 @@ public class CurlyBraceBorder extends AbstractBorder {
                 endx += width - thickness;
                 endCPx += width - thickness;
             }
-            
-            CubicCurve2D curveTop = new CubicCurve2D.Double();
-            curveTop.setCurve(      startx, starty, 
-                                    startCPx , startCPy, 
-                                    spearheadCPx, spearheadCPy, 
-                                    spearheadx, spearheady );
 
-            CubicCurve2D curveBottom = new CubicCurve2D.Double();
-            curveBottom.setCurve(   spearheadx, spearheady, 
-                                    spearheadCPx, spearheadCPy,
-                                    endCPx, endCPy, 
-                                    endx, endy );
-            
-            Path2D path = new Path2D.Float( Path2D.WIND_EVEN_ODD );
-            path.append( curveTop, false );
-            path.append( curveBottom, false );
-            g2d.draw( path );
-            g2d.setColor( oldColor );
+            CubicCurve2D curveTop = new CubicCurve2D.Double ();
+            curveTop.setCurve (startx, starty, startCPx, startCPy, spearheadCPx, spearheadCPy, spearheadx, spearheady);
+
+            CubicCurve2D curveBottom = new CubicCurve2D.Double ();
+            curveBottom.setCurve (spearheadx, spearheady, spearheadCPx, spearheadCPy, endCPx, endCPy, endx, endy);
+
+            Path2D path = new Path2D.Float (Path2D.WIND_EVEN_ODD);
+            path.append (curveTop, false);
+            path.append (curveBottom, false);
+            g2d.draw (path);
+            g2d.setColor (oldColor);
         }
     }
 
@@ -181,26 +175,22 @@ public class CurlyBraceBorder extends AbstractBorder {
      * Returns the insets of the border.
      * 
      * @param c
-     *            the component for which this border insets value applies
+     * the component for which this border insets value applies
      */
-    public Insets getBorderInsets( Component c ) {
+    public Insets getBorderInsets (Component c) {
 
-        return new Insets( 
-                        0, 
-                        position == Position.LEFT ? thickness : 0,
-                        0,
-                        position == Position.RIGHT ? thickness : 0 );
+        return new Insets (0, position == Position.LEFT ? thickness : 0, 0, position == Position.RIGHT ? thickness : 0);
     }
 
     /**
      * Reinitialize the insets parameter with this Border's current Insets.
      * 
      * @param c
-     *            the component for which this border insets value applies
+     * the component for which this border insets value applies
      * @param insets
-     *            the object to be reinitialized
+     * the object to be reinitialized
      */
-    public Insets getBorderInsets( Component c, Insets insets ) {
+    public Insets getBorderInsets (Component c, Insets insets) {
         insets.top = 0;
         insets.bottom = 0;
         insets.left = position == Position.LEFT ? thickness : 0;
@@ -211,14 +201,14 @@ public class CurlyBraceBorder extends AbstractBorder {
     /**
      * Returns the color of the border.
      */
-    public Color getLineColor() {
+    public Color getLineColor () {
         return lineColor;
     }
 
     /**
      * Returns the thickness of the border.
      */
-    public int getThickness() {
+    public int getThickness () {
         return thickness;
     }
 

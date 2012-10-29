@@ -22,7 +22,7 @@ public abstract class AbstractEntityModel implements EntityModel, EntityListener
      * Fügt dem Model einen Listener hinzu
      * 
      * @param l
-     *            Der Listener
+     * Der Listener
      */
     public void addEntityModelListener (EntityModelListener l) {
         listenerList.add (EntityModelListener.class, l);
@@ -32,7 +32,7 @@ public abstract class AbstractEntityModel implements EntityModel, EntityListener
      * Entfernt einen Listener aus der Liste der Listener
      * 
      * @param l
-     *            der Listener der entfernt werden soll.
+     * der Listener der entfernt werden soll.
      */
     public void removeEntityModelListener (EntityModelListener l) {
         listenerList.remove (EntityModelListener.class, l);
@@ -54,7 +54,7 @@ public abstract class AbstractEntityModel implements EntityModel, EntityListener
      * Informiert alle Listener und löst dort das AttribChangedEvent aus.
      * 
      * @param e
-     *            Das Event, das übergeben werden soll.
+     * Das Event, das übergeben werden soll.
      */
     public void fireAttribChanged (EntityModelEvent e) {
         Object[] listeners = listenerList.getListenerList ();

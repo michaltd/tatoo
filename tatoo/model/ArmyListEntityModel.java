@@ -20,7 +20,7 @@ public class ArmyListEntityModel extends AbstractEntityModel {
      * Instanziiert das Model mit dem Übergebenen ArmyListEntity.
      * 
      * @param o
-     *            Das ArmyListEntity das von dem Model gekapselt werden soll.
+     * Das ArmyListEntity das von dem Model gekapselt werden soll.
      */
     public ArmyListEntityModel (Object o) {
         setSource (o);
@@ -52,7 +52,7 @@ public class ArmyListEntityModel extends AbstractEntityModel {
      * Setzt die Anzahl des Entitys.
      * 
      * @param count
-     *            Die neue Anzahl des Entitys.
+     * Die neue Anzahl des Entitys.
      */
     public void setCount (int count) {
         if (((Integer) entity.getAttribute (ConditionTypes.MIN_COUNT).getValue ()) <= count
@@ -76,7 +76,7 @@ public class ArmyListEntityModel extends AbstractEntityModel {
      * setzt die Maximale Anzahl des Entitys.
      * 
      * @param maxCount
-     *            die Maximale Anzahl.
+     * die Maximale Anzahl.
      */
     public void setMaxCount (String maxCount) throws NumberFormatException {
         int value = Integer.parseInt (maxCount);
@@ -96,7 +96,7 @@ public class ArmyListEntityModel extends AbstractEntityModel {
      * Setzt die Minimale Anzahl des Entitys
      * 
      * @param minCount
-     *            die Minimale Anzahl.
+     * die Minimale Anzahl.
      */
     public void setMinCount (String minCount) throws NumberFormatException {
         int value = Integer.parseInt (minCount);
@@ -116,7 +116,7 @@ public class ArmyListEntityModel extends AbstractEntityModel {
      * Setzt den Namen des Entitys.
      * 
      * @param name
-     *            Der Name des Entitys.
+     * Der Name des Entitys.
      */
     public void setName (String name) {
         entity.setName (name);
@@ -133,7 +133,7 @@ public class ArmyListEntityModel extends AbstractEntityModel {
      * Setzt den Preis des Entitys.
      * 
      * @param val
-     *            Der Preis
+     * Der Preis
      */
     public void setPrice (String val) {
         try {
@@ -157,8 +157,7 @@ public class ArmyListEntityModel extends AbstractEntityModel {
      * Setzt das gekapselte Entiy des Models. Löst ein SourceChanged Event aus.
      * 
      * @param o
-     *            Das ArmyListEntity welches von dem Model gekapselt werden
-     *            soll.
+     * Das ArmyListEntity welches von dem Model gekapselt werden soll.
      */
     public void setSource (Object o) {
         try {
@@ -188,8 +187,8 @@ public class ArmyListEntityModel extends AbstractEntityModel {
         return entity.getType ();
     }
 
-//    public int getNodeType () {
-//        return entity.getType ().ordinal ();
-//    }
+    // public int getNodeType () {
+    // return entity.getType ().ordinal ();
+    // }
 
 }

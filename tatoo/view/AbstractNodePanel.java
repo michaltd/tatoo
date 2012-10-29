@@ -12,11 +12,9 @@ import tatoo.model.ArmyListEntityModel;
  * Eigenschaften für die Darstellung des Knotens fest.
  * 
  * @see tatoo.model.entities.AbstractEntity.EntityType
- * 
  * @author mkortz
- * 
  */
-@SuppressWarnings( "serial" )
+@SuppressWarnings ("serial")
 public abstract class AbstractNodePanel extends TatooPanel implements NodePanel {
 
     /** Das Model dieses NodePanels */
@@ -31,26 +29,26 @@ public abstract class AbstractNodePanel extends TatooPanel implements NodePanel 
     /**
      * JPanel für den Inhalt des NodePanels
      */
-    protected JPanel              contentPanel      = new TatooPanel();
+    protected JPanel              contentPanel      = new TatooPanel ();
 
     /**
      * Konstruktor für ein leeres Nodepanel. Ein Knoten muss später mittels
      * {@link #setNode(Object)} manuell hinzugefügt werden.
      */
-    protected AbstractNodePanel() {}
+    protected AbstractNodePanel () {}
 
-    public AbstractNodePanel( Object node ) {
-        this();
-        setNode( node );
+    public AbstractNodePanel (Object node) {
+        this ();
+        setNode (node);
     }
 
     /**
      * Setzt den Wert ob leere Entitys angezeigt werden sollen oder nicht.
      * 
      * @param show
-     *            Leere Entitys anzeigen.
+     * Leere Entitys anzeigen.
      */
-    public void showEmptyEntitys( boolean show ) {
+    public void showEmptyEntitys (boolean show) {
         showEmptyEntities = show;
     }
 
@@ -59,10 +57,10 @@ public abstract class AbstractNodePanel extends TatooPanel implements NodePanel 
      * method {@link #create(JPanel, JPanel, boolean)} instead.
      */
     @Override
-    public final void createNodePanel( JPanel parentPanel, boolean hasChilds ) {
-        if ( showEmptyEntities || hasChilds ) {
-            parentPanel.setLayout( new BoxLayout( parentPanel, alignment ) );
-            create( parentPanel, contentPanel, hasChilds );
+    public final void createNodePanel (JPanel parentPanel, boolean hasChilds) {
+        if (showEmptyEntities || hasChilds) {
+            parentPanel.setLayout (new BoxLayout (parentPanel, alignment));
+            create (parentPanel, contentPanel, hasChilds);
         }
     }
 
@@ -70,40 +68,40 @@ public abstract class AbstractNodePanel extends TatooPanel implements NodePanel 
      * set the node of this Panel
      * 
      * @param node
-     *            the Node
+     * the Node
      */
-    private void setNode( Object node ) {
-        setModel( new ArmyListEntityModel( node ) );
+    private void setNode (Object node) {
+        setModel (new ArmyListEntityModel (node));
     }
 
-    public ArmyListEntityModel getModel() {
+    public ArmyListEntityModel getModel () {
         return model;
     }
 
-    public void setModel( ArmyListEntityModel model ) {
+    public void setModel (ArmyListEntityModel model) {
         this.model = model;
-        this.model.addEntityModelListener( this );
+        this.model.addEntityModelListener (this);
     }
 
-    public boolean showChilds() {
+    public boolean showChilds () {
         return showChilds;
     }
 
-    public void showChilds( boolean showChilds ) {
+    public void showChilds (boolean showChilds) {
         this.showChilds = showChilds;
     }
 
     @Override
-    public JPanel getChildNodePanel() {
+    public JPanel getChildNodePanel () {
         return contentPanel;
     }
 
-    public void setChildNodePanel( JPanel panel ) {
+    public void setChildNodePanel (JPanel panel) {
         contentPanel = panel;
     }
 
-    public void setAlignment( int align ) {
-        contentPanel.setLayout( new BoxLayout( contentPanel, align ) );
+    public void setAlignment (int align) {
+        contentPanel.setLayout (new BoxLayout (contentPanel, align));
         alignment = align;
     }
 
@@ -111,12 +109,12 @@ public abstract class AbstractNodePanel extends TatooPanel implements NodePanel 
      * Here you can create and design your Panel
      * 
      * @param parentPanel
-     *            the Panel on which the Components are laid-out
+     * the Panel on which the Components are laid-out
      * @param hasChilds
-     *            information about wether the node has Childs or not
+     * information about wether the node has Childs or not
      */
-    public abstract void create( JPanel parentPanel, JPanel contentPanel, boolean hasChilds );
+    public abstract void create (JPanel parentPanel, JPanel contentPanel, boolean hasChilds);
 
-    public void childInserted( AbstractNodePanel contentPanel, JPanel childPanel, boolean hasChilds ) {}
+    public void childInserted (AbstractNodePanel contentPanel, JPanel childPanel, boolean hasChilds) {}
 
 }
