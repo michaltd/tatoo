@@ -24,7 +24,7 @@ public interface Condition<T> extends Cloneable {
      * 
      * @return Der Wert der Condition.
      */
-    public T getValue ();
+    public Integer getValue ();
 
     /**
      * Setzt den Wert der Condition.
@@ -43,6 +43,8 @@ public interface Condition<T> extends Cloneable {
      * @return Die geklonte Condition
      * @throws CloneNotSupportedException
      */
+    //TODO: cloneFor muss aus den Conditions entfernt und in eine Factory oder so ausgelagert werden. 
+    // Dann sind wir auch diesen ganzen Owner quatsch los!
     public abstract Condition <T> cloneFor (AbstractEntity entity) throws CloneNotSupportedException;
 
     /**

@@ -1,6 +1,5 @@
 package tatoo.model.entities;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,9 +10,7 @@ import tatoo.model.conditions.CalculatedNumber.Arithmetic;
 import tatoo.model.conditions.Condition;
 import tatoo.model.conditions.Condition.ConditionTypes;
 import tatoo.model.conditions.ConditionListener;
-import tatoo.model.conditions.NumberCondition;
 import tatoo.model.conditions.SimpleNumber;
-import tatoo.model.entities.AbstractEntity.EntityType;
 
 /**
  * Abstrakte Oberklasse aller Entities. <br />
@@ -181,7 +178,7 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
         // keine Kreise erzeugen indem die CalculatedCondition sich selbst als
         // Source übergeben bekommt!
         if (attributes[type.ordinal ()] != attribute) {
-            attributes[type.ordinal ()].setValue ((NumberCondition <Integer>) attribute);
+            attributes[type.ordinal ()].setValue (attribute);
             fireAttribChanged (type);
         }
     }

@@ -16,7 +16,7 @@ import tatoo.model.entities.AbstractEntity;
  * 
  * @author mkortz
  */
-public class CalculatedNumber extends AbstractNumberCondition <Integer> implements ConditionListener {
+public class CalculatedNumber extends AbstractNumberCondition <Integer> implements ConditionListener, CalculatedCondition <Integer> {
 
     /**
      * Die Arithmetik die für die Berechnung der Condition zuständig ist.
@@ -29,7 +29,7 @@ public class CalculatedNumber extends AbstractNumberCondition <Integer> implemen
          */
         ADD ('+') {
 
-            protected Integer solve (NumberCondition <Integer> src, NumberCondition <Integer> val) {
+            protected Integer solve (Condition <Integer> src, Condition <Integer> val) {
                 return src.getValue ().intValue () + val.getValue ().intValue ();
             }
         },
@@ -38,7 +38,7 @@ public class CalculatedNumber extends AbstractNumberCondition <Integer> implemen
          */
         SUBTRACT ('-') {
 
-            protected Integer solve (NumberCondition <Integer> src, NumberCondition <Integer> val) {
+            protected Integer solve (Condition <Integer> src, Condition <Integer> val) {
                 return src.getValue ().intValue () - val.getValue ().intValue ();
             }
         },
@@ -47,7 +47,7 @@ public class CalculatedNumber extends AbstractNumberCondition <Integer> implemen
          */
         MULTIPLY ('*') {
 
-            protected Integer solve (NumberCondition <Integer> src, NumberCondition <Integer> val) {
+            protected Integer solve (Condition <Integer> src, Condition <Integer> val) {
                 return src.getValue ().intValue () * val.getValue ().intValue ();
             }
         },
@@ -56,7 +56,7 @@ public class CalculatedNumber extends AbstractNumberCondition <Integer> implemen
          */
         DIVIDE ('/') {
 
-            protected Integer solve (NumberCondition <Integer> src, NumberCondition <Integer> val) {
+            protected Integer solve (Condition <Integer> src, Condition <Integer> val) {
                 return src.getValue ().intValue () / val.getValue ().intValue ();
             }
         };
@@ -74,13 +74,13 @@ public class CalculatedNumber extends AbstractNumberCondition <Integer> implemen
          * Berechnet mittels der hinterlegten Arithmetik ein Ergebnis aus den
          * Beiden enthaltenen NumberConditions und gibt es als Integer zurück.
          * 
-         * @param src
+         * @param source
          * die source Condition
-         * @param val
+         * @param value
          * die value Condition
          * @return Das Ergebnis der Berechnung als Integer
          */
-        protected abstract Integer solve (NumberCondition <Integer> src, NumberCondition <Integer> val);
+        protected abstract Integer solve (Condition <Integer> source, Condition <Integer> value);
 
         public String toString () {
             return String.valueOf (calculator);
@@ -91,11 +91,11 @@ public class CalculatedNumber extends AbstractNumberCondition <Integer> implemen
     /**
      * Die sourcecondition.
      */
-    NumberCondition <Integer>                          source;
+    Condition <Integer>                                source;
     /**
      * Die Valuecondition.
      */
-    NumberCondition <Integer>                          value;
+    Condition <Integer>                                value;
     /**
      * Die Arithmetik mit der source und value berechnet werden.
      */
@@ -107,11 +107,11 @@ public class CalculatedNumber extends AbstractNumberCondition <Integer> implemen
         this (new SimpleNumber (0), new SimpleNumber (0), Arithmetic.MULTIPLY);
     }
 
-    public CalculatedNumber (NumberCondition <Integer> src, Integer value, Arithmetic a) {
+    public CalculatedNumber (Condition <Integer> src, Integer value, Arithmetic a) {
         this (src, new SimpleNumber (value), a);
     }
 
-    public CalculatedNumber (NumberCondition <Integer> src, NumberCondition <Integer> value, Arithmetic a) {
+    public CalculatedNumber (Condition <Integer> src, Condition <Integer> value, Arithmetic a) {
         this.source = src;
         if (source.getOwnerNode () == null)
             this.source.setOwner (getOwnerNode ());
@@ -133,20 +133,28 @@ public class CalculatedNumber extends AbstractNumberCondition <Integer> implemen
         CalculatedNumber copy = new CalculatedNumber ();
         copy.setOwner (entity);
 
-        copy.source = (NumberCondition <Integer>) source.cloneFor (sourceNode);
+        copy.source = (Condition <Integer>) source.cloneFor (sourceNode);
         copy.source.addChangeListener (copy);
-        copy.value = (NumberCondition <Integer>) value.cloneFor (sourceNode);
+        copy.value = (Condition <Integer>) value.cloneFor (sourceNode);
         copy.value.addChangeListener (copy);
         copy.arith = this.arith;
 
         return copy;
     }
 
-    protected Condition getSourceCondition () {
+    /* (non-Javadoc)
+     * @see tatoo.model.conditions.CalculatedCondition#getSourceCondition()
+     */
+    @Override
+    public Condition getSourceCondition () {
         return source;
     }
 
-    protected Condition getValueCondition () {
+    /* (non-Javadoc)
+     * @see tatoo.model.conditions.CalculatedCondition#getValueCondition()
+     */
+    @Override
+    public Condition getValueCondition () {
         return value;
     }
 
@@ -156,19 +164,20 @@ public class CalculatedNumber extends AbstractNumberCondition <Integer> implemen
     }
 
     @Override
-    public void setValue (Number val) {
+    public void setValue (Integer val) {
         value.setValue (val);
         fireValueChanged (this);
     }
 
-    public void setValue (NumberCondition <Integer> val) {
+    public void setValue (Condition val) {
         value = val;
         value.addChangeListener (this);
         fireValueChanged (this);
     }
 
+    @Override
     public void setSource (Condition src) {
-        source = (NumberCondition <Integer>) src;
+        source = src;
     }
 
     public String toString () {
@@ -179,5 +188,11 @@ public class CalculatedNumber extends AbstractNumberCondition <Integer> implemen
     public void valueChanged (Condition source) {
         fireValueChanged (source);
     }
+    
+    @Override
+    public Character getOperator () {
+        return arith.toString ().toCharArray ()[0];
+    }
+
 
 }

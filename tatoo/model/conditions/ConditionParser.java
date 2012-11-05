@@ -5,10 +5,7 @@ import java.util.Collection;
 import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.Stack;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import tatoo.model.conditions.CalculatedNumber.Arithmetic;
 import tatoo.model.conditions.Condition.ConditionTypes;
 import tatoo.model.entities.AbstractEntity;
 import tatoo.model.entities.AbstractEntity.EntityType;
@@ -24,11 +21,11 @@ public class ConditionParser {
     /**
      * Erlaubte Operatoren in umgekehrter Reihenfolge der Wertigkeit
      */
-    private static final String operators   = "-+/*";
+    private static final String operators   = "-+/*<>=";
     /**
      * Regular Expression für Operanden
      */
-    private static final String operands    = "([A-Za-z0-9_]+\\.?)+";
+    private static final String operands    = "([A-Za-z0-9_ ]+\\.?)+";
     /**
      * Klammern welche in dem Term erlaubt sind
      */
@@ -76,6 +73,7 @@ public class ConditionParser {
      * Infixterm mit Conditdions als Operanden.
      * @return der durch den übergebenen String festgelegte Condition-Baum
      */
+    @SuppressWarnings ("rawtypes")
     public Condition createCondition (String infix) {
         Condition result = evaluatePostfix (convertToPostfix (infix));
         if (result == null)
@@ -85,7 +83,8 @@ public class ConditionParser {
 
     private ArrayList <String> convertToPostfix (String infixExpr) {
         // whitespaces entfernen und zu array machen
-        String[] terms = toTermArray (infixExpr.replaceAll ("\\s", ""));
+        // String[] terms = toTermArray (infixExpr.replaceAll ("\\s", ""));
+        String[] terms = toTermArray (infixExpr);
 
         Stack <String> stack = new Stack <String> ();
         ArrayList <String> out = new ArrayList <String> ();
@@ -136,37 +135,53 @@ public class ConditionParser {
             throw new ConditionParseException ();
         for (String term : postfixExpr) {
             if (isOperator (term)) {
-                NumberCondition <Integer> op1;
-                NumberCondition <Integer> op2;
+                Condition op1;
+                Condition op2;
                 try {
-                    op1 = (NumberCondition <Integer>) stack.pop ();
-                    op2 = (NumberCondition <Integer>) stack.pop ();
+                    op1 = stack.pop ();
+                    op2 = stack.pop ();
                 }
                 catch (EmptyStackException ese) {
                     throw new ConditionParseException ();
                 }
                 if (op1 == null || op2 == null)
                     throw new ConditionParseException ();
-                Arithmetic ar = null;
+                CalculatedNumber.Arithmetic arNum = null;
                 switch (term.charAt (0)) {
                     case '*':
-                        ar = Arithmetic.MULTIPLY;
+                        arNum = CalculatedNumber.Arithmetic.MULTIPLY;
                         break;
                     case '/':
-                        ar = Arithmetic.DIVIDE;
+                        arNum = CalculatedNumber.Arithmetic.DIVIDE;
                         break;
                     case '+':
-                        ar = Arithmetic.ADD;
+                        arNum = CalculatedNumber.Arithmetic.ADD;
                         break;
                     case '-':
-                        ar = Arithmetic.SUBTRACT;
+                        arNum = CalculatedNumber.Arithmetic.SUBTRACT;
                         break;
                 }
-                stack.push (new CalculatedNumber ((NumberCondition <Integer>) op2, op1, ar));
+                if (arNum != null)
+                    stack.push (new CalculatedNumber (op2, op1, arNum));
+                else {
+                    TrueFalseCondition.Arithmetic arBool = null;
+                    switch (term.charAt (0)) {
+                        case '=':
+                            arBool = TrueFalseCondition.Arithmetic.EQ;
+                            break;
+                        case '>':
+                            arBool = TrueFalseCondition.Arithmetic.GT;
+                            break;
+                        case '<':
+                            arBool = TrueFalseCondition.Arithmetic.LT;
+                            break;
+                    }
+                    if (arBool != null)
+                        stack.push (new TrueFalseCondition (op2, op1, arBool));
+                }
             }
             else if (isOperand (term)) {
                 // Condition suchen bzw. instantiieren und auf den Stack legen.
-
                 // Das ist einfach wenn es sich um eine Zahl handelt:
                 if (term.matches ("[0-9]+")) {
                     stack.push (new SimpleNumber (Integer.parseInt (term)));
@@ -188,6 +203,7 @@ public class ConditionParser {
      * Der Term, der den Ort der Condition beschreibt.
      * @return Die Condition.
      */
+    @SuppressWarnings ("rawtypes")
     private Condition getCondition (String term) {
 
         ParseNode tmp_node = rootEntity;
@@ -245,24 +261,29 @@ public class ConditionParser {
             String c = infixExpr.substring (i, i + 1);
             if (isOperator (c)) {
                 if (resultString.length () > 0) {
-                    resultArr.add (resultString);
+                    resultArr.add (resultString.trim ());
                     resultString = new String ();
                 }
                 resultArr.add (c);
             }
             else if (isParenthesis (c)) {
                 if (resultString.length () > 0) {
-                    resultArr.add (resultString);
+                    resultArr.add (resultString.trim ());
                     resultString = new String ();
                 }
                 resultArr.add (c);
             }
             else {
                 resultString += c;
+                // if (isBooleanExpression (resultString)) {
+                // resultArr.add (resultString.trim ());
+                // resultString = new String ();
+                // }
+
             }
         }
         if (resultString.length () > 0)
-            resultArr.add (resultString);
+            resultArr.add (resultString.trim ());
         return resultArr.toArray (new String[resultArr.size ()]);
     }
 
@@ -274,9 +295,13 @@ public class ConditionParser {
         else if (operator == '*' || operator == '/') {
             ret = 2;
         }
+        else if (operator == '<' || operator == '>') {
+            ret = 3;
+        }
         return ret;
     }
 
+    @SuppressWarnings ("rawtypes")
     public String getConditionString (AbstractEntity entity, Condition condition) {
         String resultString = "";
         AbstractEntity owner = condition.getOwnerNode ();
@@ -286,9 +311,9 @@ public class ConditionParser {
                 if (condition instanceof SimpleNumber) {
                     resultString += condition.getValue ().toString ();
                 }
-                else if (condition instanceof CalculatedNumber) {
+                else if (condition instanceof CalculatedCondition) {
 
-                    resultString += buildCalculatedNumberString (entity, (CalculatedNumber) condition);
+                    resultString += buildCalculatedNumberString (entity, (CalculatedCondition) condition);
                 }
                 else {
                     throw new ConditionParseException ();
@@ -310,8 +335,8 @@ public class ConditionParser {
             }
         }
         else {
-            if (condition instanceof CalculatedNumber)
-                resultString += buildCalculatedNumberString (entity, (CalculatedNumber) condition);
+            if (condition instanceof CalculatedCondition)
+                resultString += buildCalculatedNumberString (entity, (CalculatedCondition) condition);
             else resultString += condition.getValue ().toString ();
         }
 
@@ -329,31 +354,18 @@ public class ConditionParser {
         return null;
     }
 
-    private String buildCalculatedNumberString (AbstractEntity entity, CalculatedNumber calcNumber) {
+    @SuppressWarnings ("rawtypes")
+    private String buildCalculatedNumberString (AbstractEntity entity, CalculatedCondition calcNumber) {
 
-        Condition <Number> sourceCondition = calcNumber.getSourceCondition ();
-        Condition <Number> valueCondition = calcNumber.getValueCondition ();
-
-        if (sourceCondition instanceof SimpleNumber && valueCondition instanceof SimpleNumber)
-            return calcNumber.getValue ().toString ();
-
-        boolean sourceParenthesis = false;
-        if (sourceCondition instanceof CalculatedNumber
-                        && getPrecedence (((CalculatedNumber) sourceCondition).arith.toString ().toCharArray ()[0]) < getPrecedence (calcNumber.arith.toString ().toCharArray ()[0])) {
-            sourceParenthesis = true;
-        }
-        boolean valueParenthesis = false;
-        if (valueCondition instanceof CalculatedNumber
-                        && getPrecedence (((CalculatedNumber) valueCondition).arith.toString ().toCharArray ()[0]) < getPrecedence (calcNumber.arith.toString ().toCharArray ()[0])) {
-            valueParenthesis = true;
-        }
+        Condition sourceCondition = calcNumber.getSourceCondition ();
+        Condition valueCondition = calcNumber.getValueCondition ();
 
         String sourceResult;
         String arithResult;
         String valueResult;
 
         sourceResult = getConditionString (entity, sourceCondition);
-        arithResult = " " + calcNumber.arith.toString () + " ";
+        arithResult = " " + calcNumber.getOperator () + " ";
         valueResult = getConditionString (entity, valueCondition);
 
         // * 1 ausschließen
@@ -368,11 +380,37 @@ public class ConditionParser {
             }
         }
 
-        // klammern setzen
-        if (sourceParenthesis && valueResult.length () > 0)
+        if (sourceCondition instanceof SimpleNumber && valueCondition instanceof SimpleNumber)
+            return calcNumber.getValue ().toString ();
+
+        // Klammern setzen
+        // Prüfen ob im sourceResult ein Operand ist (sonst müssen keine
+        // Klammern gesetzt werden
+        boolean sourceContainsOperand = false;
+        if (sourceResult.length () > 0)
+            for (int i = 0; i < operators.length (); i++ )
+                if (sourceResult.contains (operators.substring (i, i + 1))) {
+                    sourceContainsOperand = true;
+                    break;
+                }
+        boolean valueContainsOperand = false;
+        if (valueResult.length () > 0)
+            for (int i = 0; i < operators.length (); i++ )
+                if (valueResult.contains (operators.substring (i, i + 1))) {
+                    valueContainsOperand = true;
+                    break;
+                }
+        if (sourceCondition instanceof CalculatedCondition
+                        && getPrecedence (((CalculatedCondition) sourceCondition).getOperator ()) < getPrecedence (calcNumber.getOperator ())
+                        && valueResult.length () > 0 && sourceContainsOperand) {
             sourceResult = "(" + sourceResult + ")";
-        if (valueParenthesis && sourceResult.length () > 0)
+        }
+
+        if (valueCondition instanceof CalculatedCondition
+                        && getPrecedence (((CalculatedCondition) valueCondition).getOperator ()) < getPrecedence (calcNumber.getOperator ())
+                        && sourceResult.length () > 0 && valueContainsOperand) {
             valueResult = "(" + valueResult + ")";
+        }
 
         return sourceResult + arithResult + valueResult;
     }
@@ -382,16 +420,26 @@ public class ConditionParser {
     }
 
     private boolean isOperator (String val) {
-        return operators.indexOf (val) >= 0;
+        return operators.indexOf (val) >= 0 && val.length() > 0;
     }
 
     private boolean isParenthesis (String val) {
-        return parenthesis.indexOf (val) >= 0;
+        return parenthesis.indexOf (val) >= 0 && val.length() > 0;
     }
 
     private boolean isOperand (String val) {
         return val.matches (operands);
     }
+
+    // private boolean isBooleanExpression (String val) {
+    // if (val.endsWith (" ")) {
+    // String[] boolExpr = booleanExpressions.split (",");
+    // for (String expr : boolExpr)
+    // if (expr.equalsIgnoreCase (val.trim ()))
+    // return true;
+    // }
+    // return false;
+    // }
 
     private class ParseNode {
 
@@ -407,14 +455,6 @@ public class ConditionParser {
 
         public Collection <ParseNode> getChilds () {
             return childs.values ();
-        }
-
-        public AbstractEntity getNode () {
-            return entity;
-        }
-
-        public ParseNode getParent () {
-            return parent;
         }
 
         public ParseNode getChild (String s) {
