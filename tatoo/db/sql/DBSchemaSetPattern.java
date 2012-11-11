@@ -1,5 +1,6 @@
 package tatoo.db.sql;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 
 import java.util.ArrayList;
@@ -83,6 +84,7 @@ public class DBSchemaSetPattern extends DBSchemaPattern {
         Object o = fld.get (c.cast (ds));
         if (type.equalsIgnoreCase ("ArrayList")) { return ((ArrayList) o).toArray (); }
         if (type.equalsIgnoreCase ("EventListenerList")) { return ((EventListenerList) o).getListenerList (); }
+        if (type.equalsIgnoreCase ("Array")) { return (Object[])o; }
         return null;
     }
 }

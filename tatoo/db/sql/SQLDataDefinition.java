@@ -24,7 +24,7 @@ public class SQLDataDefinition extends DataDefinition {
 
     @Override
     protected boolean create () {
-        String sqlString = "CREATE TABLE \"" + t_Name + "\" (";
+        String sqlString = "CREATE TABLE IF NOT EXISTS \"" + t_Name + "\" (";
         for (String columnName : t_columns.keySet ()) {
             sqlString += columnName + " " + t_columns.get (columnName) + ",";
         }

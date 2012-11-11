@@ -226,7 +226,6 @@ public abstract class DBConnection {
      */
     public void migrate () {
         LinkedList <Migration> migrationList = getMigrationList ();
-        System.out.println (migrationList);
         if (migrationList != null && migrationList.size () > 0) {
             migrate (migrationList.getLast ().getVersion ());
         }
@@ -316,7 +315,14 @@ public abstract class DBConnection {
      * Liste von auszuführenden Migrationen.
      */
     private void migrate_down (LinkedList <Migration> migrations) {
-        for (Migration m : migrations) {
+        // flache Kopie der Liste erzeugen:
+        @SuppressWarnings ("unchecked")
+        LinkedList <Migration> tmp_mig = (LinkedList <Migration>) migrations.clone ();
+
+        Migration m;
+        while (tmp_mig.size() > 0) {
+            m = tmp_mig.getLast ();
+            tmp_mig.removeLast ();
             if (m.getVersion ().compareTo (Tatoo.VERSION) > 0) { throw new MigrationInvocationException ("VersionNumber of Migration less than actual VersionNumber"); }
 
             m.migration_down ();
@@ -347,11 +353,11 @@ public abstract class DBConnection {
             for (File f : migrationDir.listFiles ()) {
                 String fileName = f.getName ();
 
-                if ( !fileName.endsWith (".java")) {
+                if ( !(fileName.endsWith (".java") || fileName.endsWith (".class"))) {
                     continue;
                 }
 
-                fileName = "tatoo.db.migrate." + fileName.substring (0, fileName.length () - 5);
+                fileName = "tatoo.db.migrate." + fileName.substring (0, fileName.lastIndexOf ('.'));
                 Migration migration = null;
 
                 try {

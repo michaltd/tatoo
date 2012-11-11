@@ -8,40 +8,25 @@ public class InitialAddOfAllTables extends Migration {
     @Override
     public void up () {
 
-        createTableWithID ("entity", "parent:INTEGER");
-
-        createTableWithID ("abstract_entity", "name:VARCHAR(45)", "price:INTEGER", "count:INTEGER",
-                        "entity_type:VARCHAR");
-
-        createTableWithID ("abstract_upgrade", "receiving_entity_id:INTEGER");
-
-        createTableWithID ("real_entity", "max_count_id:INTEGER", "min_count_id:INTEGER");
-
-        createTableWithID ("simple_number", "number:INTEGER");
-
-        createTable ("realentity_entities", "real_entity_id:INTEGER", "entities_id:INTEGER");
-
+        createTable ("abstract_entity", "entity_type:INTEGER", "name:VARCHAR(45)", "parent:INTEGER");
+        createTable ("simple_number", "number:INTEGER");
         createTable ("calculated_number", "source:Integer", "value:Integer", "arith:VARCHAR");
-
-        createTable ("abstract_number_condition");
-
-        createTable ("abstract_number_condition_listeners", "abstract_number_condition_id:Integer",
-                        "listenerList_id:Integer");
+        createTable ("true_false_condition", "source:Integer", "value:Integer", "arith:VARCHAR");
+        createTable ("abstract_number_condition", "owner_node:INTEGER");
+        createTable ("entity_type", "name:VARCHAR(20)", "ordinal:INTEGER");
 
     }
 
     @Override
     public void down () {
 
-        dropTable ("entity");
         dropTable ("abstract_entity");
-        dropTable ("abstract_upgrade");
-        dropTable ("real_entity");
         dropTable ("simple_number");
-        dropTable ("realentity_entities");
         dropTable ("calculated_number");
+        dropTable ("true_false_condition");
         dropTable ("abstract_number_condition");
-        dropTable ("abstract_number_condition_listeners");
+        dropTable ("entity_type");
+        
     }
 
     @Override

@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Hashtable;
 
+import tatoo.db.DataDefinition;
 import tatoo.db.DataManipulation;
 import tatoo.db.Dataset;
 import tatoo.db.sql.DBSchemaPattern.SchemaType;
@@ -88,8 +89,10 @@ public class SQLDataManipulation extends DataManipulation {
      * Fügt die übergebenen Daten in die Datenbank ein. Sollte nicht aufgerufen
      * werden wenn das einfügen über die Methode {@link #insert(Dataset)}
      * möglich ist.
+     * 
+     * @throws SQLException
      */
-    private int insert () {
+    private int insert () throws SQLException {
         if (t_name == null)
             return -1;
         String columnNames = new String ("");
@@ -107,15 +110,15 @@ public class SQLDataManipulation extends DataManipulation {
             sql = new String ("INSERT INTO \"dataset\" (type) values ('" + t_class + "');");
         else sql = new String ("INSERT INTO \"" + t_name + "\" (" + columnNames + ") values (" + columnValues + ");");
         int result = -1;
-        try {
-            result = execute (sql);
-        }
-        catch (SQLException e) {
-            // // State 42S02 = Table not Found -> Sie muss angelegt werden!
-            // if (e.getSQLState() == "42S02")
-
-            e.printStackTrace ();
-        }
+        // try {
+        result = execute (sql);
+        // }
+        // catch (SQLException e) {
+        // // // State 42S02 = Table not Found -> Sie muss angelegt werden!
+        // // if (e.getSQLState() == "42S02")
+        //
+        // e.printStackTrace ();
+        // }
         return result;
     }
 
@@ -161,7 +164,11 @@ public class SQLDataManipulation extends DataManipulation {
         // dieses Objekt wird also sofort in den Cache geschoben, da es gerade
         // in die DB eingefügt wurde.
         if (id == 0) {
-            id = insert ();
+            try {
+                id = insert ();
+            }
+            catch (SQLException sqle) {}
+
             // die id des Objektes setzen. Geschieht über Reflection weil setId
             // eine private Methode ist.
             try {
@@ -193,7 +200,10 @@ public class SQLDataManipulation extends DataManipulation {
             alterValue ("dataset_id = " + id); // jede Tabelle (außer das
                                                // Dataset selbst) bekommt die
                                                // dataset_id übergeben.
-            insert ();
+            try {
+                insert ();
+            }
+            catch (SQLException sqle) {}
         }
 
         // TODO: das folgende auslagern in eine eigene Methode?
@@ -205,6 +215,12 @@ public class SQLDataManipulation extends DataManipulation {
             if (def.getSchemaType () == SchemaType.CLASS) {
                 // die Sets durchlaufen ...
                 for (DBSchemaSetPattern set : ((DBSchemaClassPattern) def).getSets ()) {
+                    // existiert die Tabelle für das Objekt? Sie wird auf jeden Fall angelegt:
+                    SQLDataDefinition ddf = new SQLDataDefinition (dbconn, schema);
+                    ddf.setTableName (set.getTableName ());
+                    ddf.addColumns ("one_id:INTEGER", "to_many_id:INTEGER");
+                    ddf.create ();
+                    
                     // ... und die einzelnen Objecte darin ...
                     Object[] objects = {};
                     try {
@@ -246,9 +262,34 @@ public class SQLDataManipulation extends DataManipulation {
                         // zu schaffen
                         SQLDataManipulation insertSet = new SQLDataManipulation (dbconn, schema);
                         insertSet.setTableName (set.getTableName ());
-                        insertSet.alterValue (set.getName () + "_id = " + id);
-                        insertSet.alterValue (schema.getTableName (c) + "_id = " + itemId);
-                        insertSet.insert ();
+
+                        Class tmp_class = datset.getClass ();
+                        String targetTable = schema.getTableName (tmp_class);
+                        while (targetTable == null && tmp_class != null) {
+                            tmp_class = tmp_class.getSuperclass ();
+                            targetTable = schema.getTableName (tmp_class);
+                        }
+                        insertSet.alterValue ("to_many_id = " + itemId);
+                        insertSet.alterValue ("one_id = " + id);
+                        try {
+                            insertSet.insert ();
+                        }
+                        catch (SQLException sqle) {
+                            // State 42S02 = Table not Found -> Sie muss
+                            // angelegt werden!
+                            if (sqle.getSQLState ().equals ("42S02")) {
+//                                SQLDataDefinition ddf = new SQLDataDefinition (dbconn, schema);
+//                                ddf.setTableName (set.getTableName ());
+//                                ddf.addColumns ("one_id:INTEGER", "to_many_id:INTEGER");
+//                                ddf.create ();
+                                try {
+                                    insertSet.insert ();
+                                }
+                                catch (SQLException e) {
+                                    e.printStackTrace ();
+                                }
+                            }
+                        }
                     }
                 }
             }

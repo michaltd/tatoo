@@ -122,7 +122,7 @@ public abstract class Migration implements Comparable <Migration> {
         down ();
         DataManipulation dm = dbConn.createDataManipulation ();
         dm.setTableName ("migration_schema");
-        dm.setCondition ("version = " + getVersion ());
+        dm.setCondition ("version = " + getVersion ().intValue());
         dm.delete ();
     }
 

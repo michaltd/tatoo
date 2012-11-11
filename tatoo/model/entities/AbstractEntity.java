@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.swing.event.EventListenerList;
 
+import tatoo.db.Dataset;
 import tatoo.model.conditions.CalculatedNumber;
 import tatoo.model.conditions.CalculatedNumber.Arithmetic;
 import tatoo.model.conditions.Condition;
@@ -32,7 +33,7 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
      * 
      * @author mkortz
      */
-    public static class EntityType {
+    public static class EntityType extends Dataset {
 
         public static final EntityType ROOT;
         public static final EntityType CATEGORY;
@@ -73,6 +74,9 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
             this.ordinal = ordinal;
             this.name = name;
         }
+        
+        //Konstruktor für das deserialisieren aus der DB
+        public EntityType(){}
 
         private void setChildTypes (EntityType[] t) {
             this.possibleChildTypes = new EntityType[t.length];
@@ -93,6 +97,10 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
 
         public EntityType[] getChildTypes () {
             return possibleChildTypes;
+        }
+
+        public String toString () {
+            return name;
         }
 
     }
@@ -156,6 +164,7 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
      * @return Das geklonte Entity
      * @throws CloneNotSupportedException
      */
+    // TODO: das ist blöd hier. Eventuell durch eine Factory ersetzen oder so?
     public abstract AbstractEntity cloneFor (AbstractEntity parent) throws CloneNotSupportedException;
 
     /**

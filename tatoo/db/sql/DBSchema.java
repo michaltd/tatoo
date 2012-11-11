@@ -3,9 +3,11 @@ package tatoo.db.sql;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
+
 import tatoo.db.sql.DBSchemaPattern.SchemaType;
 
 /**

@@ -22,8 +22,8 @@ public class DBFactory {
         // TODO hier muss per Reflection der "Treiber" geladen werden
         // (SQLConnection, XMLConnection oder MySQLConnection usw.)
         // zur zeit noch einfach so eingestellt
-        // conn = new SQLConnection(DBases.H2Server);
-        conn = new SQLConnection (DBases.H2);
+        conn = new SQLConnection (DBases.H2Server);
+//        conn = new SQLConnection (DBases.H2);
         conn.connect ();
     }
 

@@ -1,5 +1,6 @@
 package tatoo.db.sql;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.sql.Connection;
@@ -14,6 +15,7 @@ import javax.swing.event.EventListenerList;
 import tatoo.db.DBFactory;
 import tatoo.db.Dataset;
 import tatoo.db.Query;
+import tatoo.model.conditions.CalculatedNumber;
 
 /**
  * Implementierung einer Query für die Verbindung mit der SQL-Datenbank H2.
@@ -183,16 +185,20 @@ public class SQLQuery extends Query {
                 e.printStackTrace ();
             }
         }
-        // test test test das objekt auslesen, für debuggingzwecke eingefügt um
-        // mir das Objekt im Cache anzusehen
-        Dataset testCache = getFromCache (rowObject.getId ());
+
         // .. und dann die sets durchlaufen und mit Werten belegen.
         for (DBSchemaSetPattern set : table.getSets ()) {
 
-            // Die entsprechenden Datensätze aus der dem Set zugeordneten
+            // zunächst die zieltabelle herausfinden:
+            Class tmp_class = rowObject.getClass ();
+            String targetTable = schema.getTableName (tmp_class);
+            while (targetTable == null && tmp_class != null) {
+                tmp_class = tmp_class.getSuperclass ();
+                targetTable = schema.getTableName (tmp_class);
+            }
+            // Dann die entsprechenden Datensätze aus der dem Set zugeordneten
             // Tabelle holen ...
-            String stmt = "SELECT * FROM \"" + set.getTableName () + "\" WHERE " + set.getName () + "_id = "
-                            + rowObject.getId ();
+            String stmt = "SELECT * FROM \"" + set.getTableName () + "\" WHERE " + "one_id = " + rowObject.getId ();
             ResultSet resultSet;
             ArrayList <Dataset> resultCollection = new ArrayList <Dataset> ();
             try {
@@ -200,8 +206,7 @@ public class SQLQuery extends Query {
                 // ... und dann einzeln durchlaufen und Objekte initialisieren
                 while (resultSet.next ()) {
                     // die Dataset_Id des zu erzeugenden Objektes holen
-                    // int newIdReal = resultSet.getInt(1);
-                    int newId = resultSet.getInt (2);
+                    int newId = resultSet.getInt ("to_many_id");
                     // und damit den Typen des zu erzeugenden Objektes
                     // heraussuchen
                     String stmt2 = "SELECT * FROM \"dataset\" WHERE dataset_id = " + newId;
@@ -224,11 +229,23 @@ public class SQLQuery extends Query {
                     }
 
                 }
+                if (set.getType ().equals ("Array")) {
+                    // Typ des Arrays holen
+                    Class <?> resultType = cl.getDeclaredField (set.getName ()).getType ().getComponentType ();
+                    // Leeres Array mit dem Typ erzeugen
+                    resultCollectionAsObject = Array.newInstance (resultType, resultCollection.size ());
+                    // Und die Werte eintragen
+                    for (int i = 0; i < resultCollection.size (); i++ ) {
+                        Array.set (resultCollectionAsObject, i, resultCollection.get (i));
+                    }
+
+                }
                 Field fld = cl.getDeclaredField (set.getName ());
                 fld.setAccessible (true);
                 fld.set (rowObject, resultCollectionAsObject);
             }
             catch (SQLException e) {
+
                 e.printStackTrace ();
             }
             catch (ClassNotFoundException e) {
@@ -291,21 +308,29 @@ public class SQLQuery extends Query {
                 // da es nur die ID des eigentlichen Objektes darstellt
                 if ( !(fld.getType ().isPrimitive () || Number.class.isAssignableFrom (fld.getType ())
                                 || String.class.isAssignableFrom (fld.getType ()) || fld.getType ().isEnum ())) {
-                    // zunächst die Dataset-Tabelle abfragen, um an den zu
-                    // instanziierenden Typ zu kommen
-                    SQLQuery typeQuery = new SQLQuery (dbconn, schema);
-                    typeQuery.get (Dataset.class);
-                    typeQuery.addCondition ("dataset_id =" + ((Integer) resultObject).intValue ());
-                    String stmt = typeQuery.composeStatement ();
-                    ResultSet resultSet = dbconn.createStatement ().executeQuery (stmt);
-                    // und dann das Objekt selbst holen:
-                    SQLQuery objektQuery = new SQLQuery (dbconn, schema);
-                    if (resultSet.first ()) {
-                        String className = resultSet.getString ("type");
-                        Class <?> c = Class.forName (className);
-                        objektQuery.get (c);
-                        objektQuery.addCondition ("\"dataset\".dataset_id=" + ((Integer) resultObject).intValue ());
-                        resultObject = objektQuery.execute ().getFirst ();
+                    // den ganzen quatsch nachher können wir uns sparen wenn das
+                    // zu suchende Objekt bereits im Cache ist:
+                    Dataset cachedObject = getFromCache (((Integer) resultObject).intValue ());
+                    if (cachedObject != null) {
+                        resultObject = cachedObject;
+                    }
+                    else {
+                        // zunächst die Dataset-Tabelle abfragen, um an den zu
+                        // instanziierenden Typ zu kommen
+                        SQLQuery typeQuery = new SQLQuery (dbconn, schema);
+                        typeQuery.get (Dataset.class);
+                        typeQuery.addCondition ("dataset_id =" + ((Integer) resultObject).intValue ());
+                        String stmt = typeQuery.composeStatement ();
+                        ResultSet resultSet = dbconn.createStatement ().executeQuery (stmt);
+                        // und dann das Objekt selbst holen:
+                        SQLQuery objektQuery = new SQLQuery (dbconn, schema);
+                        if (resultSet.first ()) {
+                            String className = resultSet.getString ("type");
+                            Class <?> c = Class.forName (className);
+                            objektQuery.get (c);
+                            objektQuery.addCondition ("\"dataset\".dataset_id=" + ((Integer) resultObject).intValue ());
+                            resultObject = objektQuery.execute ().getFirst ();
+                        }
                     }
                 }
                 if (fld.getType ().isEnum ()) {

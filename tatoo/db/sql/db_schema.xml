@@ -3,25 +3,20 @@
 	<class name="VersionNumber" table="migration_schema" >
 		<property name="version" column="version"/>
 	</class>
-	<class name="Entity" table="entity">
-		<property name="parent" column="parent"/>
+	<class name="Dataset" table="dataset">
+		<property name="id" column="dataset_id"/>
 	</class>
 	<class name="AbstractEntity" table="abstract_entity">
 		<property name="type" column="entity_type" />
 		<property name="name" column="name"/>
-		<property name="price" column="price" type="" />
-		<property name="count" column="count"/>
+		<set name="attributes" table="abstract_entity_attributes" type="Array" />
+		<set name="listenerList" table="abstract_entity_listeners" type="EventListenerList" />
+		<property name="parent" column="parent" />
+		<set name="entities" table="abstract_entity_entities" type="ArrayList" />
 	</class>
-	<class name="Dataset" table="dataset">
-		<property name="id" column="dataset_id"/>
-	</class>
-	<class name="AbstractUpgrade" table="abstract_upgrade" >
-		<property name="receivingEntity" column="receiving_entity_id" />
-	</class>
-	<class name="RealEntity" table="real_entity">
-		<property name="maxCount" column="max_count_id" />
-		<property name="minCount" column="min_count_id" />
-		<set name="entities" table="realentity_entities" type="ArrayList" />
+	<class name="AbstractNumberCondition" table="abstract_number_condition">
+		<set name="listenerList" table="abstract_number_condition_listeners" type="EventListenerList" />
+		<property name="ownerNode" column="owner_node" />
 	</class>
 	<class name="SimpleNumber" table="simple_number">
 		<property name="number" column="number"/>
@@ -31,8 +26,15 @@
 		<property name="value" column="value" />
 		<property name="arith" column="arith" />
 	</class>
-	<class name="AbstractNumberCondition" table="abstract_number_condition">
-		<set name="listenerList" table="abstract_number_condition_listeners" type="EventListenerList" />
+	<class name="TrueFalseCondition" table="true_false_condition">
+		<property name="source" column="source" />
+		<property name="value" column="value" />
+		<property name="arith" column="arith" />
+	</class>
+	<class name="EntityType" table="entity_type">
+		<property name="name" column="name" />
+		<property name="ordinal" column="ordinal" />
+		<set name="possibleChildTypes" table="entity_type_possible_child_types" type="Array" />
 	</class>
 </schema>
 

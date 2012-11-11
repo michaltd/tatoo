@@ -5,6 +5,7 @@ import java.util.IdentityHashMap;
 
 import javax.swing.event.EventListenerList;
 
+import tatoo.db.Dataset;
 import tatoo.model.entities.AbstractEntity;
 
 /**
@@ -14,7 +15,7 @@ import tatoo.model.entities.AbstractEntity;
  *
  */
 @SuppressWarnings ("rawtypes")
-public class TrueFalseCondition implements Condition <Boolean>, ConditionListener, CalculatedCondition <Boolean> {
+public class TrueFalseCondition extends AbstractNumberCondition<Boolean> implements Condition <Boolean>, ConditionListener, CalculatedCondition <Boolean> {
 
     /**
      * Die Arithmetik die für die Berechnung der Condition zuständig ist.
@@ -95,11 +96,6 @@ public class TrueFalseCondition implements Condition <Boolean>, ConditionListene
 
     IdentityHashMap <AbstractEntity, CalculatedNumber> copies       = new IdentityHashMap <AbstractEntity, CalculatedNumber> ();
 
-    /** Liste der Listener */
-    private EventListenerList                          listenerList = new EventListenerList ();
-
-    private AbstractEntity                             ownerNode;
-
     /**
      * Konstruktor. Liefert immer true (1)
      */
@@ -158,7 +154,8 @@ public class TrueFalseCondition implements Condition <Boolean>, ConditionListene
     public Integer getValue () {
         return arith.solve (source, value);
     }
-
+    
+    @SuppressWarnings ("unchecked")
     public void setValue (Boolean val) {
          value.setValue (val);
          fireValueChanged (this);
@@ -181,40 +178,6 @@ public class TrueFalseCondition implements Condition <Boolean>, ConditionListene
     @Override
     public void valueChanged (Condition source) {
         fireValueChanged (source);
-    }
-
-    @Override
-    public void addChangeListener (ConditionListener l) {
-        listenerList.add (ConditionListener.class, l);
-        if (this.ownerNode == null && l instanceof AbstractEntity)
-            listenerList.remove (ConditionListener.class, l);
-    }
-
-    @Override
-    public void fireValueChanged (Condition source) {
-        Object[] listeners = listenerList.getListenerList ();
-        for (int i = listeners.length - 2; i >= 0; i -= 2) {
-            if (EventListener.class.isAssignableFrom ((Class <?>) listeners[i])) {
-                ((ConditionListener) listeners[i + 1]).valueChanged (this);
-            }
-        }
-    }
-
-    @Override
-    public void removeChangeListener (ConditionListener l) {
-        listenerList.remove (ConditionListener.class, l);
-
-    }
-
-    @Override
-    public void setOwner (AbstractEntity ownerNode) {
-        if (this.ownerNode != ownerNode)
-            this.ownerNode = ownerNode;
-    }
-
-    @Override
-    public AbstractEntity getOwnerNode () {
-        return ownerNode;
     }
 
     @Override

@@ -20,7 +20,6 @@ public class VersionNumber extends Dataset implements Comparable <VersionNumber>
      */
     // leerer Konstruktor. Ist für das Instanziieren aus dem Datenbankframework.
     // NICHT löschen.
-    @Deprecated
     public VersionNumber () {};
 
     /**
@@ -90,7 +89,7 @@ public class VersionNumber extends Dataset implements Comparable <VersionNumber>
      * 
      * @return die Versionsnummer
      */
-    private int intValue () {
+    public int intValue () {
         if (version == 0)
             throw new tatoo.VersionnumberNotInitializedException ();
         return version;

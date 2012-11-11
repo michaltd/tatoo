@@ -2,8 +2,8 @@ package tatoo;
 
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
+
 import tatoo.db.DBFactory;
-import tatoo.model.conditions.ConditionParser;
 import tatoo.view.MainWindow;
 
 /**
@@ -15,15 +15,11 @@ import tatoo.view.MainWindow;
 public class Tatoo {
 
     /**
-     * Die Versionsnummer als String. Finale Konstante, welche vor dem
+     * Enthält die aktuelle Versionsnummer. Finale Konstante, welche vor dem
      * Kompilieren des Nightly Builds mal automatisch gesetzt werden soll...
      * oder so
      */
-    private static final String       versionString = "00.2712.00";
-    /**
-     * Enthält die aktuelle Versionsnummer.
-     */
-    public final static VersionNumber VERSION       = new VersionNumber (versionString);
+    public final static VersionNumber VERSION = new VersionNumber ("00.2712.00");
     /**
      * Enthält das tatoo-Object
      */
