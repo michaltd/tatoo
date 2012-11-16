@@ -18,6 +18,9 @@ public class ArmyBuilderEntityModel extends ArmyListEntityModel {
      */
     public void setSource (Object o) {
         try {
+            // ist entity schon belegt? dann muss das model als Listener wieder entfernt werden!
+            if (entity != null)
+                entity.removeEntityListener (this);
             entity = (AbstractEntity) o;
             entity.addEntityListener (this);
             AbstractEntity rootNode = entity;
@@ -123,19 +126,25 @@ public class ArmyBuilderEntityModel extends ArmyListEntityModel {
     }
 
     private String getAttrib (ConditionTypes type) {
-        Condition condition = entity.getAttribute (type);
-        String conditionString = conditionParser.getConditionString (entity, condition);
-        return conditionString;
+        if (entity != null) {
+            Condition condition = entity.getAttribute (type);
+            String conditionString = conditionParser.getConditionString (entity, condition);
+            return conditionString;
+        }
+        return null;
     }
 
     public EntityType[] getPossibleNodeTypes () {
-        EntityType[] resultTypes;
-        if (entity.getParent () != null) {
-            EntityType parentType = entity.getParent ().getType ();
-            resultTypes = parentType.getChildTypes ();
-        }
-        else resultTypes = new EntityType[] {EntityType.ROOT};
+        if (entity != null) {
+            EntityType[] resultTypes;
+            if (entity.getParent () != null) {
+                EntityType parentType = entity.getParent ().getType ();
+                resultTypes = parentType.getChildTypes ();
+            }
+            else resultTypes = new EntityType[] {EntityType.ROOT};
 
-        return resultTypes;
+            return resultTypes;
+        }
+        return null;
     }
 }

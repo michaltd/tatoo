@@ -137,24 +137,26 @@ public class ArmyBuilderPanel extends JPanel implements ActionListener {
 
     public void setSidePane () {
         int sidebarWidth = 300;
-        Object o = entityModel.getSource ();
-        if (o == null) {
-            JPanel pane = new TatooPanel ();
-            pane.setLayout (new BoxLayout (pane, BoxLayout.X_AXIS));
-            pane.add (Box.createHorizontalStrut (sidebarWidth));
-            sidebar.add (pane);
-        }
-        else {
-            // TODO was ist das für ein Blödsinn, das View kennt die Daten?
-            // Neeee... noch mal überarbeiten!
-            if (o instanceof ArmyListEntity) {
-                if ( !(sidebar.getComponent (0) instanceof EntityEditPane)) {
-                    sidebar.removeAll ();
-                    sidebar.add (new EntityEditPane (entityModel));
-                }
-            }
-            sidebar.revalidate ();
-        }
+//        Object o = entityModel.getSource ();
+//        if (o == null) {
+//            JPanel pane = new TatooPanel ();
+//            pane.setLayout (new BoxLayout (pane, BoxLayout.X_AXIS));
+//            pane.add (Box.createHorizontalStrut (sidebarWidth));
+//            sidebar.add (pane);
+//        }
+//        else {
+//            // TODO was ist das für ein Blödsinn, das View kennt die Daten?
+//            // Neeee... noch mal überarbeiten!
+//            if (o instanceof ArmyListEntity) {
+//                if ( !(sidebar.getComponent (0) instanceof EntityEditPane)) {
+//                    sidebar.removeAll ();
+//                    sidebar.add (new EntityEditPane (entityModel));
+//                }
+//            }
+//            sidebar.revalidate ();
+//        }
+        sidebar.removeAll ();
+        sidebar.add (new EntityEditPane (entityModel));
     }
 
     class PopupListener extends MouseAdapter {

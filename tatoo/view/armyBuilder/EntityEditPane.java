@@ -9,7 +9,6 @@ import java.awt.event.ActionListener;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -52,11 +51,12 @@ public class EntityEditPane extends ArmyBuilderEditPanel implements ActionListen
     @Override
     public void buildPanel () {
 
-        title = new JLabel ();
-        title.setPreferredSize (new Dimension (width, 35));
-        title.setBorder (new LineBorder (Color.black));
-        title.setHorizontalAlignment (SwingConstants.CENTER);
-
+        if (title == null) {
+            title = new JLabel ();
+            title.setPreferredSize (new Dimension (width, 35));
+            title.setBorder (new LineBorder (Color.black));
+            title.setHorizontalAlignment (SwingConstants.CENTER);
+        }
         if (count == null)
             count = new JTextField ();
         if (points == null)
@@ -66,14 +66,18 @@ public class EntityEditPane extends ArmyBuilderEditPanel implements ActionListen
         if (maxCount == null)
             maxCount = new JTextField ();
         if (type == null) {
-            EntityType[] possibleNodeTypes = model.getPossibleNodeTypes ();
-            String[] nodeStrings = new String[possibleNodeTypes.length];
-            for (int i = 0; i < possibleNodeTypes.length; i++ )
-                nodeStrings[i] = possibleNodeTypes[i].name ();
-            type = new JComboBox (nodeStrings);
-            if (possibleNodeTypes.length < 2)
-                type.setEditable (false);
-            else type.setEditable (true);
+            if (model.getSource () == null)
+                type = new JComboBox ();
+            else {
+                EntityType[] possibleNodeTypes = model.getPossibleNodeTypes ();
+                String[] nodeStrings = new String[possibleNodeTypes.length];
+                for (int i = 0; i < possibleNodeTypes.length; i++ )
+                    nodeStrings[i] = possibleNodeTypes[i].name ();
+                type = new JComboBox (nodeStrings);
+                if (possibleNodeTypes.length < 2)
+                    type.setEditable (false);
+                else type.setEditable (true);
+            }
         }
 
         JPanel countPanel = buildAttribPanel ("Count", count);
@@ -208,9 +212,21 @@ public class EntityEditPane extends ArmyBuilderEditPanel implements ActionListen
      */
     @Override
     void showValues () {
-        if (model == null)
-            this.setEnabled (false);
+        if (model == null || model.getSource () == null) {
+            title.setEnabled (false);
+            count.setEnabled (false);
+            points.setEnabled (false);
+            minCount.setEnabled (false);
+            maxCount.setEnabled (false);
+            type.setEnabled (false);
+        }
         else {
+            title.setEnabled (true);
+            count.setEnabled (true);
+            points.setEnabled (true);
+            minCount.setEnabled (true);
+            maxCount.setEnabled (true);
+            type.setEnabled (true);
             if ( !textFieldModified) {
                 title.setText (model.getName ());
 
@@ -232,6 +248,7 @@ public class EntityEditPane extends ArmyBuilderEditPanel implements ActionListen
                 textFieldModified = false;
             }
         }
+
     }
 
     /**

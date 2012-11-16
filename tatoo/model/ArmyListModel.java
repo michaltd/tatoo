@@ -208,19 +208,6 @@ public class ArmyListModel implements ArmyModel {
     public AbstractEntity insertNewEntity (Object parent) {
 
         EntityType type = EntityType.UPGRADE;
-        // EntityType type;
-        // switch (((AbstractEntity)parent).getType ().ordinal ())
-        // {
-        // case ROOT:
-        // type = EntityType.CATEGORY;
-        // break;
-        // case CATEGORY:
-        // type = EntityType.NODE;
-        // break;
-        // default:
-        // type = EntityType.UPGRADE;
-        // break;
-        // }
         // create new ArmyListEntity with the given Name from language-file
         AbstractEntity newEntity = new ArmyListEntity (type, TextWrapper.getString ("ArmyListModel.0"));
         // create an Array with the new ArmyListEntity as Element

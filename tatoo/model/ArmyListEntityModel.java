@@ -35,17 +35,20 @@ public class ArmyListEntityModel extends AbstractEntityModel {
 
     @Override
     public String getCount () {
-        int realVal = (Integer) entity.getAttribute (ConditionTypes.COUNT).getValue ();
-        int maxVal = (Integer) entity.getAttribute (ConditionTypes.MAX_COUNT).getValue ();
-        int minVal = (Integer) entity.getAttribute (ConditionTypes.MIN_COUNT).getValue ();
-        int resultVal = realVal;
+        if (entity != null) {
+            int realVal = (Integer) entity.getAttribute (ConditionTypes.COUNT).getValue ();
+            int maxVal = (Integer) entity.getAttribute (ConditionTypes.MAX_COUNT).getValue ();
+            int minVal = (Integer) entity.getAttribute (ConditionTypes.MIN_COUNT).getValue ();
+            int resultVal = realVal;
 
-        if (realVal > maxVal)
-            resultVal = maxVal;
-        else if (realVal < minVal)
-            resultVal = minVal;
+            if (realVal > maxVal)
+                resultVal = maxVal;
+            else if (realVal < minVal)
+                resultVal = minVal;
 
-        return Integer.toString (resultVal);
+            return Integer.toString (resultVal);
+        }
+        return null;
     }
 
     /**
@@ -69,7 +72,9 @@ public class ArmyListEntityModel extends AbstractEntityModel {
 
     @Override
     public String getMaxCount () {
-        return ((Integer) entity.getAttribute (ConditionTypes.MAX_COUNT).getValue ()).toString ();
+        if (entity != null)
+            return ((Integer) entity.getAttribute (ConditionTypes.MAX_COUNT).getValue ()).toString ();
+        return null;
     }
 
     /**
@@ -89,7 +94,9 @@ public class ArmyListEntityModel extends AbstractEntityModel {
 
     @Override
     public String getMinCount () {
-        return ((Integer) entity.getAttribute (ConditionTypes.MIN_COUNT).getValue ()).toString ();
+        if (entity != null)
+            return ((Integer) entity.getAttribute (ConditionTypes.MIN_COUNT).getValue ()).toString ();
+        return null;
     }
 
     /**
@@ -109,7 +116,10 @@ public class ArmyListEntityModel extends AbstractEntityModel {
 
     @Override
     public String getName () {
-        return entity.getName ();
+        if (entity != null)
+            return entity.getName ();
+        return null;
+
     }
 
     /**
@@ -126,7 +136,9 @@ public class ArmyListEntityModel extends AbstractEntityModel {
 
     @Override
     public String getPrice () {
-        return entity.getAttribute (ConditionTypes.PRICE).toString ();
+        if (entity != null)
+            return entity.getAttribute (ConditionTypes.PRICE).toString ();
+        return null;
     }
 
     /**
@@ -161,6 +173,8 @@ public class ArmyListEntityModel extends AbstractEntityModel {
      */
     public void setSource (Object o) {
         try {
+            if (entity != null)
+                entity.removeEntityListener (this);
             entity = (AbstractEntity) o;
             entity.addEntityListener (this);
             fireSourceChanged ();
@@ -179,16 +193,10 @@ public class ArmyListEntityModel extends AbstractEntityModel {
         return entity;
     }
 
-    public boolean isOneOfUpgrade () {
-        return entity.getParent ().getType () == EntityType.ONEOFUPGRADE;
-    }
-
     public EntityType getSourceType () {
-        return entity.getType ();
+        if (entity != null)
+            return entity.getType ();
+        return null;
     }
-
-    // public int getNodeType () {
-    // return entity.getType ().ordinal ();
-    // }
 
 }
