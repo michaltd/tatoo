@@ -15,7 +15,7 @@ import tatoo.model.entities.AbstractEntity;
  *
  */
 @SuppressWarnings ("rawtypes")
-public class TrueFalseCondition extends AbstractNumberCondition<Boolean> implements Condition <Boolean>, ConditionListener, CalculatedCondition <Boolean> {
+public class TrueFalseCondition extends AbstractNumberCondition<Boolean> implements ConditionListener, CalculatedCondition <Boolean> {
 
     /**
      * Die Arithmetik die für die Berechnung der Condition zuständig ist.
@@ -157,8 +157,10 @@ public class TrueFalseCondition extends AbstractNumberCondition<Boolean> impleme
     
     @SuppressWarnings ("unchecked")
     public void setValue (Boolean val) {
-         value.setValue (val);
-         fireValueChanged (this);
+        // wird eh nicht aufgerufen. 
+        // hmm ob das Sinn ergibt das dann so zu implementieren hier?
+//         value.setValue (val);
+//         fireValueChanged (this);
     }
 
     public void setValue (Condition val) {

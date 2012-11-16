@@ -371,20 +371,6 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
 
     public void setParent (AbstractEntity parent) {
         this.parent = parent;
-
-        // // wenn der parent gesetzt wird, müssen die owner der attribute neu
-        // // angepasst werden:
-        // for ( ConditionTypes attType : ConditionTypes.values() ) {
-        // if ( attributes[attType.ordinal()] != null )
-        // // attributes[attType.ordinal()].setOwner( getEntityNode( parent
-        // // ) );
-        // attributes[attType.ordinal()].setOwner( parent );
-        // }
-        //
-        // // Die Owner der Kinder müssen auch neu angepasst werden:
-        // for ( AbstractEntity child : entities ) {
-        // child.setParent( this );
-        // }
     }
 
     public Boolean addEntity (AbstractEntity entity) {
