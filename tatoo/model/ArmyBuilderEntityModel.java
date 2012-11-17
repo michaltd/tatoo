@@ -18,16 +18,19 @@ public class ArmyBuilderEntityModel extends ArmyListEntityModel {
      */
     public void setSource (Object o) {
         try {
-            // ist entity schon belegt? dann muss das model als Listener wieder entfernt werden!
+            // ist entity schon belegt? dann muss das model als Listener wieder
+            // entfernt werden!
             if (entity != null)
                 entity.removeEntityListener (this);
             entity = (AbstractEntity) o;
             entity.addEntityListener (this);
-            AbstractEntity rootNode = entity;
-            while (rootNode.getParent () != null)
-                rootNode = rootNode.getParent ();
-
-            conditionParser = new ConditionParser (rootNode);
+            // Beim ersten zuweisen eines Entities muss der ConditionParser erzeugt werden: 
+            if (conditionParser == null) {
+                AbstractEntity rootNode = entity;
+                while (rootNode.getParent () != null)
+                    rootNode = rootNode.getParent ();
+                conditionParser = new ConditionParser (rootNode);
+            }
             fireSourceChanged ();
         }
         catch (ClassCastException e) {

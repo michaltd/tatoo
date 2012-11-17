@@ -34,6 +34,13 @@
 	<class name="EntityType" table="entity_type">
 		<property name="name" column="name" />
 		<property name="ordinal" column="ordinal" />
+		<property name="ROOT" column="ROOT" />
+		<property name="CATEGORY" column="CATEGORY" />
+		<property name="NODE" column="NODE" />
+		<property name="ANYOFUPGRADE" column="ANYOFUPGRADE" />
+		<property name="ONEOFUPGRADE" column="ONEOFUPGRADE" />
+		<property name="UPGRADE" column="UPGRADE" />
+		<set name="values" table="entity_type_values" type="Array" />
 		<set name="possibleChildTypes" table="entity_type_possible_child_types" type="Array" />
 	</class>
 </schema>

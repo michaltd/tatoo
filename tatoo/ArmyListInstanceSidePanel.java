@@ -1,5 +1,6 @@
 package tatoo;
 
+import tatoo.db.DBFactory;
 import tatoo.model.conditions.CalculatedNumber;
 import tatoo.model.conditions.CalculatedNumber.Arithmetic;
 import tatoo.model.conditions.Condition.ConditionTypes;
@@ -23,11 +24,11 @@ public class ArmyListInstanceSidePanel {
 
     public ArmyListInstanceSidePanel () {
 
-//        armeeliste = (AbstractEntity) DBFactory.getInstance().read(ArmyListEntity.class, 3);
+        armeeliste = (AbstractEntity) DBFactory.getInstance().read(ArmyListEntity.class, 3);
 
         if (armeeliste == null) {
             armeeliste = generateManually ();
-//            DBFactory.getInstance().write(armeeliste);
+            DBFactory.getInstance().write(armeeliste);
         }
     }
 

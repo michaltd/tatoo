@@ -35,12 +35,12 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
      */
     public static class EntityType extends Dataset {
 
-        public static final EntityType ROOT;
-        public static final EntityType CATEGORY;
-        public static final EntityType NODE;
-        public static final EntityType ANYOFUPGRADE;
-        public static final EntityType ONEOFUPGRADE;
-        public static final EntityType UPGRADE;
+        public static  EntityType ROOT;
+        public static  EntityType CATEGORY;
+        public static  EntityType NODE;
+        public static  EntityType ANYOFUPGRADE;
+        public static  EntityType ONEOFUPGRADE;
+        public static  EntityType UPGRADE;
 
         private int                    ordinal;
         private String                 name;
