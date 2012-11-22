@@ -24,6 +24,9 @@ public class Tatoo {
      * Enthält das tatoo-Object
      */
     private static Tatoo              tatoo;
+    
+    public static final CommandManager cmdMgr = new CommandManager();
+    
     // Die DBFactory sollte nur einmal initialisiert werden, weil dann auch
     // Schema nur einmal eingelesen wird usw.
     // Es handelt sich hier also um ein globales Objekt. Nicht schön, aber

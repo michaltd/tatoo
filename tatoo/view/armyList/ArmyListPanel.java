@@ -1,14 +1,15 @@
 package tatoo.view.armyList;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.border.LineBorder;
 
-import tatoo.ArmyListInstanceSidePanel;
 import tatoo.model.ArmyListModel;
 import tatoo.model.entities.AbstractEntity;
 import tatoo.model.entities.ArmyListEntity;
@@ -20,15 +21,10 @@ public class ArmyListPanel extends JPanel {
     ArmyListModel sideMenuModel;
     ArmyListModel armyListModel;
 
-    // public ArmyListPanel(){
-    // this(new ArmyListInstanceSidePanel().armeeliste);
-    // }
-
     public ArmyListPanel (AbstractEntity armeeliste) {
 
         this.setLayout (new BorderLayout ());
-        // sideMenuModel = new ArmyListModel(new
-        // ArmyListInstanceSidePanel().armeeliste);
+
         sideMenuModel = new ArmyListModel (armeeliste);
 
         ArmyTreePanel sideMenu = new ArmyTreePanel (sideMenuModel, "Sidemenu");

@@ -1,9 +1,10 @@
 package tatoo.model;
 
-import tatoo.model.conditions.CalculatedNumber;
+import tatoo.Tatoo;
+import tatoo.commands.CmdAlterConditionByCond;
+import tatoo.commands.CmdAlterConditionByVal;
 import tatoo.model.conditions.Condition;
 import tatoo.model.conditions.Condition.ConditionTypes;
-import tatoo.model.conditions.SimpleNumber;
 import tatoo.model.entities.AbstractEntity;
 import tatoo.model.entities.AbstractEntity.EntityType;
 import tatoo.model.entities.ArmyListEntity;
@@ -60,13 +61,15 @@ public class ArmyListEntityModel extends AbstractEntityModel {
     public void setCount (int count) {
         if (((Integer) entity.getAttribute (ConditionTypes.MIN_COUNT).getValue ()) <= count
                         && ((Integer) entity.getAttribute (ConditionTypes.MAX_COUNT).getValue ()) >= count) {
-            entity.setAttribute (count, ConditionTypes.COUNT);
+            Tatoo.cmdMgr.execute (new CmdAlterConditionByVal (entity.getAttribute (ConditionTypes.COUNT), count));
             fireAttribChanged (new EntityModelEvent (entity, ConditionTypes.COUNT));
         }
     }
 
+    @SuppressWarnings ("rawtypes")
     public void setCount (Condition condition) {
         entity.setAttribute (condition, ConditionTypes.COUNT);
+        Tatoo.cmdMgr.execute (new CmdAlterConditionByCond (entity, condition, ConditionTypes.COUNT));
         fireAttribChanged (new EntityModelEvent (entity, ConditionTypes.COUNT));
     }
 
@@ -85,11 +88,11 @@ public class ArmyListEntityModel extends AbstractEntityModel {
      */
     public void setMaxCount (String maxCount) throws NumberFormatException {
         int value = Integer.parseInt (maxCount);
-        entity.setAttribute (value, ConditionTypes.MAX_COUNT);
+        Tatoo.cmdMgr.execute (new CmdAlterConditionByVal (entity.getAttribute (ConditionTypes.MAX_COUNT), value));
     }
 
     public void setMaxCount (Condition condition) {
-        entity.setAttribute (condition, ConditionTypes.MAX_COUNT);
+        Tatoo.cmdMgr.execute (new CmdAlterConditionByCond (entity, condition, ConditionTypes.MAX_COUNT));
     }
 
     @Override
@@ -107,11 +110,11 @@ public class ArmyListEntityModel extends AbstractEntityModel {
      */
     public void setMinCount (String minCount) throws NumberFormatException {
         int value = Integer.parseInt (minCount);
-        entity.setAttribute (value, ConditionTypes.MIN_COUNT);
+        Tatoo.cmdMgr.execute (new CmdAlterConditionByVal (entity.getAttribute (ConditionTypes.MIN_COUNT), value));
     }
 
     public void setMinCount (Condition condition) {
-        entity.setAttribute (condition, ConditionTypes.MIN_COUNT);
+        Tatoo.cmdMgr.execute (new CmdAlterConditionByCond (entity, condition, ConditionTypes.MIN_COUNT));
     }
 
     @Override
@@ -150,14 +153,13 @@ public class ArmyListEntityModel extends AbstractEntityModel {
     public void setPrice (String val) {
         try {
             int value = Integer.parseInt (val);
-            CalculatedNumber condition = (CalculatedNumber) entity.getAttribute (ConditionTypes.PRICE);
-            condition.setValue (new SimpleNumber (value));
+            Tatoo.cmdMgr.execute (new CmdAlterConditionByVal (entity.getAttribute (ConditionTypes.PRICE), value));
         }
         catch (NumberFormatException nfe) {}
     }
 
     public void setPrice (Condition price) {
-        entity.setAttribute (price, ConditionTypes.PRICE);
+        Tatoo.cmdMgr.execute (new CmdAlterConditionByCond (entity, price, ConditionTypes.PRICE));
     }
 
     @Override

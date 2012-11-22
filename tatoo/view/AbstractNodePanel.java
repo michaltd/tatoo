@@ -104,6 +104,12 @@ public abstract class AbstractNodePanel extends TatooPanel implements NodePanel 
         contentPanel.setLayout (new BoxLayout (contentPanel, align));
         alignment = align;
     }
+    
+    @Override
+    public void EntityInserted () {}
+
+    @Override
+    public void EntityRemoved () {}
 
     /**
      * Here you can create and design your Panel

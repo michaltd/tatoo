@@ -1,11 +1,13 @@
 package tatoo.view.armyList;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
+import javax.swing.border.LineBorder;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 
@@ -28,8 +30,9 @@ public class ArmyTreePanel extends JPanel implements MouseListener {
     public ArmyTreePanel (ArmyListModel model, String target) {
 
         thisPane = this;
+        thisPane.setLayout (new BorderLayout ());
         treePanel = new TatooPanel ();
-        treePanel.setLayout (new BorderLayout ());
+//        treePanel.setLayout (new BorderLayout ());
         this.model = model;
         model.addTreeModelListener (modelHandler);
 
@@ -156,7 +159,13 @@ public class ArmyTreePanel extends JPanel implements MouseListener {
         }
 
         @Override
-        public void treeNodesRemoved (TreeModelEvent e) {}
+        public void treeNodesRemoved (TreeModelEvent e) {
+            JPanel pane = new TatooPanel ();
+            buildPanel (model.getRoot (), pane, new NodePanelFactory ("ArmyList"));
+            thisPane.removeAll ();
+            thisPane.add (pane);
+            thisPane.revalidate ();
+        }
 
         @Override
         public void treeStructureChanged (TreeModelEvent e) {}

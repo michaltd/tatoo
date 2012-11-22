@@ -85,14 +85,16 @@ public class EntityEditPane extends ArmyBuilderEditPanel implements ActionListen
 
             @Override
             public void setValue (String val) {
-                textFieldModified = true;
-                try {
-                    model.setCount (val);
-                    textFieldModified = false;
-                    count.setBackground (Color.WHITE);
-                }
-                catch (ConditionParseException cpe) {
-                    count.setBackground (new Color (255, 170, 170));
+                if ( !textFieldModified) {
+                    textFieldModified = true;
+                    try {
+                        model.setCount (val);
+                        textFieldModified = false;
+                        count.setBackground (Color.WHITE);
+                    }
+                    catch (ConditionParseException cpe) {
+                        count.setBackground (new Color (255, 170, 170));
+                    }
                 }
             };
         });
@@ -101,14 +103,16 @@ public class EntityEditPane extends ArmyBuilderEditPanel implements ActionListen
 
             @Override
             public void setValue (String val) {
-                textFieldModified = true;
-                try {
-                    model.setPrice (val);
-                    textFieldModified = false;
-                    points.setBackground (Color.WHITE);
-                }
-                catch (ConditionParseException cpe) {
-                    points.setBackground (new Color (255, 170, 170));
+                if ( !textFieldModified) {
+                    textFieldModified = true;
+                    try {
+                        model.setPrice (val);
+                        textFieldModified = false;
+                        points.setBackground (Color.WHITE);
+                    }
+                    catch (ConditionParseException cpe) {
+                        points.setBackground (new Color (255, 170, 170));
+                    }
                 }
             };
         });
@@ -117,14 +121,16 @@ public class EntityEditPane extends ArmyBuilderEditPanel implements ActionListen
 
             @Override
             public void setValue (String val) {
-                textFieldModified = true;
-                try {
-                    model.setMinCount (val);
-                    textFieldModified = false;
-                    minCount.setBackground (Color.WHITE);
-                }
-                catch (ConditionParseException cpe) {
-                    minCount.setBackground (new Color (255, 170, 170));
+                if ( !textFieldModified) {
+                    textFieldModified = true;
+                    try {
+                        model.setMinCount (val);
+                        textFieldModified = false;
+                        minCount.setBackground (Color.WHITE);
+                    }
+                    catch (ConditionParseException cpe) {
+                        minCount.setBackground (new Color (255, 170, 170));
+                    }
                 }
             };
         });
@@ -133,14 +139,16 @@ public class EntityEditPane extends ArmyBuilderEditPanel implements ActionListen
 
             @Override
             public void setValue (String val) {
-                textFieldModified = true;
-                try {
-                    model.setMaxCount (val);
-                    textFieldModified = false;
-                    maxCount.setBackground (Color.WHITE);
-                }
-                catch (ConditionParseException cpe) {
-                    maxCount.setBackground (new Color (255, 170, 170));
+                if ( !textFieldModified) {
+                    textFieldModified = true;
+                    try {
+                        model.setMaxCount (val);
+                        textFieldModified = false;
+                        maxCount.setBackground (Color.WHITE);
+                    }
+                    catch (ConditionParseException cpe) {
+                        maxCount.setBackground (new Color (255, 170, 170));
+                    }
                 }
             };
         });
@@ -152,11 +160,13 @@ public class EntityEditPane extends ArmyBuilderEditPanel implements ActionListen
                 if ( !textFieldModified) {
                     JComboBox cb = (JComboBox) e.getSource ();
                     String val = (String) cb.getSelectedItem ();
-                    textFieldModified = true;
-                    model.setType (val);
-                    textFieldModified = false;
-                }
+                    if ( !textFieldModified) {
+                        textFieldModified = true;
+                        model.setType (val);
+                        textFieldModified = false;
+                    }
 
+                }
             }
         });
 
@@ -228,6 +238,7 @@ public class EntityEditPane extends ArmyBuilderEditPanel implements ActionListen
             maxCount.setEnabled (true);
             type.setEnabled (true);
             if ( !textFieldModified) {
+                textFieldModified = true;
                 title.setText (model.getName ());
 
                 count.setText (model.getCount ());
@@ -236,7 +247,6 @@ public class EntityEditPane extends ArmyBuilderEditPanel implements ActionListen
                 maxCount.setText (model.getMaxCount ());
 
                 // die Combobox für den Typ neu setzen
-                textFieldModified = true;
                 type.removeAllItems ();
                 EntityType[] possibleNodeTypes = model.getPossibleNodeTypes ();
                 for (int i = 0; i < possibleNodeTypes.length; i++ )

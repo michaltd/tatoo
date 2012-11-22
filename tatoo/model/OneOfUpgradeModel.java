@@ -82,4 +82,14 @@ public class OneOfUpgradeModel implements EntityListener {
             }
         }
     }
+
+    @Override
+    public void ChildInserted (AbstractEntity entity, AbstractEntity child) {
+        
+    }
+
+    @Override
+    public void ChildRemoved (AbstractEntity entity, AbstractEntity child, int index) {
+        
+    }
 }

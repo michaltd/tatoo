@@ -9,6 +9,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Locale;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -16,10 +17,10 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
 
 import tatoo.ArmyListInstanceSidePanel;
+import tatoo.CommandManager;
+import tatoo.Tatoo;
 import tatoo.VersionNumber;
 import tatoo.model.ArmyListModel;
 import tatoo.model.entities.AbstractEntity;
@@ -54,7 +55,9 @@ public class MainWindow extends JFrame implements ActionListener, ItemListener {
     private MainWindow (String name) {
         super (name);
         // initialize the language which is schown in tatoo
-        textWrapper = new TextWrapper (TextWrapper.Language.LANG_EN);
+        // textWrapper = new TextWrapper (TextWrapper.Language.LANG_EN);
+        textWrapper = new TextWrapper (Locale.ENGLISH);
+        // textWrapper.setDefault(TextWrapper.Language.LANG_EN);
     }
 
     /**
@@ -67,12 +70,14 @@ public class MainWindow extends JFrame implements ActionListener, ItemListener {
     private void addMenuBarToPane (final JFrame frame) {
         JMenuBar menuBar = new JMenuBar ();
 
+        /************************************************
+         * Anzeigen
+         ************************************************/
         JMenu showMenu = new JMenu ("Anzeigen");
         menuBar.add (showMenu);
 
         JMenuItem showArmyList = new JMenuItem ("Armeelisten Generator");
         showArmyList.setName ("showArmyList");
-        // TODO: warum muss this lauschen?? Wie wäre es mit einer inline klasse?
         showArmyList.addActionListener (this);
         showMenu.add (showArmyList);
 
@@ -87,6 +92,24 @@ public class MainWindow extends JFrame implements ActionListener, ItemListener {
         closeItem.addActionListener (this);
         closeItem.setAccelerator (KeyStroke.getKeyStroke (KeyEvent.VK_Q, InputEvent.CTRL_MASK));
         showMenu.add (closeItem);
+        
+        /************************************************
+         * Bearbeiten
+         ************************************************/
+        JMenu editMenu = new JMenu ("Bearbeiten");
+        menuBar.add (editMenu);
+        
+        JMenuItem undo = new JMenuItem ("Rückgängig");
+        undo.setName ("undo");
+        undo.addActionListener (this);
+        undo.setAccelerator (KeyStroke.getKeyStroke (KeyEvent.VK_Z, InputEvent.CTRL_MASK));
+        editMenu.add (undo);
+        
+        JMenuItem redo = new JMenuItem ("Wiederherstellen");
+        redo.setName ("redo");
+        redo.addActionListener (this);
+        redo.setAccelerator (KeyStroke.getKeyStroke (KeyEvent.VK_Y, InputEvent.CTRL_MASK));
+        editMenu.add (redo);
 
         frame.setJMenuBar (menuBar);
     }
@@ -99,6 +122,7 @@ public class MainWindow extends JFrame implements ActionListener, ItemListener {
      */
     public void showArmyList () {
         addComponentsToPane (new ArmyListPanel (armylist));
+        Tatoo.cmdMgr.setActiveView (CommandManager.View.ARMYLIST);
     }
 
     /**
@@ -111,6 +135,21 @@ public class MainWindow extends JFrame implements ActionListener, ItemListener {
         // TODO: und durch das hier ersetzt:
         ArmyBuilderPanel armyTree = new ArmyBuilderPanel (new ArmyListModel (armylist));
         addComponentsToPane (armyTree);
+        Tatoo.cmdMgr.setActiveView (CommandManager.View.ARMYBUILDER);
+    }
+    
+    /**
+     * Macht das zuletzt ausgeführte Kommando rückgängig.
+     */
+    public void undo () {
+        Tatoo.cmdMgr.undo ();
+    }
+    
+    /**
+     * Führt das zuletzt rückgängig gemachte Kommando wieder aus.
+     */
+    public void redo () {
+        Tatoo.cmdMgr.redo ();
     }
 
     /**

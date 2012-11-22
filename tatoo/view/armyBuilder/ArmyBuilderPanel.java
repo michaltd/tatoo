@@ -8,8 +8,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -21,10 +19,11 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 
+import tatoo.Tatoo;
+import tatoo.commands.CmdTreeSelectionChanged;
 import tatoo.model.ArmyBuilderEntityModel;
 import tatoo.model.ArmyListEntityModel;
 import tatoo.model.ArmyListModel;
-import tatoo.model.entities.ArmyListEntity;
 import tatoo.model.entities.AbstractEntity.EntityType;
 import tatoo.model.entities.events.EntityModelEvent;
 import tatoo.view.TatooPanel;
@@ -32,10 +31,11 @@ import tatoo.view.TatooPanel;
 @SuppressWarnings ("serial")
 public class ArmyBuilderPanel extends JPanel implements ActionListener {
 
-    JTree                  tree        = null;
-    JPanel                 sidebar     = null;
-    ArmyListModel          treeModel   = null;
-    ArmyBuilderEntityModel entityModel = null;
+    JTree                  tree           = null;
+    JPanel                 sidebar        = null;
+    ArmyListModel          treeModel      = null;
+    ArmyBuilderEntityModel entityModel    = null;
+    EntityEditPane         entityEditPane = null;
 
     private enum treeTableCommand {
 
@@ -136,27 +136,31 @@ public class ArmyBuilderPanel extends JPanel implements ActionListener {
     }
 
     public void setSidePane () {
-        int sidebarWidth = 300;
-//        Object o = entityModel.getSource ();
-//        if (o == null) {
-//            JPanel pane = new TatooPanel ();
-//            pane.setLayout (new BoxLayout (pane, BoxLayout.X_AXIS));
-//            pane.add (Box.createHorizontalStrut (sidebarWidth));
-//            sidebar.add (pane);
-//        }
-//        else {
-//            // TODO was ist das für ein Blödsinn, das View kennt die Daten?
-//            // Neeee... noch mal überarbeiten!
-//            if (o instanceof ArmyListEntity) {
-//                if ( !(sidebar.getComponent (0) instanceof EntityEditPane)) {
-//                    sidebar.removeAll ();
-//                    sidebar.add (new EntityEditPane (entityModel));
-//                }
-//            }
-//            sidebar.revalidate ();
-//        }
-        sidebar.removeAll ();
-        sidebar.add (new EntityEditPane (entityModel));
+        // int sidebarWidth = 300;
+        // Object o = entityModel.getSource ();
+        // if (o == null) {
+        // JPanel pane = new TatooPanel ();
+        // pane.setLayout (new BoxLayout (pane, BoxLayout.X_AXIS));
+        // pane.add (Box.createHorizontalStrut (sidebarWidth));
+        // sidebar.add (pane);
+        // }
+        // else {
+        // // TODO was ist das für ein Blödsinn, das View kennt die Daten?
+        // // Neeee... noch mal überarbeiten!
+        // if (o instanceof ArmyListEntity) {
+        // if ( !(sidebar.getComponent (0) instanceof EntityEditPane)) {
+        // sidebar.removeAll ();
+        // sidebar.add (new EntityEditPane (entityModel));
+        // }
+        // }
+        // sidebar.revalidate ();
+        // }
+        // sidebar.removeAll ();
+//        sidebar.add (new EntityEditPane (entityModel));
+        if (entityEditPane == null){
+            entityEditPane = new EntityEditPane (entityModel);
+            sidebar.add (entityEditPane);
+        }
     }
 
     class PopupListener extends MouseAdapter {
@@ -195,7 +199,10 @@ public class ArmyBuilderPanel extends JPanel implements ActionListener {
 
         @Override
         public void valueChanged (TreeSelectionEvent e) {
-            Object o = e.getPath ().getLastPathComponent ();
+            Tatoo.cmdMgr.execute (new CmdTreeSelectionChanged (tree.getSelectionModel (), e.getOldLeadSelectionPath (), tree.getSelectionPath ()));
+            Object o = null;
+            if (tree.getSelectionPath () != null)
+                o = tree.getSelectionPath ().getLastPathComponent ();
             entityModel.setSource (o);
             setSidePane ();
         }

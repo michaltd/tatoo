@@ -286,6 +286,24 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
             }
         }
     }
+    
+    public void fireChildInserted (AbstractEntity entity, AbstractEntity child) {
+        Object[] listeners = listenerList.getListenerList ();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == EntityListener.class) {
+                ((EntityListener) listeners[i + 1]).ChildInserted (entity, child);
+            }
+        }
+    }
+    
+    public void fireChildRemoved (AbstractEntity entity, AbstractEntity child, int index) {
+        Object[] listeners = listenerList.getListenerList ();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == EntityListener.class) {
+                ((EntityListener) listeners[i + 1]).ChildRemoved (entity, child, index);
+            }
+        }
+    }
 
     /**
      * Gibt den Typ des Entitys zurück.
@@ -375,14 +393,18 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
 
     public Boolean addEntity (AbstractEntity entity) {
         ((AbstractEntity) entity).setParent (this);
-        return entities.add (entity);
+        boolean successfull = entities.add (entity);
+        if (successfull)
+            fireChildInserted (this, entity);
+        return successfull;
     }
 
     public void removeEntity (AbstractEntity entity) {
         int idx = getIndexOf (entity);
         if (idx >= 0) {
             entities.remove (idx);
-            ((AbstractEntity) entity).setParent (null);
+            entity.setParent (null);
+            fireChildRemoved (this, entity, idx);
         }
     }
 

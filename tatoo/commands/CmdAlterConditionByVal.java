@@ -2,16 +2,17 @@ package tatoo.commands;
 
 import tatoo.Command;
 import tatoo.model.conditions.AbstractNumberCondition;
+import tatoo.model.conditions.Condition;
 
 @SuppressWarnings ("rawtypes")
-public class CmdAlterAttribute implements Command {
+public class CmdAlterConditionByVal implements Command {
 
     private int                     oldValue;
     private int                     newValue;
     private AbstractNumberCondition dataset;
 
-    public CmdAlterAttribute (AbstractNumberCondition dataset, int newValue) {
-        this.dataset = dataset;
+    public CmdAlterConditionByVal (Condition dataset, int newValue) {
+        this.dataset = (AbstractNumberCondition)dataset;
         oldValue = dataset.getValue ();
         this.newValue = newValue;
     }

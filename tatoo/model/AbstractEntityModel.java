@@ -15,12 +15,11 @@ public abstract class AbstractEntityModel implements EntityModel, EntityListener
     private EventListenerList listenerList = new EventListenerList ();
 
     public AbstractEntityModel () {
-        super ();
+//        super ();
     }
-
+    
     /**
-     * Fügt dem Model einen Listener hinzu
-     * 
+     * Fügt dem Model einen Listener hinzu.
      * @param l
      * Der Listener
      */
@@ -30,7 +29,6 @@ public abstract class AbstractEntityModel implements EntityModel, EntityListener
 
     /**
      * Entfernt einen Listener aus der Liste der Listener
-     * 
      * @param l
      * der Listener der entfernt werden soll.
      */
@@ -69,6 +67,27 @@ public abstract class AbstractEntityModel implements EntityModel, EntityListener
     public void AttribChanged (AbstractEntity entity, ConditionTypes attrib) {
         EntityModelEvent e = new EntityModelEvent (entity, attrib);
         fireAttribChanged (e);
+    }
+    
+    @Override
+    public void ChildInserted (AbstractEntity entity, AbstractEntity child) {
+        Object[] listeners = listenerList.getListenerList ();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == EntityModelListener.class) {
+                ((EntityModelListener) listeners[i + 1]).EntityInserted ();
+            }
+        }
+    }
+
+    @Override
+    public void ChildRemoved (AbstractEntity entity, AbstractEntity child, int index) {
+        Object[] listeners = listenerList.getListenerList ();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == EntityModelListener.class) {
+                ((EntityModelListener) listeners[i + 1]).EntityRemoved ();
+            }
+        }
+        
     }
 
 }

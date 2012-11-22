@@ -1,5 +1,8 @@
 package tatoo.model;
 
+import tatoo.Tatoo;
+import tatoo.commands.CmdSetEntityName;
+import tatoo.commands.CmdSetEntityType;
 import tatoo.model.conditions.Condition;
 import tatoo.model.conditions.Condition.ConditionTypes;
 import tatoo.model.conditions.ConditionParser;
@@ -23,7 +26,8 @@ public class ArmyBuilderEntityModel extends ArmyListEntityModel {
             if (entity != null)
                 entity.removeEntityListener (this);
             entity = (AbstractEntity) o;
-            entity.addEntityListener (this);
+            if (entity != null)
+                entity.addEntityListener (this);
             // Beim ersten zuweisen eines Entities muss der ConditionParser erzeugt werden: 
             if (conditionParser == null) {
                 AbstractEntity rootNode = entity;
@@ -110,22 +114,24 @@ public class ArmyBuilderEntityModel extends ArmyListEntityModel {
     public void setType (String val) {
         if (val == null)
             return;
+        EntityType eType = null;
         if (val.equals (EntityType.ROOT.name ()))
-            entity.setType (EntityType.ROOT);
+            eType = EntityType.ROOT;
         else if (val.equals (EntityType.CATEGORY.name ()))
-            entity.setType (EntityType.CATEGORY);
+            eType = EntityType.CATEGORY;
         else if (val.equals (EntityType.NODE.name ()))
-            entity.setType (EntityType.NODE);
+            eType = EntityType.NODE;
         else if (val.equals (EntityType.UPGRADE.name ()))
-            entity.setType (EntityType.UPGRADE);
+            eType = EntityType.UPGRADE;
         else if (val.equals (EntityType.ANYOFUPGRADE.name ())) {
-            entity.setType (EntityType.ANYOFUPGRADE);
-            entity.setName ("beliebiges aus");
+            eType = EntityType.ANYOFUPGRADE;
+            Tatoo.cmdMgr.execute (new CmdSetEntityName (entity, "beliebiges aus"));
         }
         else if (val.equals (EntityType.ONEOFUPGRADE.name ())) {
-            entity.setType (EntityType.ONEOFUPGRADE);
-            entity.setName ("eines aus");
+            eType = EntityType.ONEOFUPGRADE;
+            Tatoo.cmdMgr.execute (new CmdSetEntityName (entity, "eines aus"));
         }
+        Tatoo.cmdMgr.execute (new CmdSetEntityType (entity, eType));
     }
 
     private String getAttrib (ConditionTypes type) {

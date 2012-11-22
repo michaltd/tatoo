@@ -24,5 +24,9 @@ public interface EntityModelListener extends EventListener {
      * Das Event
      */
     public void AttribChanged (EntityModelEvent e);
+    
+    public void EntityInserted ();
+    
+    public void EntityRemoved ();
 
 }

@@ -45,9 +45,15 @@ public abstract class ArmyBuilderEditPanel extends JPanel implements EntityModel
     public void AttribChanged (EntityModelEvent e) {
         // we ignore the event-Object here and refresh all attributes for
         // simplicity
-        if (sourceChanged)
+//        if (sourceChanged)
             showValues ();
     }
+    
+    @Override
+    public void EntityInserted () {}
+
+    @Override
+    public void EntityRemoved () {}
 
     void clearPanel () {
         this.removeAll ();
