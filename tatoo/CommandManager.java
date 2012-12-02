@@ -159,39 +159,38 @@ public class CommandManager {
 
     public void write () {
 
-        // if (firstNode != null) {
-        //
-        // boolean lastNodeGreaterThanSavedNode = false;
-        // if (lastExecutedNode != null)
-        // if (lastSavedNode == null)
-        // lastNodeGreaterThanSavedNode = true;
-        // else {
-        // CommandNode tmpNode = lastExecutedNode.previous;
-        // while (tmpNode != null && !lastNodeGreaterThanSavedNode)
-        // if (tmpNode != lastSavedNode)
-        // tmpNode = tmpNode.previous;
-        // else lastNodeGreaterThanSavedNode = true;
-        // }
-        //
-        // if (lastNodeGreaterThanSavedNode)
-        // while (lastSavedNode != lastExecutedNode) {
-        // if (lastSavedNode == null)
-        // lastSavedNode = firstNode;
-        // else lastSavedNode = lastSavedNode.next;
-        // //DBFactory.getInstance ().write (lastSavedNode.cmd);
-        // }
-        // else {
-        // // wenn lastSavedNode == null ist dann MUSS lastExecutedNode auch
-        // null
-        // // sein wegen !lastNodeGreaterThanSavedNode. In dem Fall nichts
-        // // tun.
-        // while (lastSavedNode != lastExecutedNode && lastSavedNode != null) {
-        // DBFactory.getInstance ().write (lastSavedNode.cmd);
-        // lastSavedNode = lastSavedNode.previous;
-        // }
-        // }
-        //
-        // }
+        if (firstNode[activeView] != null) {
+
+            boolean lastNodeGreaterThanSavedNode = false;
+            if (lastExecutedNode[activeView] != null)
+                if (lastSavedNode[activeView] == null)
+                    lastNodeGreaterThanSavedNode = true;
+                else {
+                    CommandNode tmpNode = lastExecutedNode[activeView].previous;
+                    while (tmpNode != null && !lastNodeGreaterThanSavedNode)
+                        if (tmpNode != lastSavedNode[activeView])
+                            tmpNode = tmpNode.previous;
+                        else lastNodeGreaterThanSavedNode = true;
+                }
+
+            if (lastNodeGreaterThanSavedNode)
+                while (lastSavedNode[activeView] != lastExecutedNode[activeView]) {
+                    if (lastSavedNode[activeView] == null)
+                        lastSavedNode[activeView] = firstNode[activeView];
+                    else lastSavedNode[activeView] = lastSavedNode[activeView].next;
+                    lastSavedNode[activeView].writeObject ();
+                }
+            else {
+                // wenn lastSavedNode == null ist dann MUSS lastExecutedNode
+                // auch null sein wegen !lastNodeGreaterThanSavedNode. In dem
+                // Fall nichts tun.
+                while (lastSavedNode[activeView] != lastExecutedNode[activeView] && lastSavedNode[activeView] != null) {
+                    lastSavedNode[activeView].deleteObject ();
+                    lastSavedNode[activeView] = lastSavedNode[activeView].previous;
+                }
+            }
+
+        }
     }
 
     public void setActiveView (View view) {
@@ -234,6 +233,18 @@ public class CommandManager {
         public void redo () {
             for (int i = 0; i < cmd.size (); i++ )
                 cmd.get (i).redo ();
+        }
+
+        @Override
+        public void writeObject () {
+            for (Command localCmd : cmd)
+                localCmd.writeObject ();
+        }
+
+        @Override
+        public void deleteObject () {
+            for (Command localCmd : cmd)
+                localCmd.deleteObject ();
         }
 
     }

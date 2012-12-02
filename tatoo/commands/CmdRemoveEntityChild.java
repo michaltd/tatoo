@@ -1,8 +1,8 @@
 package tatoo.commands;
 
 import tatoo.Command;
+import tatoo.db.DBFactory;
 import tatoo.model.entities.AbstractEntity;
-
 
 public class CmdRemoveEntityChild implements Command {
 
@@ -27,6 +27,17 @@ public class CmdRemoveEntityChild implements Command {
     @Override
     public void redo () {
         parent.removeEntity (child);
+    }
+
+    @Override
+    public void writeObject () {
+        DBFactory.getInstance ().write (parent);
+        DBFactory.getInstance ().delete (child);
+    }
+
+    @Override
+    public void deleteObject () {
+        DBFactory.getInstance ().write (parent);
     }
 
 }

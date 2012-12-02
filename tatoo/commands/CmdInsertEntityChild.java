@@ -1,6 +1,7 @@
 package tatoo.commands;
 
 import tatoo.Command;
+import tatoo.db.DBFactory;
 import tatoo.model.entities.AbstractEntity;
 
 
@@ -27,6 +28,17 @@ public class CmdInsertEntityChild implements Command {
     @Override
     public void redo () {
         parent.addEntity (child);
+    }
+
+    @Override
+    public void writeObject () {
+        DBFactory.getInstance ().write(parent);
+    }
+
+    @Override
+    public void deleteObject () {
+        DBFactory.getInstance ().write(parent);
+        DBFactory.getInstance ().delete(child);
     }
 
 }

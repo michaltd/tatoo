@@ -22,4 +22,14 @@ public interface Command {
      */
     public void redo();
 
+    /**
+     * Schreibt das Kommando in die Datenstruktur
+     */
+    public void writeObject ();
+
+    /**
+     * Löscht das Kommando aus der Datenstruktur
+     */
+    public void deleteObject ();
+
 }

@@ -1,6 +1,7 @@
 package tatoo.commands;
 
 import tatoo.Command;
+import tatoo.db.DBFactory;
 import tatoo.model.entities.AbstractEntity;
 
 
@@ -29,6 +30,16 @@ public class CmdSetEntityName implements Command {
     @Override
     public void redo () {
         entity.setName (newName);
+    }
+
+    @Override
+    public void writeObject () {
+        DBFactory.getInstance ().write(entity);
+    }
+
+    @Override
+    public void deleteObject () {
+        DBFactory.getInstance ().write(entity);
     }
 
 }

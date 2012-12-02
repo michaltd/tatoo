@@ -23,7 +23,7 @@ public class DBFactory {
         // (SQLConnection, XMLConnection oder MySQLConnection usw.)
         // zur zeit noch einfach so eingestellt
         conn = new SQLConnection (DBases.H2Server);
-//        conn = new SQLConnection (DBases.H2);
+        // conn = new SQLConnection (DBases.H2);
         conn.connect ();
     }
 
@@ -77,5 +77,9 @@ public class DBFactory {
     public Dataset read (Class <?> c, int id) {
         return getConnection ().read (c, id);
 
+    }
+
+    public boolean delete (Dataset o) {
+        return getConnection ().delete (o);
     }
 }

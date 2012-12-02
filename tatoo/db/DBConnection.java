@@ -168,28 +168,7 @@ public abstract class DBConnection {
         }
         else {
             // 3. wenn nein: Objekt eintragen
-            int id = createDataManipulation ().insert (o);
-            try {
-                Method setId = Dataset.class.getDeclaredMethod ("setId", int.class);
-                setId.setAccessible (true);
-                setId.invoke (o, id);
-                return true;
-            }
-            catch (SecurityException e) {
-                e.printStackTrace ();
-            }
-            catch (NoSuchMethodException e) {
-                e.printStackTrace ();
-            }
-            catch (IllegalArgumentException e) {
-                e.printStackTrace ();
-            }
-            catch (IllegalAccessException e) {
-                e.printStackTrace ();
-            }
-            catch (InvocationTargetException e) {
-                e.printStackTrace ();
-            }
+            createDataManipulation ().insert (o);
         }
 
         // 4. schon fertig :)
@@ -219,6 +198,16 @@ public abstract class DBConnection {
             }
         }
         return null;
+    }
+    
+    /**
+     * Löscht ein Dataset aus der Datenstruktur.
+     * @param o Das Dataset welches gelöscht werden soll.
+     * @return true wenn das geklappt hat. False sonst.
+     */
+    public boolean delete (Dataset o) {
+
+        return false;
     }
 
     /**

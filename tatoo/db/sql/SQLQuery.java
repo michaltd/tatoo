@@ -108,30 +108,31 @@ public class SQLQuery extends Query {
     private LinkedList <Dataset> execute (String sqlStatement) throws SQLException {
 
         ResultSet results = dbconn.createStatement ().executeQuery (sqlStatement);
-
         LinkedList <Dataset> objects = new LinkedList <Dataset> ();
-        while (results.next ()) {
-            Dataset rowObject = null;
-            try {
-                Constructor <?> constructor = t_class.getConstructor ();
-                constructor.setAccessible (true);
-                rowObject = (Dataset) t_class.newInstance ();
-            }
-            catch (InstantiationException e) {
-                e.printStackTrace ();
-            }
-            catch (IllegalAccessException e) {
-                e.printStackTrace ();
-            }
-            catch (SecurityException e) {
-                e.printStackTrace ();
-            }
-            catch (NoSuchMethodException e) {
-                e.printStackTrace ();
-            }
-            rowObject = setValuesOfObject (t_class, rowObject, results);
+        if (t_class != null) {
+            while (results.next ()) {
+                Dataset rowObject = null;
+                try {
+                    Constructor <?> constructor = t_class.getConstructor ();
+                    constructor.setAccessible (true);
+                    rowObject = (Dataset) t_class.newInstance ();
+                }
+                catch (InstantiationException e) {
+                    e.printStackTrace ();
+                }
+                catch (IllegalAccessException e) {
+                    e.printStackTrace ();
+                }
+                catch (SecurityException e) {
+                    e.printStackTrace ();
+                }
+                catch (NoSuchMethodException e) {
+                    e.printStackTrace ();
+                }
+                rowObject = setValuesOfObject (t_class, rowObject, results);
 
-            objects.add (rowObject);
+                objects.add (rowObject);
+            }
         }
         if (objects.isEmpty ())
             return null;

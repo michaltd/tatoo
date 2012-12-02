@@ -1,6 +1,7 @@
 package tatoo.commands;
 
 import tatoo.Command;
+import tatoo.db.DBFactory;
 import tatoo.model.conditions.AbstractNumberCondition;
 import tatoo.model.conditions.Condition;
 
@@ -35,6 +36,16 @@ public class CmdAlterConditionByVal implements Command {
     public void redo () {
         dataset.setValue (newValue);
 
+    }
+
+    @Override
+    public void writeObject () {
+        DBFactory.getInstance ().write(dataset);
+    }
+
+    @Override
+    public void deleteObject () {
+        DBFactory.getInstance ().write(dataset);
     }
 
 }

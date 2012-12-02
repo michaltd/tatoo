@@ -85,7 +85,14 @@ public class MainWindow extends JFrame implements ActionListener, ItemListener {
         showArmyBuilder.setName ("showArmyBuilder");
         showArmyBuilder.addActionListener (this);
         showMenu.add (showArmyBuilder);
-
+        
+        showMenu.addSeparator ();
+        JMenuItem saveItem = new JMenuItem ("Speichern");
+        saveItem.setName ("saveView");
+        saveItem.addActionListener (this);
+        saveItem.setAccelerator (KeyStroke.getKeyStroke (KeyEvent.VK_S, InputEvent.CTRL_MASK));
+        showMenu.add (saveItem);
+        
         showMenu.addSeparator ();
         JMenuItem closeItem = new JMenuItem ("Schließen");
         closeItem.setName ("closeFrame");
@@ -151,7 +158,14 @@ public class MainWindow extends JFrame implements ActionListener, ItemListener {
     public void redo () {
         Tatoo.cmdMgr.redo ();
     }
-
+    
+    /**
+     * Sichert die aktuelle Ansicht
+     */
+    public void saveView(){
+        Tatoo.cmdMgr.write ();
+    }
+    
     /**
      * Close the Main Window
      */

@@ -1,6 +1,7 @@
 package tatoo.commands;
 
 import tatoo.Command;
+import tatoo.db.DBFactory;
 import tatoo.model.conditions.Condition;
 import tatoo.model.conditions.Condition.ConditionTypes;
 import tatoo.model.entities.AbstractEntity;
@@ -33,6 +34,16 @@ public class CmdAlterConditionByCond implements Command {
     @Override
     public void redo () {
         entity.setAttribute (newValue, conditionType);
+    }
+
+    @Override
+    public void writeObject () {
+        DBFactory.getInstance ().write (entity);
+    }
+
+    @Override
+    public void deleteObject () {
+        DBFactory.getInstance ().write (entity);
     }
 
 }
