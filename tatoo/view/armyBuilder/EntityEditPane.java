@@ -148,6 +148,7 @@ public class EntityEditPane extends ArmyBuilderEditPanel implements ActionListen
                     }
                     catch (ConditionParseException cpe) {
                         maxCount.setBackground (new Color (255, 170, 170));
+                        textFieldModified = false;
                     }
                 }
             };
