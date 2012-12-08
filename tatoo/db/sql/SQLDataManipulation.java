@@ -31,6 +31,7 @@ public class SQLDataManipulation extends DataManipulation {
     private String                                            condition;
 
     protected static HashMap <Integer, ArrayList <Class <?>>> itemsInWriteProcess = new HashMap <Integer, ArrayList <Class <?>>> ();
+    protected static int openDataManipulations = 0;
 
     public SQLDataManipulation (Connection sqlConnection, DBSchema schema) {
         super (schema);
@@ -83,7 +84,7 @@ public class SQLDataManipulation extends DataManipulation {
 
     @Override
     public boolean delete (Dataset dataset) {
-        collectFieldParameters (dataset, dataset.getClass ());
+        collectFieldParameters (dataset, dataset.getClass (), true);
         return delete ();
     }
 
@@ -136,10 +137,17 @@ public class SQLDataManipulation extends DataManipulation {
     public int insert (Dataset dataset) {
         if (dataset == null)
             return -1;
+        openDataManipulations++;
+        int resultId = -1;
         Dataset datset = getFromCache (dataset.getId ());
         if (datset != null)
-            return datset.getId ();
-        else return insert (dataset, dataset.getClass ());
+            resultId = datset.getId ();
+        else
+            resultId = insert (dataset, dataset.getClass ());
+        openDataManipulations--;
+        if (openDataManipulations == 0)
+            itemsInWriteProcess = new HashMap <Integer, ArrayList <Class <?>>> ();
+        return resultId;
     }
 
     /**
@@ -169,7 +177,7 @@ public class SQLDataManipulation extends DataManipulation {
             SQLDataManipulation insertStmt = new SQLDataManipulation (dbconn, schema);
             id = insertStmt.insert (dataset, superclass);
         }
-        collectFieldParameters (dataset, c);
+        collectFieldParameters (dataset, c, true);
 
         // wenn die id == 0 ist handelt es sich in jedem Fall um die
         // Dataset-Klasse -> (c.getSimpleName() == "Dataset") da zuerst das
@@ -259,12 +267,26 @@ public class SQLDataManipulation extends DataManipulation {
 
     @Override
     public boolean update (Dataset dataset) {
-        return update (dataset, dataset.getClass ());
+        openDataManipulations++;
+        boolean result = update (dataset, dataset.getClass ());
+        openDataManipulations--;
+        if (openDataManipulations == 0)
+            itemsInWriteProcess = new HashMap <Integer, ArrayList <Class <?>>> ();
+        return result;
     }
 
     private boolean update (Dataset dataset, Class <?> c) {
         boolean result = false;
-        if ( !itemsInWriteProcess.containsKey (dataset.getId ())) {
+        if ( !itemsInWriteProcess.containsKey (dataset.getId ()) || !itemsInWriteProcess.get (dataset.getId ()).contains (c)) {
+            
+            if (itemsInWriteProcess.containsKey (dataset.getId ()))
+                itemsInWriteProcess.get (dataset.getId ()).add (c);
+            else {
+                ArrayList <Class <?>> classList = new ArrayList <Class <?>> ();
+                classList.add (c);
+                itemsInWriteProcess.put (dataset.getId (), classList);
+            }
+            
             this.t_class = dataset.getClass ().getName ();
 
             Class <?> superclass = c.getSuperclass ();
@@ -276,19 +298,12 @@ public class SQLDataManipulation extends DataManipulation {
                 SQLDataManipulation insertStmt = new SQLDataManipulation (dbconn, schema);
                 result = insertStmt.update (dataset, superclass);
             }
-            collectFieldParameters (dataset, c);
+            collectFieldParameters (dataset, c, false);
 
             setCondition ("dataset_id = " + dataset.getId ());
 
             update ();
 
-            if (itemsInWriteProcess.containsKey (dataset.getId ()))
-                itemsInWriteProcess.get (dataset.getId ()).add (c);
-            else {
-                ArrayList <Class <?>> classList = new ArrayList <Class <?>> ();
-                classList.add (c);
-                itemsInWriteProcess.put (dataset.getId (), classList);
-            }
             updateSets (dataset, c, false);
         }
         return result;
@@ -419,9 +434,10 @@ public class SQLDataManipulation extends DataManipulation {
      * 
      * @param dataset
      * das Objekt des Datasets
+     * @param isInsert TODO
      * @param class Die Klasse die behandelt werden soll
      */
-    private void collectFieldParameters (Dataset dataset, Class <?> c) {
+    private void collectFieldParameters (Dataset dataset, Class <?> c, boolean isInsert) {
         // zunächst den Tabellennamen heraussuchen
         t_name = schema.getTableName (c);
         // es kommt vor, dass die Klasse nicht im Schema auftaucht, weil sie
@@ -454,8 +470,12 @@ public class SQLDataManipulation extends DataManipulation {
                 // Oder so.... irgendwie .... :)
                 if (Dataset.class.isInstance (oValue)) {
                     SQLDataManipulation insertStmt = new SQLDataManipulation (dbconn, schema);
-                    if (((Dataset) oValue).getId () == 0)
+                    if (((Dataset) oValue).getId () == 0 || isInsert )
                         value = ((Integer) insertStmt.insert ((Dataset) oValue)).toString ();
+                    else if (!isInsert){
+                        value = ((Integer) ((Dataset) oValue).getId ()).toString ();
+                        insertStmt.update ((Dataset)oValue);
+                    }
                     else value = ((Integer) ((Dataset) oValue).getId ()).toString ();
                 }
                 else {
