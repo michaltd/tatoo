@@ -30,14 +30,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link CodexList }
-     * 
-     */
-    public CodexList createCodexList() {
-        return new CodexList();
-    }
-
-    /**
      * Create an instance of {@link Game }
      * 
      */
@@ -54,11 +46,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Codex }
+     * Create an instance of {@link ArmyList }
      * 
      */
-    public Codex createCodex() {
-        return new Codex();
+    public ArmyList createArmyList() {
+        return new ArmyList();
+    }
+
+    /**
+     * Create an instance of {@link Army }
+     * 
+     */
+    public Army createArmy() {
+        return new Army();
     }
 
 }

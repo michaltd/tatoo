@@ -9,19 +9,19 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for codex complex type.
+ * <p>Java class for army complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="codex">
+ * &lt;complexType name="army">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element name="name" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="version" type="{http://www.w3.org/2001/XMLSchema}integer"/>
  *         &lt;element name="edition" type="{http://www.w3.org/2001/XMLSchema}integer"/>
- *         &lt;element name="codexID" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="armyID" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="creator" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
@@ -32,14 +32,14 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "codex", propOrder = {
+@XmlType(name = "army", propOrder = {
     "name",
     "version",
     "edition",
-    "codexID",
+    "armyID",
     "creator"
 })
-public class Codex {
+public class Army {
 
     @XmlElement(required = true)
     protected String name;
@@ -48,7 +48,7 @@ public class Codex {
     @XmlElement(required = true)
     protected BigInteger edition;
     @XmlElement(required = true)
-    protected String codexID;
+    protected String armyID;
     @XmlElement(required = true)
     protected String creator;
 
@@ -125,27 +125,27 @@ public class Codex {
     }
 
     /**
-     * Gets the value of the codexID property.
+     * Gets the value of the armyID property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getCodexID() {
-        return codexID;
+    public String getArmyID() {
+        return armyID;
     }
 
     /**
-     * Sets the value of the codexID property.
+     * Sets the value of the armyID property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setCodexID(String value) {
-        this.codexID = value;
+    public void setArmyID(String value) {
+        this.armyID = value;
     }
 
     /**
