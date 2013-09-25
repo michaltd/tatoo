@@ -26,7 +26,7 @@ import tatoo.resources.TextWrapper;
 public class ArmyListModel implements ArmyModel, EntityListener {
 
     /** Wurzelelement der Armeeliste */
-    private AbstractEntity    armyList     = null;
+    private AbstractEntity    game         = null;
     /** Liste von Listenern */
     private EventListenerList listenerList = new EventListenerList ();
 
@@ -36,10 +36,12 @@ public class ArmyListModel implements ArmyModel, EntityListener {
      * @param root
      * Die Wurzel des Baumes
      */
-    public ArmyListModel (AbstractEntity root) {
-        armyList = root;
-        armyList.addEntityListener (this);
-        setEntityListener(armyList);
+    public ArmyListModel () {
+        
+    }
+    
+    public ArmyListModel (AbstractEntity entity){
+        setRoot (entity);
     }
 
     private void setEntityListener (AbstractEntity entity) {
@@ -102,8 +104,6 @@ public class ArmyListModel implements ArmyModel, EntityListener {
      * @param e
      * Das Event welches an die Listener übergeben wird.
      */
-    // TODO: noch mal überarbeiten, so dass nicht das Event übergeben wird,
-    // sondern eine Referenz auf das auslösende Objekt.
     public void fireTreeStructureChanged (TreeModelEvent e) {
         Object[] listeners = listenerList.getListenerList ();
         for (int i = listeners.length - 2; i >= 0; i -= 2) {
@@ -151,7 +151,17 @@ public class ArmyListModel implements ArmyModel, EntityListener {
 
     @Override
     public Object getRoot () {
-        return armyList;
+        return game;
+    }
+
+    public void setRoot (AbstractEntity e) {
+        if (e != null) {
+            game = e;
+            game.addEntityListener (this);
+            setEntityListener (game);
+            AbstractEntity arr[] = {e};
+            fireTreeStructureChanged (new TreeModelEvent (e, arr));
+        }
     }
 
     public EntityType getTypeOfNode (Object node) {
@@ -220,27 +230,26 @@ public class ArmyListModel implements ArmyModel, EntityListener {
      */
     // TODO: throw ClassCastException?
     public AbstractEntity insertNewEntity (Object parent) {
-
-        EntityType type = EntityType.UPGRADE;
+        // wenn das übergebene Objekt null ist muss eine neue Armeeliste
+        // angelegt werden
+        EntityType type;
+        if (parent == null) {
+            type = EntityType.ARMYLIST;
+            parent = game;
+        }
+        else type = EntityType.UPGRADE;
         // create new ArmyListEntity with the given Name from language-file
         AbstractEntity newEntity = new ArmyListEntity (type, TextWrapper.getString ("ArmyListModel.0"));
         newEntity.addEntityListener (this);
 
-        AbstractEntity paren;
-        // If no parent was passed as parameter get the root from tree
-        // and insert the new node as child
-        // else insert child into passed node
-        if (parent == null)
-            paren = (AbstractEntity) getRoot ();
-        else paren = (AbstractEntity) parent;
-        Tatoo.cmdMgr.execute (new CmdInsertEntityChild (paren, newEntity));
+        Tatoo.cmdMgr.execute (new CmdInsertEntityChild ((AbstractEntity) parent, newEntity));
         return newEntity;
     }
 
     @Override
     public AbstractEntity insertCopyOf (Object[] treePath) {
 
-        AbstractEntity orignalRoot = armyList;
+        AbstractEntity orignalRoot = game;
         // Wenn der Root in der Armeeliste noch keine Kinder hat, handelt es
         // sich um den Standardmäßig eingefügten Knoten, welcher
         // nur eingefügt wurde weil es sonst in der Anzeige zu Exceptions kommt.
@@ -249,24 +258,24 @@ public class ArmyListModel implements ArmyModel, EntityListener {
         if (((AbstractEntity) getRoot ()).getChildCount () == 0 && treePath.length > 0) {
             // Kopie erzeugen:
             try {
-                armyList = ((AbstractEntity) treePath[0]).cloneFor (null);
-                armyList.addEntityListener (this);
+                game = ((AbstractEntity) treePath[0]).cloneFor (null);
+                game.addEntityListener (this);
             }
             catch (CloneNotSupportedException e) {
                 e.printStackTrace ();
-                armyList = orignalRoot;
+                game = orignalRoot;
                 return null;
             }
 
         }
-        if (armyList == null)
+        if (game == null)
             return null;
         // das erste Object im Array MUSS der root-Knoten sein, sonst ist es
         // kein gültiger Pfad!
         // TODO: hier eventuell Exception schmeißen bei ungültigem Pfad.
         if (treePath[0].equals (getRoot ()) && treePath.length > 1) {
             boolean found = false;
-            AbstractEntity treeNode = armyList;
+            AbstractEntity treeNode = game;
             AbstractEntity parent = treeNode;
             // den Pfad vom Knoten eins bis Ende durchlaufen
             for (int i = 1; i < treePath.length - 1; i++ ) {
@@ -288,7 +297,7 @@ public class ArmyListModel implements ArmyModel, EntityListener {
                     }
                     catch (CloneNotSupportedException e) {
                         e.printStackTrace ();
-                        armyList = orignalRoot;
+                        game = orignalRoot;
                         return null;
                     }
                     newNode.addEntityListener (this);
@@ -306,13 +315,13 @@ public class ArmyListModel implements ArmyModel, EntityListener {
             }
             catch (CloneNotSupportedException e) {
                 e.printStackTrace ();
-                armyList = orignalRoot;
+                game = orignalRoot;
                 return null;
             }
             newNode.addEntityListener (this);
             newNode.setParent (parent);
-            Tatoo.cmdMgr.add(new CmdInsertEntityChild (treeNode, newNode));
-            Tatoo.cmdMgr.execute();
+            Tatoo.cmdMgr.add (new CmdInsertEntityChild (treeNode, newNode));
+            Tatoo.cmdMgr.execute ();
             return newNode;
         }
         return null;
@@ -327,13 +336,11 @@ public class ArmyListModel implements ArmyModel, EntityListener {
     public void removeNodeFromParent (Object node) {
         AbstractEntity delEntity = (AbstractEntity) node;
         AbstractEntity parent = delEntity.getParent ();
-        Tatoo.cmdMgr.execute (new CmdRemoveEntityChild(parent, delEntity));
+        Tatoo.cmdMgr.execute (new CmdRemoveEntityChild (parent, delEntity));
     }
 
     @Override
     public void AttribChanged (AbstractEntity entity, ConditionTypes attrib) {
-//        TreeModelEvent e = null;
-//        fireTreeNodesChanged (e);
 
     }
 
@@ -352,7 +359,6 @@ public class ArmyListModel implements ArmyModel, EntityListener {
         int[] idx = {index};
         TreeModelEvent e = new TreeModelEvent (this, getNodePath (entity, 0).toArray (), idx, childArr);
         fireTreeNodesRemoved (e);
-
     }
 
 }

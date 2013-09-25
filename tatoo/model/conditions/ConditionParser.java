@@ -51,7 +51,7 @@ public class ConditionParser {
     private void buildParseTree (AbstractEntity entity, ParseNode parseNode) {
 
         for (AbstractEntity ae : entity.getChilds ()) {
-            if (ae.getType () == EntityType.ROOT || ae.getType () == EntityType.CATEGORY
+            if (ae.getType () == EntityType.ARMYLIST || ae.getType () == EntityType.CATEGORY
                             || ae.getType () == EntityType.NODE || ae.getType () == EntityType.UPGRADE) {
                 ParseNode newChild = new ParseNode (ae);
                 parseNode.addChild (newChild);

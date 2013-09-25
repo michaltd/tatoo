@@ -168,11 +168,10 @@ public abstract class DBConnection {
         }
         else {
             // 3. wenn nein: Objekt eintragen
-            createDataManipulation ().insert (o);
+            return createDataManipulation ().insert (o) >= 0;
         }
 
         // 4. schon fertig :)
-        return false;
     }
 
     /**
@@ -198,6 +197,18 @@ public abstract class DBConnection {
             }
         }
         return null;
+    }
+    
+    public Dataset[] read (Class <?> c) {
+        LinkedList <Dataset> results = createQuery ().get (c).execute ();
+
+        if (results == null || results.isEmpty ()) {
+            return null;
+        }
+        else {
+            Dataset[] dat = new Dataset[results.size ()];
+            return results.toArray (dat);
+        }
     }
     
     /**

@@ -24,7 +24,8 @@ public class ArmyListEntityModel extends AbstractEntityModel {
      * Das ArmyListEntity das von dem Model gekapselt werden soll.
      */
     public ArmyListEntityModel (Object o) {
-        setSource (o);
+        if (o != null)
+            setSource (o);
     }
 
     /**

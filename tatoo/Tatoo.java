@@ -4,6 +4,7 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
 import tatoo.db.DBFactory;
+import tatoo.model.entities.ArmyListEntity;
 import tatoo.view.MainWindow;
 
 /**
@@ -19,7 +20,7 @@ public class Tatoo {
      * Kompilieren des Nightly Builds mal automatisch gesetzt werden soll...
      * oder so
      */
-    public final static VersionNumber VERSION = new VersionNumber ("00.2712.00");
+    public final static VersionNumber VERSION = new VersionNumber ("00.4912.00");
     /**
      * Enthält das tatoo-Object
      */
@@ -73,9 +74,9 @@ public class Tatoo {
             return;
         }
 
-        // lookAndFeel setzen:
+//        // lookAndFeel setzen:
         setLookAndFeel ();
-        // Hauptfenster öffnen
+//        // Hauptfenster öffnen
         MainWindow.createAndShowGUI (VERSION);
     }
 

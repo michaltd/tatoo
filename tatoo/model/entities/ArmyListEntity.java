@@ -34,7 +34,7 @@ public class ArmyListEntity extends AbstractEntity {
 
         ArmyListEntity new_entity = new ArmyListEntity ();
 
-        if (parent == null && this.getType () != EntityType.ROOT)
+        if (parent == null && this.getType () != EntityType.ARMYLIST)
             throw new CloneNotSupportedException ("Get null as parent but cloning a non-root node.");
         else new_entity.setParent (parent);
 
@@ -50,9 +50,9 @@ public class ArmyListEntity extends AbstractEntity {
         }
 
         // zum Schluss die entities durchgehen und wenn es sich NICHT um
-        // ROOT, CATEGORY, NODE Entitys handelt Klonen:
+        // ARMYLIST, CATEGORY, NODE Entitys handelt Klonen:
         for (AbstractEntity ae : entities) {
-            if (ae.getType () != EntityType.ROOT && ae.getType () != EntityType.CATEGORY
+            if (ae.getType () != EntityType.ARMYLIST && ae.getType () != EntityType.CATEGORY
                             && ae.getType () != EntityType.NODE) {
                 new_entity.addEntity (ae.cloneFor (new_entity));
             }

@@ -7,7 +7,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
+import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -21,9 +26,13 @@ import javax.swing.tree.TreePath;
 
 import tatoo.Tatoo;
 import tatoo.commands.CmdTreeSelectionChanged;
+import tatoo.db.DBFactory;
+import tatoo.db.Dataset;
 import tatoo.model.ArmyBuilderEntityModel;
 import tatoo.model.ArmyListEntityModel;
 import tatoo.model.ArmyListModel;
+import tatoo.model.entities.AbstractEntity;
+import tatoo.model.entities.Game;
 import tatoo.model.entities.AbstractEntity.EntityType;
 import tatoo.model.entities.events.EntityModelEvent;
 import tatoo.view.TatooPanel;
@@ -42,12 +51,10 @@ public class ArmyBuilderPanel extends JPanel implements ActionListener {
         ADD_ITEM ("Add Item", EntityType.NODE),
         REMOVE_ITEM ("Remove Item", null);
 
-        private final String     text;
-        private final EntityType type;
+        private final String text;
 
         private treeTableCommand (String text, EntityType type) {
             this.text = text;
-            this.type = type;
         }
 
         public String getText () {
@@ -67,9 +74,9 @@ public class ArmyBuilderPanel extends JPanel implements ActionListener {
      */
     public ArmyBuilderPanel (ArmyListModel model) {
         this.setLayout (new BorderLayout ());
-        this.treeModel = model;
+        treeModel = model;
         treeModel.addTreeModelListener (new PrivTreeModelHandler ());
-        createBuilderPane (model);
+        createBuilderPane (treeModel);
         entityModel = new ArmyBuilderEntityModel ();
         sidebar = new TatooPanel ();
         add (sidebar, BorderLayout.EAST);
@@ -96,27 +103,62 @@ public class ArmyBuilderPanel extends JPanel implements ActionListener {
         tree.setEditable (true);
         tree.setRootVisible (true);
 
-        JScrollPane pane = new JScrollPane (tree);
-        this.add (pane, BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane (tree);
+
+        JPanel containerPanel = new TatooPanel ();
+        containerPanel.setLayout (new BorderLayout ());
+        containerPanel.add (scrollPane, BorderLayout.CENTER);
+
+        Dataset[] games = DBFactory.getInstance ().read (Game.class);
+        ArrayList <String> gameNames = new ArrayList <String> (games.length);
+        for (Dataset g : games)
+            gameNames.add (((Game) g).getName ());
+        Collections.sort (gameNames, new StringIgnoreCaseComparator ());
+        JComboBox gamesList = new JComboBox (gameNames.toArray ());
+        gamesList.setEditable (true);
+        containerPanel.add (gamesList, BorderLayout.NORTH);        
+
+        this.add (containerPanel, BorderLayout.CENTER);
+
+        gamesList.addActionListener (new ActionListener () {
+
+            @Override
+            public void actionPerformed (ActionEvent e) {
+                JComboBox cb = (JComboBox) e.getSource ();
+                String val = (String) cb.getSelectedItem ();
+                Dataset[] games = DBFactory.getInstance ().read (Game.class);
+                for (Dataset g : games)
+                    if (((Game) g).getName ().equalsIgnoreCase (val)) {
+                        AbstractEntity rootEntity = (AbstractEntity) ((Game) g).getGameEntity ();
+                        treeModel = new ArmyListModel (rootEntity);
+                        treeModel.addTreeModelListener (new PrivTreeModelHandler ());
+                        tree.revalidate ();
+                        tree.setModel (treeModel);
+                        //createBuilderPane (treeModel);
+                    }
+            }
+        });
 
     }
 
-    public void createPopupMenu () {
-        JMenuItem menuItem;
+    private void createPopupMenu () {
+        if (treeModel.getRoot () != null) {
+            JMenuItem menuItem;
 
-        JPopupMenu popup = new JPopupMenu ();
+            JPopupMenu popup = new JPopupMenu ();
 
-        menuItem = new JMenuItem (treeTableCommand.ADD_ITEM.getText ());
-        menuItem.setActionCommand (treeTableCommand.ADD_ITEM.getCommand ());
-        menuItem.addActionListener (this);
-        popup.add (menuItem);
-        menuItem = new JMenuItem (treeTableCommand.REMOVE_ITEM.getText ());
-        menuItem.setActionCommand (treeTableCommand.REMOVE_ITEM.getCommand ());
-        menuItem.addActionListener (this);
-        popup.add (menuItem);
+            menuItem = new JMenuItem (treeTableCommand.ADD_ITEM.getText ());
+            menuItem.setActionCommand (treeTableCommand.ADD_ITEM.getCommand ());
+            menuItem.addActionListener (this);
+            popup.add (menuItem);
+            menuItem = new JMenuItem (treeTableCommand.REMOVE_ITEM.getText ());
+            menuItem.setActionCommand (treeTableCommand.REMOVE_ITEM.getCommand ());
+            menuItem.addActionListener (this);
+            popup.add (menuItem);
 
-        MouseListener popupListener = new PopupListener (popup);
-        tree.addMouseListener (popupListener);
+            MouseListener popupListener = new PopupListener (popup);
+            tree.addMouseListener (popupListener);
+        }
     }
 
     // TODO: Warum existiert das so in dieser Form?? Eigentlich sollte es doch
@@ -136,28 +178,7 @@ public class ArmyBuilderPanel extends JPanel implements ActionListener {
     }
 
     public void setSidePane () {
-        // int sidebarWidth = 300;
-        // Object o = entityModel.getSource ();
-        // if (o == null) {
-        // JPanel pane = new TatooPanel ();
-        // pane.setLayout (new BoxLayout (pane, BoxLayout.X_AXIS));
-        // pane.add (Box.createHorizontalStrut (sidebarWidth));
-        // sidebar.add (pane);
-        // }
-        // else {
-        // // TODO was ist das für ein Blödsinn, das View kennt die Daten?
-        // // Neeee... noch mal überarbeiten!
-        // if (o instanceof ArmyListEntity) {
-        // if ( !(sidebar.getComponent (0) instanceof EntityEditPane)) {
-        // sidebar.removeAll ();
-        // sidebar.add (new EntityEditPane (entityModel));
-        // }
-        // }
-        // sidebar.revalidate ();
-        // }
-        // sidebar.removeAll ();
-//        sidebar.add (new EntityEditPane (entityModel));
-        if (entityEditPane == null){
+        if (entityEditPane == null) {
             entityEditPane = new EntityEditPane (entityModel);
             sidebar.add (entityEditPane);
         }
@@ -230,6 +251,15 @@ public class ArmyBuilderPanel extends JPanel implements ActionListener {
         @Override
         public void treeStructureChanged (TreeModelEvent e) {
             // nothing to do here
+        }
+
+    }
+
+    private class StringIgnoreCaseComparator implements Comparator <String> {
+
+        @Override
+        public int compare (String o1, String o2) {
+            return o1.compareToIgnoreCase (o2);
         }
 
     }

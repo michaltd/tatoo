@@ -34,7 +34,7 @@
 	<class name="EntityType" table="entity_type">
 		<property name="name" column="name" />
 		<property name="ordinal" column="ordinal" />
-		<property name="ROOT" column="ROOT" />
+		<property name="ARMYLIST" column="ARMYLIST" />
 		<property name="CATEGORY" column="CATEGORY" />
 		<property name="NODE" column="NODE" />
 		<property name="ANYOFUPGRADE" column="ANYOFUPGRADE" />
@@ -42,7 +42,12 @@
 		<property name="UPGRADE" column="UPGRADE" />
 		<set name="values" table="entity_type_values" type="Array" />
 		<set name="possibleChildTypes" table="entity_type_possible_child_types" type="Array" />
+	</class>	
+	<class name="Game" table="game">
+		<property name="name" column="name" />
+		<property name="rootId" column="root_id" />
 	</class>
+		
 </schema>
 
 

@@ -21,6 +21,8 @@ public class ArmyBuilderEntityModel extends ArmyListEntityModel {
      */
     public void setSource (Object o) {
         try {
+            if (o == null)
+                return;
             // ist entity schon belegt? dann muss das model als Listener wieder
             // entfernt werden!
             if (entity != null)
@@ -115,8 +117,8 @@ public class ArmyBuilderEntityModel extends ArmyListEntityModel {
         if (val == null)
             return;
         EntityType eType = null;
-        if (val.equals (EntityType.ROOT.name ()))
-            eType = EntityType.ROOT;
+        if (val.equals (EntityType.ARMYLIST.name ()))
+            eType = EntityType.ARMYLIST;
         else if (val.equals (EntityType.CATEGORY.name ()))
             eType = EntityType.CATEGORY;
         else if (val.equals (EntityType.NODE.name ()))
@@ -150,7 +152,7 @@ public class ArmyBuilderEntityModel extends ArmyListEntityModel {
                 EntityType parentType = entity.getParent ().getType ();
                 resultTypes = parentType.getChildTypes ();
             }
-            else resultTypes = new EntityType[] {EntityType.ROOT};
+            else resultTypes = new EntityType[] {EntityType.ARMYLIST};
 
             return resultTypes;
         }

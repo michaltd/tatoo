@@ -35,7 +35,8 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
      */
     public static class EntityType extends Dataset {
 
-        public static  EntityType ROOT;
+        public static  EntityType GAME;
+        public static  EntityType ARMYLIST;
         public static  EntityType CATEGORY;
         public static  EntityType NODE;
         public static  EntityType ANYOFUPGRADE;
@@ -52,21 +53,23 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
             // jedes Attribut muss zunächst instanziiert und dann auf jeden Fall
             // mögliche Kinder zugewiesen bekommen!
             // Neue Attribute dürfen unter values nicht vergessen werden!
+            GAME = new EntityType (6, "GAME");
             UPGRADE = new EntityType (5, "UPGRADE");
             ONEOFUPGRADE = new EntityType (4, "ONEOFUPGRADE");
             ANYOFUPGRADE = new EntityType (3, "ANYOFUPGRADE");
             NODE = new EntityType (2, "NODE");
             CATEGORY = new EntityType (1, "CATEGORY");
-            ROOT = new EntityType (0, "ROOT");
+            ARMYLIST = new EntityType (0, "ARMYLIST");
 
             UPGRADE.setChildTypes (new EntityType[] {ANYOFUPGRADE, ONEOFUPGRADE, UPGRADE});
             ONEOFUPGRADE.setChildTypes (new EntityType[] {ANYOFUPGRADE, ONEOFUPGRADE, UPGRADE});
             ANYOFUPGRADE.setChildTypes (new EntityType[] {ANYOFUPGRADE, ONEOFUPGRADE, UPGRADE});
             NODE.setChildTypes (new EntityType[] {ANYOFUPGRADE, ONEOFUPGRADE, UPGRADE});
             CATEGORY.setChildTypes (new EntityType[] {NODE});
-            ROOT.setChildTypes (new EntityType[] {CATEGORY});
+            ARMYLIST.setChildTypes (new EntityType[] {CATEGORY});
+            GAME.setChildTypes (new EntityType[] {ARMYLIST});
 
-            values = new EntityType[] {ROOT, CATEGORY, NODE, ANYOFUPGRADE, ONEOFUPGRADE, UPGRADE};
+            values = new EntityType[] {GAME, ARMYLIST, CATEGORY, NODE, ANYOFUPGRADE, ONEOFUPGRADE, UPGRADE};
         }
 
         // private EntityType (int ordinal, String name, EntityType[] t) {
@@ -195,7 +198,7 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
     /**
      * Durchläuft den Entity-Baum nach oben in Richtung root und gibt das erste
      * Entity vom Typ <code>NODE</code> zurück. Handelt es sich bei dem
-     * übergebenen Entity um ein Entity vom Typ CATEGORY oder ROOT wird dieses
+     * übergebenen Entity um ein Entity vom Typ CATEGORY oder ARMYLIST wird dieses
      * Entity zurück gegeben.
      * 
      * @param e
@@ -205,7 +208,7 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
     protected AbstractEntity getEntityNode (AbstractEntity e) {
         if (e == null)
             return e;
-        if (e.getType () == EntityType.NODE || e.getType () == EntityType.CATEGORY || e.getType () == EntityType.ROOT)
+        if (e.getType () == EntityType.NODE || e.getType () == EntityType.CATEGORY || e.getType () == EntityType.ARMYLIST)
             return e;
         else return getEntityNode (e.getParent ());
     }
@@ -213,7 +216,7 @@ public abstract class AbstractEntity extends tatoo.db.Dataset implements EntityB
     /**
      * Durchläuft den Entity-Baum nach oben in Richtung root und gibt das erste
      * Entity vom Typ <code>NODE</code> zurück. Handelt es sich bei dem
-     * übergebenen Entity um ein Entity vom Typ CATEGORY oder ROOT wird dieses
+     * übergebenen Entity um ein Entity vom Typ CATEGORY oder ARMYLIST wird dieses
      * Entity zurück gegeben.
      * 
      * @return Das Ursprungsentity

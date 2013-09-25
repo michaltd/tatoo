@@ -29,7 +29,7 @@ public class NodePanelFactory {
             entity.setAlignment (NodePanel.HORIZONTAL_ALIGNMENT);
             entity.setShowEmptyEntities (false);
         }
-        nodePanel.put (AbstractEntity.EntityType.ROOT.ordinal (), entity);
+        nodePanel.put (AbstractEntity.EntityType.ARMYLIST.ordinal (), entity);
 
         entity = new NodePanelEntity ();
         entity.setNodePanel (SimpleCategoryPanel.class);

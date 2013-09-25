@@ -51,7 +51,8 @@ public class ArmyTreePanel extends JPanel implements MouseListener {
      * Das Eltern-JPanel auf dem die Knoten dargestellt werden sollen.
      */
     public void buildPanel (Object node, JPanel panel, NodePanelFactory nodeFactory) {
-        buildPanel (new ArrayList <OneOfUpgradeModel> (), null, node, panel, nodeFactory);
+        if (node != null)
+            buildPanel (new ArrayList <OneOfUpgradeModel> (), null, node, panel, nodeFactory);
     }
 
     /**
@@ -168,7 +169,13 @@ public class ArmyTreePanel extends JPanel implements MouseListener {
         }
 
         @Override
-        public void treeStructureChanged (TreeModelEvent e) {}
+        public void treeStructureChanged (TreeModelEvent e) {
+            JPanel pane = new TatooPanel ();
+            buildPanel (model.getRoot (), pane, new NodePanelFactory ("Sidemenu"));
+            thisPane.removeAll ();
+            thisPane.add (pane);
+            thisPane.revalidate ();
+        }
 
     }
 

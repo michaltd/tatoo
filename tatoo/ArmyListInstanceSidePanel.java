@@ -12,7 +12,7 @@ import tatoo.model.entities.ArmyListEntity;
 public class ArmyListInstanceSidePanel {
 
     // TODO: zu Testzwecken freigegeben über kurz oder lang muss das hier weg!
-    public AbstractEntity armeeliste;
+    private AbstractEntity armeeliste;
 
     private AbstractEntity anyOfUpgrade () {
         return new ArmyListEntity (AbstractEntity.EntityType.ANYOFUPGRADE, "beliebiges aus");
@@ -33,7 +33,7 @@ public class ArmyListInstanceSidePanel {
     }
 
     private AbstractEntity generateManually () {
-        AbstractEntity armeeliste = new ArmyListEntity (AbstractEntity.EntityType.ROOT, "Armeeliste");
+        AbstractEntity armeeliste = new ArmyListEntity (AbstractEntity.EntityType.ARMYLIST, "Armeeliste");
 
         /* Entry */
         AbstractEntity hq = new ArmyListEntity (AbstractEntity.EntityType.CATEGORY, "HQ");

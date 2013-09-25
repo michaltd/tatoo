@@ -2,6 +2,7 @@ package tatoo.db;
 
 import tatoo.db.DBConnection.DBases;
 import tatoo.db.sql.SQLConnection;
+import tatoo.model.entities.Game;
 
 /**
  * Hält ein global nutzbare Datenverbindung aufrecht. Es können Objekte direkt
@@ -77,6 +78,10 @@ public class DBFactory {
     public Dataset read (Class <?> c, int id) {
         return getConnection ().read (c, id);
 
+    }
+    
+    public Dataset[] read (Class <?> c) {
+        return getConnection ().read (c);
     }
 
     public boolean delete (Dataset o) {

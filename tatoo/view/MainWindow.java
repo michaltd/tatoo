@@ -122,13 +122,13 @@ public class MainWindow extends JFrame implements ActionListener, ItemListener {
     }
 
     // TODO: nur zu Testzwecken eingefügt. wieder entfernen
-    private AbstractEntity armylist = new ArmyListInstanceSidePanel ().armeeliste;
+    //private AbstractEntity armylist = new ArmyListInstanceSidePanel ().armeeliste;
 
     /**
      * Shows the ArmyList in the Main Window
      */
     public void showArmyList () {
-        addComponentsToPane (new ArmyListPanel (armylist));
+        addComponentsToPane (new ArmyListPanel ());
         Tatoo.cmdMgr.setActiveView (CommandManager.View.ARMYLIST);
     }
 
@@ -140,7 +140,7 @@ public class MainWindow extends JFrame implements ActionListener, ItemListener {
         // ArmyBuilderPanel armyTree = new ArmyBuilderPanel(
         // new ArmyListModel(new ArmyListInstanceSidePanel().armeeliste));
         // TODO: und durch das hier ersetzt:
-        ArmyBuilderPanel armyTree = new ArmyBuilderPanel (new ArmyListModel (armylist));
+        ArmyBuilderPanel armyTree = new ArmyBuilderPanel (new ArmyListModel ());
         addComponentsToPane (armyTree);
         Tatoo.cmdMgr.setActiveView (CommandManager.View.ARMYBUILDER);
     }
@@ -210,7 +210,7 @@ public class MainWindow extends JFrame implements ActionListener, ItemListener {
         frame.showArmyBuilder ();
         // frame.showArmyList();
         // Display the window.
-        frame.setSize (new Dimension (1024, 800));
+        frame.setSize (new Dimension (800, 600));
         frame.setResizable (true);
         frame.setVisible (true);
     }
