@@ -10,7 +10,7 @@ import tatoo.view.MainWindow;
 /**
  * Einstiegspunkt für tatoo. Enthält die main Methode und wichtige globale
  * Objekte. Setzt ausserdem das LookAndFeel von Swing.
- * 
+ *
  * @author mkortz
  */
 public class Tatoo {
@@ -25,9 +25,9 @@ public class Tatoo {
      * Enthält das tatoo-Object
      */
     private static Tatoo              tatoo;
-    
+
     public static final CommandManager cmdMgr = new CommandManager();
-    
+
     // Die DBFactory sollte nur einmal initialisiert werden, weil dann auch
     // Schema nur einmal eingelesen wird usw.
     // Es handelt sich hier also um ein globales Objekt. Nicht schön, aber
@@ -35,7 +35,7 @@ public class Tatoo {
     // alles neu zu initialisieren.
     /**
      * Referenz auf die globale DBFactory.
-     * 
+     *
      * @see tatoo.db.DBFactory
      */
     private DBFactory                 dbfact;
@@ -43,7 +43,7 @@ public class Tatoo {
     /**
      * Einsprungspunkt für tatoo. Instantiiert Tatoo und führt
      * {@link Tatoo#init(String[])} aus.
-     * 
+     *
      * @param args
      */
     public static void main (String[] args) {
@@ -59,7 +59,7 @@ public class Tatoo {
      * , setzt das Look and Feel mittels {@link #setLookAndFeel()} und ruft das
      * Hauptfenster mittels
      * {@link tatoo.view.MainWindow#createAndShowGUI(VersionNumber))} auf.
-     * 
+     *
      * @param args
      */
     private void init (String[] args) {
@@ -74,9 +74,9 @@ public class Tatoo {
             return;
         }
 
-//        // lookAndFeel setzen:
+        // lookAndFeel setzen:
         setLookAndFeel ();
-//        // Hauptfenster öffnen
+        // Hauptfenster öffnen
         MainWindow.createAndShowGUI (VERSION);
     }
 
@@ -116,7 +116,7 @@ public class Tatoo {
 
     /**
      * Versucht das Nimbus LAF zu setzen.
-     * 
+     *
      * @throws Exception
      * Wenn das Nimbus LAF nicht gesetzt werden kann wird diese Exception
      * geworfen.

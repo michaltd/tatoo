@@ -3,12 +3,11 @@ package tatoo.model;
 import javax.swing.tree.TreeModel;
 
 import tatoo.model.entities.AbstractEntity;
-import tatoo.model.entities.AbstractEntity.EntityType;
 
 /**
  * Model für die Armeeliste. Das ArmyModel erweitert das TreeModel im
  * wesentlichen um zwei Methoden zum Einfügen und Entfernen von Knoten.
- * 
+ *
  * @author mkortz
  */
 public interface ArmyModel extends TreeModel {
@@ -19,7 +18,7 @@ public interface ArmyModel extends TreeModel {
      * den Root-Knoten des Baumes, welcher den Knoten o enthält. An Index 1 ist
      * das Knoten-Objekt enthalten, welches auf dem Pfad zum Knoten o im Baum
      * Level 1 entspricht usw. bis der Knoten o erreicht ist.
-     * 
+     *
      * @param o
      * Der Knoten von welchem der Pfad zurück gegeben werden soll.
      * @return Array von Knoten-Objekten
@@ -30,7 +29,7 @@ public interface ArmyModel extends TreeModel {
      * Fügt einen neuen Knoten in den Baum ein. Wird kein parent-Objekt als
      * Parameter übergeben, wird der neue Knoten direkt an den Root Knoten
      * angehängt. Ansonsten an das übergebene Parent-Objekt.
-     * 
+     *
      * @param parent
      * Der Parent-Knoten an den das neue Objekt angehängt werden soll
      * @return das neue Element
@@ -46,7 +45,7 @@ public interface ArmyModel extends TreeModel {
      * Method DON'T compare the ID of the Datasets. If treePath[0] is not equal
      * to the root node of the tree of this model or the node could not be
      * inserted, nothing happens and the return value is null.
-     * 
+     *
      * @param treePath
      * Path to the node inserted
      * @return the node inserted
@@ -56,7 +55,7 @@ public interface ArmyModel extends TreeModel {
     /**
      * Entfernt einen Knoten aus dem Baum. Entfernt auch alle Kinder, falls der
      * Knoten Kinder hat.
-     * 
+     *
      * @param node
      * Der zu entfernende Knoten.
      */

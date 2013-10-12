@@ -20,7 +20,7 @@ import tatoo.resources.TextWrapper;
 /**
  * Model für die Armeeliste. Das Model stellt eine triviale Implementierung des
  * Interfaces ArmyModel bereit.
- * 
+ *
  * @author mkortz
  */
 public class ArmyListModel implements ArmyModel, EntityListener {
@@ -32,7 +32,7 @@ public class ArmyListModel implements ArmyModel, EntityListener {
 
     /**
      * Instantiiert einen neuen ArmyListEntity-Baum mit root als Wurzelknoten.
-     * 
+     *
      * @param root
      * Die Wurzel des Baumes
      */
@@ -53,7 +53,7 @@ public class ArmyListModel implements ArmyModel, EntityListener {
 
     /**
      * Löst ein TreeNodesChangedEvent aus.
-     * 
+     *
      * @param e
      * Das Event welches an die Listener übergeben wird.
      */
@@ -68,7 +68,7 @@ public class ArmyListModel implements ArmyModel, EntityListener {
 
     /**
      * Löst ein TreeNodesInsertedEvent aus.
-     * 
+     *
      * @param e
      * Das Event welches an die Listener übergeben wird.
      */
@@ -83,7 +83,7 @@ public class ArmyListModel implements ArmyModel, EntityListener {
 
     /**
      * Löst ein TreeNodesRemovedEvent aus.
-     * 
+     *
      * @param e
      * Das Event welches an die Listener übergeben wird.
      */
@@ -100,7 +100,7 @@ public class ArmyListModel implements ArmyModel, EntityListener {
 
     /**
      * Löst ein TreeStructureChangedEvent aus.
-     * 
+     *
      * @param e
      * Das Event welches an die Listener übergeben wird.
      */
@@ -126,13 +126,14 @@ public class ArmyListModel implements ArmyModel, EntityListener {
     /**
      * Gibt den Kindsknoten an Position <code>index</code> des Knotens
      * <code>parent</code> zurück.
-     * 
+     *
      * @param parent
      * Der Knoten dessen Kindsknoten zurückgegeben werden soll.
      * @param index
      * Der index des Kindsknotens, der zurückgegeben werden soll.
      * @return Den Kindknoten mit dem Index <code>index</code> als Objekt.
      */
+    @Override
     public Object getChild (Object parent, int index) {
         return ((AbstractEntity) parent).getEntityAt (index);
     }
@@ -189,7 +190,7 @@ public class ArmyListModel implements ArmyModel, EntityListener {
 
     /**
      * Gibt den Pfad zum dem übergebenen Knoten zurück.
-     * 
+     *
      * @param o
      * Der Knoten dessen Pfad ermittelt werden soll.
      * @return Den Pfad zum Knoten als ein Array von Objects.
@@ -201,7 +202,7 @@ public class ArmyListModel implements ArmyModel, EntityListener {
     /**
      * Gibt den Knotenpfad zurück. Ruft sich selbst rekursiv auf. Wird es von
      * aussen aufgerufen muss immer 0 als levelCount übergeben werden.
-     * 
+     *
      * @param e
      * Das ArmyListEntity dessen Pfad zurückgegeben werden soll
      * @param levelCount
@@ -223,7 +224,7 @@ public class ArmyListModel implements ArmyModel, EntityListener {
 
     /**
      * Fügt dem Entitybaum einen weiteren leeren Knoten hinzu
-     * 
+     *
      * @param parent
      * Der Knoten dem ein Knoten angehängt werden soll.
      * @return gibt den angehängten Knoten zurück
@@ -329,7 +330,7 @@ public class ArmyListModel implements ArmyModel, EntityListener {
 
     /**
      * Entfernt den übergebenen Knoten aus dem Baum.
-     * 
+     *
      * @param node
      * Der Knoten der entfernt werden soll
      */

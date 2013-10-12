@@ -54,7 +54,7 @@ public class ArmyListInstanceSidePanel {
         armeeliste.addEntity (sturm);
         sturm.setAttribute (3, ConditionTypes.MAX_COUNT);
 
-        AbstractEntity unterstuetzung = new ArmyListEntity (AbstractEntity.EntityType.CATEGORY, "Unterstuetzung");
+        AbstractEntity unterstuetzung = new ArmyListEntity (AbstractEntity.EntityType.CATEGORY, "Unterstützung");
         armeeliste.addEntity (unterstuetzung);
         unterstuetzung.setAttribute (3, ConditionTypes.MAX_COUNT);
 

@@ -199,7 +199,7 @@ public class CommandManager {
 
     /**
      * Knoten für eine doppelt verkettete Liste von Commands.
-     * 
+     *
      * @author mkortz
      */
     private class CommandNode implements Command {

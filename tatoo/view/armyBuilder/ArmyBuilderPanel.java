@@ -68,7 +68,7 @@ public class ArmyBuilderPanel extends JPanel implements ActionListener {
 
     /**
      * creates a new ArmyBuilder Panel with the given model
-     * 
+     *
      * @param model
      * the model which holds the values that should be shown
      */
@@ -116,7 +116,7 @@ public class ArmyBuilderPanel extends JPanel implements ActionListener {
         Collections.sort (gameNames, new StringIgnoreCaseComparator ());
         JComboBox gamesList = new JComboBox (gameNames.toArray ());
         gamesList.setEditable (true);
-        containerPanel.add (gamesList, BorderLayout.NORTH);        
+        containerPanel.add (gamesList, BorderLayout.NORTH);
 
         this.add (containerPanel, BorderLayout.CENTER);
 

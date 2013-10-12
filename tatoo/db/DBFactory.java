@@ -7,7 +7,7 @@ import tatoo.model.entities.Game;
 /**
  * Hält ein global nutzbare Datenverbindung aufrecht. Es können Objekte direkt
  * in die Datenverbindung geschrieben oder daraus gelesen werden.
- * 
+ *
  * @author mkortz
  */
 public class DBFactory {
@@ -23,14 +23,14 @@ public class DBFactory {
         // TODO hier muss per Reflection der "Treiber" geladen werden
         // (SQLConnection, XMLConnection oder MySQLConnection usw.)
         // zur zeit noch einfach so eingestellt
-        conn = new SQLConnection (DBases.H2Server);
-        // conn = new SQLConnection (DBases.H2);
+//        conn = new SQLConnection (DBases.H2Server);
+        conn = new SQLConnection (DBases.H2);
         conn.connect ();
     }
 
     /**
      * Liefert die aktuell verwendete Datenverbindung zurück.
-     * 
+     *
      * @return Die Connection
      */
     public DBConnection getConnection () {
@@ -39,7 +39,7 @@ public class DBFactory {
 
     /**
      * Liefert die eine Instanz der DBFactory zurück.
-     * 
+     *
      * @return die globale DBFactory
      */
     public static DBFactory getInstance () {
@@ -55,7 +55,7 @@ public class DBFactory {
      * Ein Objekt, welches sich bereits in der Datenbank befindet, wird
      * lediglich angepasst, alle anderen neu geschrieben. Datasets erhalten nach
      * den Schreibvorgang ihre ID.
-     * 
+     *
      * @param o
      * Das Objekt das geschrieben werden soll.
      * @return gibt true zurück wenn das schreiben geklappt hat. False sonst.
@@ -67,7 +67,7 @@ public class DBFactory {
     /**
      * Liest ein Objekt der übergebenen Klasse mit der angegebenen id aus der
      * Datenstruktur.
-     * 
+     *
      * @param c
      * Die Klasse welche gelesen werden soll
      * @param id

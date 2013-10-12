@@ -18,15 +18,14 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
-import tatoo.ArmyListInstanceSidePanel;
 import tatoo.CommandManager;
 import tatoo.Tatoo;
 import tatoo.VersionNumber;
 import tatoo.model.ArmyListModel;
-import tatoo.model.entities.AbstractEntity;
 import tatoo.resources.TextWrapper;
 import tatoo.view.armyBuilder.ArmyBuilderPanel;
 import tatoo.view.armyList.ArmyListPanel;
+import tatoo.xml.ArmyXMLHandler;
 
 // TODO: Fehler log ins Programm verlegen. Sprich: ich brauche eine Umleitung
 // der
@@ -35,7 +34,7 @@ import tatoo.view.armyList.ArmyListPanel;
 
 /**
  * Main Window and Container of tatoo
- * 
+ *
  * @author mkortz
  */
 @SuppressWarnings ("serial")
@@ -48,7 +47,7 @@ public class MainWindow extends JFrame implements ActionListener, ItemListener {
 
     /**
      * Constructor for the Main Window
-     * 
+     *
      * @param name
      * The name of the Main Window
      */
@@ -63,7 +62,7 @@ public class MainWindow extends JFrame implements ActionListener, ItemListener {
     /**
      * Adds the Menu bar to the Main Window Build the menu and add it to the
      * Main Window
-     * 
+     *
      * @param frame
      * The Frame where the Menu is added
      */
@@ -85,44 +84,54 @@ public class MainWindow extends JFrame implements ActionListener, ItemListener {
         showArmyBuilder.setName ("showArmyBuilder");
         showArmyBuilder.addActionListener (this);
         showMenu.add (showArmyBuilder);
-        
+
         showMenu.addSeparator ();
         JMenuItem saveItem = new JMenuItem ("Speichern");
         saveItem.setName ("saveView");
         saveItem.addActionListener (this);
         saveItem.setAccelerator (KeyStroke.getKeyStroke (KeyEvent.VK_S, InputEvent.CTRL_MASK));
         showMenu.add (saveItem);
-        
+
         showMenu.addSeparator ();
         JMenuItem closeItem = new JMenuItem ("Schließen");
         closeItem.setName ("closeFrame");
         closeItem.addActionListener (this);
         closeItem.setAccelerator (KeyStroke.getKeyStroke (KeyEvent.VK_Q, InputEvent.CTRL_MASK));
         showMenu.add (closeItem);
-        
+
         /************************************************
          * Bearbeiten
          ************************************************/
         JMenu editMenu = new JMenu ("Bearbeiten");
         menuBar.add (editMenu);
-        
+
         JMenuItem undo = new JMenuItem ("Rückgängig");
         undo.setName ("undo");
         undo.addActionListener (this);
         undo.setAccelerator (KeyStroke.getKeyStroke (KeyEvent.VK_Z, InputEvent.CTRL_MASK));
         editMenu.add (undo);
-        
+
         JMenuItem redo = new JMenuItem ("Wiederherstellen");
         redo.setName ("redo");
         redo.addActionListener (this);
         redo.setAccelerator (KeyStroke.getKeyStroke (KeyEvent.VK_Y, InputEvent.CTRL_MASK));
         editMenu.add (redo);
 
+        JMenuItem uploadGame = new JMenuItem("Spielsystem hochladen");
+        uploadGame.setName("uploadGame");
+        uploadGame.addActionListener(this);
+        editMenu.add(uploadGame);
+
+        JMenuItem uploadArmy = new JMenuItem("Armee hochladen");
+        uploadArmy.setName("uploadArmy");
+        uploadArmy.addActionListener(this);
+        editMenu.add(uploadArmy);
+
         frame.setJMenuBar (menuBar);
     }
 
     // TODO: nur zu Testzwecken eingefügt. wieder entfernen
-    //private AbstractEntity armylist = new ArmyListInstanceSidePanel ().armeeliste;
+//    private AbstractEntity armylist = new ArmyListInstanceSidePanel().armeeliste;
 
     /**
      * Shows the ArmyList in the Main Window
@@ -144,28 +153,28 @@ public class MainWindow extends JFrame implements ActionListener, ItemListener {
         addComponentsToPane (armyTree);
         Tatoo.cmdMgr.setActiveView (CommandManager.View.ARMYBUILDER);
     }
-    
+
     /**
      * Macht das zuletzt ausgeführte Kommando rückgängig.
      */
     public void undo () {
         Tatoo.cmdMgr.undo ();
     }
-    
+
     /**
      * Führt das zuletzt rückgängig gemachte Kommando wieder aus.
      */
     public void redo () {
         Tatoo.cmdMgr.redo ();
     }
-    
+
     /**
      * Sichert die aktuelle Ansicht
      */
     public void saveView(){
         Tatoo.cmdMgr.write ();
     }
-    
+
     /**
      * Close the Main Window
      */
@@ -173,12 +182,23 @@ public class MainWindow extends JFrame implements ActionListener, ItemListener {
         System.exit (0);
     }
 
+    public void uploadGame()
+    {
+    }
+
+    public void uploadArmy()
+    {
+        ArmyXMLHandler a = new ArmyXMLHandler();
+//        String b = a.write(new ArmyListModel(this.armylist));
+//        System.out.println(b);
+    }
+
     // TODO: übersetzung enthält
     /**
      * Method to add Components to the Compoonent-Panel. Ensures, that the Panel
      * is empty before adding new components. This Method should only called
      * once with another Panel, which "enthält" the components to show.
-     * 
+     *
      * @param component
      * the components to add
      */
