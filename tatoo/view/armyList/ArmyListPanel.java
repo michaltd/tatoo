@@ -29,6 +29,11 @@ public class ArmyListPanel extends JPanel {
 
     ArmyListModel sideMenuModel;
     ArmyListModel armyListModel;
+    
+    public ArmyListModel getModel ()
+    {
+        return sideMenuModel;
+    }
 
     public ArmyListPanel () {
 

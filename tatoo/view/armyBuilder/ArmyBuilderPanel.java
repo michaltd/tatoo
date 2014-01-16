@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -45,6 +44,11 @@ public class ArmyBuilderPanel extends JPanel implements ActionListener {
     ArmyListModel          treeModel      = null;
     ArmyBuilderEntityModel entityModel    = null;
     EntityEditPane         entityEditPane = null;
+    
+    public ArmyListModel getModel ()
+    {
+        return treeModel;
+    }
 
     private enum treeTableCommand {
 

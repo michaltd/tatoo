@@ -196,6 +196,11 @@ public class CommandManager {
     public void setActiveView (View view) {
         activeView = view.ordinal ();
     }
+    
+    public CommandManager.View getActiveView () {
+        return CommandManager.View.values()[activeView];
+    }
+
 
     /**
      * Knoten für eine doppelt verkettete Liste von Commands.

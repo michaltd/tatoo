@@ -16,6 +16,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
 import tatoo.CommandManager;
@@ -130,8 +131,6 @@ public class MainWindow extends JFrame implements ActionListener, ItemListener {
         frame.setJMenuBar (menuBar);
     }
 
-    // TODO: nur zu Testzwecken eingefügt. wieder entfernen
-//    private AbstractEntity armylist = new ArmyListInstanceSidePanel().armeeliste;
 
     /**
      * Shows the ArmyList in the Main Window
@@ -189,9 +188,17 @@ public class MainWindow extends JFrame implements ActionListener, ItemListener {
     public void uploadArmy()
     {
         ArmyXMLHandler a = new ArmyXMLHandler();
-//        String b = a.write(new ArmyListModel(this.armylist));
-//        System.out.println(b);
+        JPanel pane = (JPanel) contentPanel.getComponent(0);
+        ArmyListModel model;
+        if (Tatoo.cmdMgr.getActiveView() == tatoo.CommandManager.View.ARMYLIST)
+            model = ((ArmyListPanel)pane).getModel();
+        else
+            model = ((ArmyBuilderPanel)pane).getModel();
+
+        String b = a.write(model);
+        System.out.println(b);
     }
+
 
     // TODO: übersetzung enthält
     /**
