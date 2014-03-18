@@ -30,12 +30,15 @@ public interface TatooWebservicePortType {
 
     /**
      *
+     * @param configuration
      * @return
      *     returns java.lang.String
      */
-    @WebMethod(action = "urn:getTatooVersion")
-    @WebResult(name = "version", partName = "version")
-    public String getTatooVersion();
+    @WebMethod(action = "urn:getTatooConfiguration")
+    @WebResult(name = "configurationValue", partName = "configurationValue")
+    public String getTatooConfiguration(
+        @WebParam(name = "configuration", partName = "configuration")
+        String configuration);
 
     /**
      *
