@@ -1,0 +1,285 @@
+package tatoo.view;
+
+import antafes.utilities.ConfigurationFactory;
+import tatoo.*;
+import tatoo.model.ArmyListModel;
+import tatoo.resources.TextWrapper;
+import tatoo.view.armyBuilder.ArmyBuilderPanel;
+import tatoo.view.armyList.ArmyListPanel;
+import tatoo.xml.ArmyXMLHandler;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.lang.reflect.InvocationTargetException;
+
+// TODO: Fehler log ins Programm verlegen. Sprich: ich brauche eine Umleitung
+// der
+// Standardausgabe (Fehlerausgabe) in eine von mir kontrollierte Konsole
+// (Textfeld)
+
+/**
+ * Main Window and Container of tatoo
+ *
+ * @author mkortz
+ */
+@SuppressWarnings("serial")
+public class MainWindow extends JFrame implements ActionListener, ItemListener
+{
+    /**
+     * contains all the Components of the Gui
+     */
+    private final Container contentPanel = this.getContentPane();
+
+    /**
+     * Serves the actual language
+     */
+    private TextWrapper textWrapper;
+
+    private Configuration configuration;
+
+    /**
+     * Constructor for the Main Window
+     *
+     * @param name The name of the Main Window
+     */
+    private MainWindow(String name)
+    {
+        super(name);
+        // initialize the language which is schown in tatoo
+        // textWrapper = new TextWrapper (TextWrapper.Language.LANG_EN);
+        textWrapper = new TextWrapper();
+        configuration = (Configuration) ConfigurationFactory.getConfiguration(Configuration.class);
+        // textWrapper.setDefault(TextWrapper.Language.LANG_EN);
+    }
+
+    /**
+     * Adds the Menu bar to the Main Window Build the menu and add it to the
+     * Main Window
+     *
+     * @param frame The Frame where the Menu is added
+     */
+    private void addMenuBarToPane(final JFrame frame)
+    {
+        JMenuBar menuBar = new JMenuBar();
+
+        /************************************************
+         * Anzeigen
+         ************************************************/
+        JMenu showMenu = new JMenu("Anzeigen");
+        menuBar.add(showMenu);
+
+        JMenuItem showArmyList = new JMenuItem("Armeelisten Generator");
+        showArmyList.setName("showArmyList");
+        showArmyList.addActionListener(this);
+        showMenu.add(showArmyList);
+
+        JMenuItem showArmyBuilder = new JMenuItem("Codex Generator");
+        showArmyBuilder.setName("showArmyBuilder");
+        showArmyBuilder.addActionListener(this);
+        showMenu.add(showArmyBuilder);
+
+        showMenu.addSeparator();
+        JMenuItem saveItem = new JMenuItem("Speichern");
+        saveItem.setName("saveView");
+        saveItem.addActionListener(this);
+        saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
+        showMenu.add(saveItem);
+
+        showMenu.addSeparator();
+        JMenuItem closeItem = new JMenuItem("Schließen");
+        closeItem.setName("closeFrame");
+        closeItem.addActionListener(this);
+        closeItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_MASK));
+        showMenu.add(closeItem);
+
+        /************************************************
+         * Bearbeiten
+         ************************************************/
+        JMenu editMenu = new JMenu("Bearbeiten");
+        menuBar.add(editMenu);
+
+        JMenuItem undo = new JMenuItem("Rückgängig");
+        undo.setName("undo");
+        undo.addActionListener(this);
+        undo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK));
+        editMenu.add(undo);
+
+        JMenuItem redo = new JMenuItem("Wiederherstellen");
+        redo.setName("redo");
+        redo.addActionListener(this);
+        redo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.CTRL_MASK));
+        editMenu.add(redo);
+
+        JMenuItem uploadGame = new JMenuItem("Spielsystem hochladen");
+        uploadGame.setName("uploadGame");
+        uploadGame.addActionListener(this);
+        editMenu.add(uploadGame);
+
+        JMenuItem uploadArmy = new JMenuItem("Armee hochladen");
+        uploadArmy.setName("uploadArmy");
+        uploadArmy.addActionListener(this);
+        editMenu.add(uploadArmy);
+
+        frame.setJMenuBar(menuBar);
+    }
+
+    /**
+     * Shows the ArmyList in the Main Window
+     */
+    public void showArmyList()
+    {
+        addComponentsToPane(new ArmyListPanel());
+        Tatoo.cmdMgr.setActiveView(CommandManager.View.ARMYLIST);
+    }
+
+    /**
+     * Shows the ArmyBuilder in the Main Window
+     */
+    public void showArmyBuilder()
+    {
+        ArmyBuilderPanel armyTree = new ArmyBuilderPanel(new ArmyListModel());
+        addComponentsToPane(armyTree);
+        Tatoo.cmdMgr.setActiveView(CommandManager.View.ARMYBUILDER);
+    }
+
+    /**
+     * Macht das zuletzt ausgeführte Kommando rückgängig.
+     */
+    public void undo()
+    {
+        Tatoo.cmdMgr.undo();
+    }
+
+    /**
+     * Führt das zuletzt rückgängig gemachte Kommando wieder aus.
+     */
+    public void redo()
+    {
+        Tatoo.cmdMgr.redo();
+    }
+
+    /**
+     * Sichert die aktuelle Ansicht
+     */
+    public void saveView()
+    {
+        Tatoo.cmdMgr.write();
+    }
+
+    /**
+     * Close the Main Window
+     */
+    public void closeFrame()
+    {
+        System.exit(0);
+    }
+
+    public void uploadGame()
+    {
+    }
+
+    public void uploadArmy()
+    {
+        ArmyXMLHandler a = new ArmyXMLHandler();
+        JPanel pane = (JPanel) contentPanel.getComponent(0);
+        ArmyListModel model;
+        if (Tatoo.cmdMgr.getActiveView() == CommandManager.View.ARMYLIST)
+            model = ((ArmyListPanel) pane).getModel();
+        else
+            model = ((ArmyBuilderPanel) pane).getModel();
+
+        String b = a.write(model);
+        System.out.println(b);
+    }
+
+
+    // TODO: übersetzung enthält
+
+    /**
+     * Method to add Components to the Compoonent-Panel. Ensures, that the Panel
+     * is empty before adding new components. This Method should only called
+     * once with another Panel, which "enthält" the components to show.
+     *
+     * @param component the components to add
+     */
+    private void addComponentsToPane(JComponent component)
+    {
+        // überlegen ob es ausreicht hier die Referenz des contentPanels einfach
+        // neu zu setzen:
+        // contentPanel = component;
+        if (contentPanel.getComponents().length > 0)
+            contentPanel.removeAll();
+        contentPanel.add(component);
+        component.revalidate();
+    }
+
+    /**
+     * Get an appropriate Windowmanager and then create the GUI and show it.
+     */
+    // TODO: so aktualisieren, dass übergeben werden kann mit welchem "Fenster"
+    // die GUI aufgebaut werden soll?
+    public static void createAndShowGUI(VersionNumber version)
+    {
+
+        // Create and set up the window.
+        MainWindow frame = new MainWindow("TabletopOrganisation - Version " + version);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        frame.addMenuBarToPane(frame);
+        // Set up the content pane.
+        // TODO muss noch ersetzt werden, durch den zuletzt angezeigten bzw.
+        // gespeicherten
+        frame.showArmyBuilder();
+        // frame.showArmyList();
+        // Display the window.
+        frame.setSize(new Dimension(800, 600));
+        frame.setResizable(true);
+        frame.setVisible(true);
+    }
+
+    @Override
+    /**
+     * Listens to the Actions from the Menu.
+     * Is called if an Menuitem is selected and calls the apropriate Method.
+     */
+    // TODO: nicht sehr schön das aufrufen anhand von MenuItem-Namen. Noch mal
+    // überarbeiten?
+    // eventuell ist das hier eh obsolet, da das beim zusammenbau des menus
+    // schon anders laufen soll.
+    // siehe Bemerkung dort.
+    public void actionPerformed(ActionEvent e)
+    {
+        JMenuItem item = null;
+        try {
+            item = (JMenuItem) e.getSource();
+        } catch (ClassCastException cce) {
+            System.err.println(cce.getStackTrace());
+            return;
+        }
+        try {
+            this.getClass().getMethod(item.getName()).invoke(this);
+        } catch (SecurityException e1) {
+            e1.printStackTrace();
+        } catch (NoSuchMethodException e1) {
+            e1.printStackTrace();
+        } catch (IllegalArgumentException e1) {
+            e1.printStackTrace();
+        } catch (IllegalAccessException e1) {
+            e1.printStackTrace();
+        } catch (InvocationTargetException e1) {
+            e1.printStackTrace();
+        }
+    }
+
+    // TODO: wann aufgerufen und wofür?
+
+    /**
+     * Don't know what this is for ;P
+     */
+    @Override
+    public void itemStateChanged(ItemEvent e)
+    {
+        System.out.println("ItemEvent");
+    }
+}

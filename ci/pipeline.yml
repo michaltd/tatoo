@@ -1,0 +1,165 @@
+resource_types:
+  - name: pull-request
+    type: docker-image
+    source:
+      repository: teliaoss/github-pr-resource
+
+resources:
+- name: tatoo-repo
+  type: git
+  source:
+    uri: https://github.com/michaltd/tatoo
+    branch: master
+    private_key: ((private_key))
+- name: tatoo-repo-dev
+  type: git
+  source:
+    uri: https://github.com/michaltd/tatoo
+    branch: dev
+    private_key: ((private_key))
+- name: tatoo-repo-pr
+  type: pull-request
+  check_every: 10m
+  source:
+    repository: michaltd/tatoo
+    access_token: ((access_token))
+- name: tatoo-pre-release
+  type: github-release
+  source:
+    owner: michaltd
+    repository: tatoo
+    pre_release: true
+    release: false
+    access_token: ((access_token))
+- name: tatoo-release
+  type: github-release
+  source:
+    owner: michaltd
+    repository: tatoo
+    release: true
+    access_token: ((access_token))
+
+jobs:
+- name: tatoo-pr
+  plan:
+    - get: tatoo-repo-pr
+      trigger: true
+      version: every
+    - put: tatoo-repo-pr
+      params:
+        path: tatoo-repo-pr
+        status: pending
+    - task: unit-test
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: maven
+            tag: 3-jdk-15
+        inputs:
+          - name: tatoo-repo-pr
+        run:
+          path: ci/test.sh
+          dir: tatoo-repo-pr
+        caches:
+          - path: maven
+      on_failure:
+        put: tatoo-repo-pr
+        params:
+          path: tatoo-repo-pr
+          status: failure
+    - put: tatoo-repo-pr
+      params:
+        path: tatoo-repo-pr
+        status: success
+
+- name: tatoo-dev
+  plan:
+  - get: tatoo-release
+  - get: tatoo-repo-dev
+    trigger: true
+  - task: build
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: maven
+          tag: 3-jdk-15
+      inputs:
+      - name: tatoo-release
+      - name: tatoo-repo-dev
+      outputs:
+      - name: dist
+      run:
+        path: ci/build-dev.sh
+        dir: tatoo-repo-dev
+      caches:
+        - path: maven
+  - put: tatoo-pre-release
+    params:
+     name: dist/name
+     tag: dist/tag
+     commitish: dist/commit_sha
+     globs:
+      - dist/*.zip
+
+- name: tatoo
+  plan:
+  - get: tatoo-repo
+    trigger: true
+  - get: tatoo-release
+  - task: check-version
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: debian
+          tag: stable-slim
+      inputs:
+      - name: tatoo-repo
+      - name: tatoo-release
+      run:
+        path: ci/check-version.sh
+        dir: tatoo-repo
+  - task: build
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: maven
+          tag: 3-jdk-15
+      inputs:
+      - name: tatoo-repo
+      outputs:
+      - name: dist
+      run:
+        path: ci/build.sh
+        dir: tatoo-repo
+      caches:
+        - path: maven
+  - put: tatoo-release
+    params:
+      name: dist/name
+      tag: dist/tag
+      globs:
+      - dist/*.zip
+  - task: maven-deploy
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: maven
+          tag: 3-jdk-15
+      inputs:
+          - name: tatoo-repo
+      run:
+        path: ci/deploy.sh
+        args: ["((maven_access_token))"]
+        dir: tatoo-repo
+      caches:
+        - path: maven
